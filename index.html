@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TravelGo - Bus Ticket Booking</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🚌</span> Travel<span class="logo-accent">Go</span>
+      </a>
+      <span class="nav-badge">Bus Tickets</span>
+    </div>
+    
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="my-bookings.html">My Bookings</a></li>
+        <li><a href="offers.html">Offers</a></li>
+        <li><a href="support.html">Help</a></li>
+      </ul>
+      <a href="login.html" class="btn-login">Login / Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- Hero Banner with Styled Visual -->
+  <header class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">⚡ Instant Confirmation</div>
+      <h1 class="hero-title">SAFE, FAST & COMFORTABLE BUS BOOKING</h1>
+      <p class="hero-subtitle">Book tickets for 1000+ routes with real-time seat tracking</p>
+    </div>
+  </header>
+
+  <!-- Search Floating Bar -->
+  <div class="search-widget-container">
+  <form id="searchForm" action="search-results.html" method="GET" class="search-widget-form">
+    
+    <!-- FROM INPUT -->
+    <div class="form-group">
+      <label for="fromInput">FROM</label>
+      <input type="text" id="fromInput" name="from" value="Mumbai" placeholder="Departure" required>
+    </div>
+
+    <!-- SWAP BUTTON -->
+    <button type="button" id="btn-swap" class="btn-swap" title="Swap Locations">⇄</button>
+
+    <!-- TO INPUT -->
+    <div class="form-group">
+      <label for="toInput">TO</label>
+      <input type="text" id="toInput" name="to" value="Goa" placeholder="Destination" required>
+    </div>
+
+    <!-- DATE INPUT -->
+    <div class="form-group">
+      <label for="dateInput">DATE</label>
+      <input type="date" id="dateInput" name="date" required>
+    </div>
+
+    <!-- BUS TYPE -->
+  <form class="search-form">
+  
+  
+  <div class="form-group">
+    <label>BUS TYPE</label>
+    <select class="glass-select">
+      <option>All Types</option>
+      <option value="ac-sleeper">AC Sleeper</option>
+    <option value="non-ac-seater">Non-AC Seater</option>
+    </select>
+  </div>
+  
+  <button type="submit" class="btn-search">Search Buses</button>
+</form>
+</div>
+  <!-- Sections Below Search -->
+  <main class="content-section">
+    
+    <div class="content-block">
+      <h2 class="block-title">Popular Bus Routes</h2>
+      <div class="routes-grid">
+        <a href="search-results.html?from=Mumbai&to=Goa" class="route-card">
+          <div class="route-info">
+            <h3>Mumbai ➔ Goa</h3>
+            <p>Starts from ₹1200</p>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+        <a href="search-results.html?from=Delhi&to=Manali" class="route-card">
+          <div class="route-info">
+            <h3>Delhi ➔ Manali</h3>
+            <p>Starts from ₹1800</p>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+        <a href="search-results.html?from=Bangalore&to=Chennai" class="route-card">
+          <div class="route-info">
+            <h3>Bangalore ➔ Chennai</h3>
+            <p>Starts from ₹1000</p>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h2 class="block-title">Special Offers</h2>
+      <div class="offers-grid">
+        <div class="offer-card pink-card">
+          <span class="offer-tag">FLAT ₹200 OFF</span>
+          <h3>Code: FIRST50</h3>
+          <p>Valid on first bus booking</p>
+        </div>
+        <div class="offer-card blue-card">
+          <span class="offer-tag">NEW USER</span>
+          <h3>Code: TRAVELGO</h3>
+          <p>Get ₹150 instant discount</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  
+
+  <script src="js/mockData.js"></script>
+</body>
+</html>

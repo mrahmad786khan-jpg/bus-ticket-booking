@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TravelGo - Select Seats</title>
+  <link rel="stylesheet" href="css/seat.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">Travel<span>Go</span></div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="booking-container">
+    
+    <!-- LEFT PANEL: BUS SEAT MAP -->
+    <div class="seat-layout-card">
+      <div class="bus-header">
+        <div class="bus-info">
+          <h3>Select Your Seats</h3>
+          <p id="routeText" class="sub-text">Loading route...</p>
+        </div>
+        <div class="driver-steering" title="Driver Side">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2">
+            <circle cx="12" cy="12" r="9"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 15v6M3 12h6M15 12h6"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- SEAT LEGEND -->
+      <div class="seat-legend">
+        <div class="legend-item"><span class="seat-sample available"></span> Available</div>
+        <div class="legend-item"><span class="seat-sample selected"></span> Selected</div>
+        <div class="legend-item"><span class="seat-sample booked"></span> Booked</div>
+      </div>
+
+      <!-- SEAT GRID (Generated dynamically via JS) -->
+      <div class="bus-grid" id="busGrid"></div>
+    </div>
+
+    <!-- RIGHT PANEL: BOOKING SUMMARY -->
+    <div class="booking-summary-card">
+      <h3>Booking Details</h3>
+      <hr class="divider">
+      
+      <div class="summary-details">
+        <div class="summary-row">
+          <span>Selected Seats</span>
+          <span id="selectedSeatsText" class="highlight-text">None</span>
+        </div>
+        <div class="summary-row">
+          <span>Seat Count</span>
+          <span id="seatCountText">0</span>
+        </div>
+        <div class="summary-row">
+          <span>Base Price per Seat</span>
+          <span id="basePriceText">₹750</span>
+        </div>
+        <hr class="divider">
+        <div class="summary-row total">
+          <span>Total Fare</span>
+          <span id="totalPriceText" class="price-text">₹0</span>
+        </div>
+      </div>
+
+      <button id="checkoutBtn" class="btn-checkout" disabled>Proceed to Checkout</button>
+    </div>
+
+  </main>
+  
+
+    
+  <script src="js/seat-selection.js"></script>
+</body>
+</html>

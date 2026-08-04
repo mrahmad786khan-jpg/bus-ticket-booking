@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TravelGo - Passenger Details</title>
+  <link rel="stylesheet" href="css/passenger.css">
+</head>
+<body>
+
+  <div class="page-container">
+    <div class="glass-card">
+      
+      <!-- Header -->
+      <div class="card-header">
+        <a href="seat-selection.html" class="back-link">← Back to Seat Selection</a>
+        <h2>Passenger Details</h2>
+      </div>
+
+      <!-- Booking Summary Bar -->
+      <div class="summary-bar">
+        <div class="summary-item">
+          <span>Selected Seats:</span>
+          <strong id="displaySeats">Loading...</strong>
+        </div>
+        <div class="summary-item">
+          <span>Total Fare:</span>
+          <strong id="displayFare" class="price-text">₹0</strong>
+        </div>
+      </div>
+
+      <!-- Main Form -->
+      <form id="passengerForm">
+        
+        <!-- Dynamic Cards Container -->
+        <div id="passengerCardsContainer">
+          <!-- JS isme automatically seat ke hisab se cards generate karega -->
+        </div>
+
+        <!-- Contact Information -->
+        <div class="contact-section">
+          <h3>Contact Details</h3>
+          <p class="section-desc">Ticket details and updates will be sent to this contact.</p>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="contactEmail">Email Address</label>
+              <input type="email" id="contactEmail" class="glass-input" placeholder="example@gmail.com" required>
+            </div>
+            <div class="form-group">
+              <label for="contactPhone">Phone Number</label>
+              <input type="tel" id="contactPhone" class="glass-input" placeholder="+91 98765 43210" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button type="submit" class="btn-proceed">Proceed to Payment →</button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <script src="js/passenger.js"></script>
+</body>
+</html>

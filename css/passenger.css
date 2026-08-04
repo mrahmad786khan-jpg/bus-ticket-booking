@@ -1,0 +1,222 @@
+/* Dark Glassmorphic Base Theme */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #050A14;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+  color: #FFFFFF;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 15px;
+}
+
+.page-container {
+  width: 100%;
+  max-width: 700px;
+}
+
+/* Glass Card Outer Box */
+.glass-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.1);
+  padding: 30px;
+}
+
+/* Header & Back Link */
+.card-header {
+  margin-bottom: 20px;
+}
+
+.back-link {
+  color: #38BDF8;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 8px;
+  transition: opacity 0.2s;
+}
+
+.back-link:hover {
+  opacity: 0.8;
+}
+
+.card-header h2 {
+  font-size: 1.6rem;
+  color: #FFFFFF;
+  letter-spacing: 0.5px;
+}
+
+/* Summary Banner */
+.summary-bar {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px dashed rgba(56, 189, 248, 0.35);
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.summary-item span {
+  color: #94A3B8;
+  font-size: 0.9rem;
+  margin-right: 6px;
+}
+
+.summary-item strong {
+  color: #FFFFFF;
+  font-size: 1rem;
+}
+
+.summary-item .price-text {
+  color: #10B981;
+  font-size: 1.2rem;
+}
+
+/* Individual Passenger Card */
+.passenger-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.passenger-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #38BDF8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+/* Form Layout Grid */
+.form-grid {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 160px;
+}
+
+.form-group.sm {
+  flex: 0.5;
+  min-width: 90px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: #CBD5E1;
+  margin-bottom: 6px;
+}
+
+/* Glass Inputs */
+.glass-input {
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(11, 19, 43, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: #38BDF8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+/* Interactive Gender Selector Pills */
+.gender-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.gender-pill {
+  flex: 1;
+  cursor: pointer;
+}
+
+.gender-pill input {
+  display: none;
+}
+
+.gender-pill span {
+  display: block;
+  text-align: center;
+  padding: 10px 0;
+  background: rgba(11, 19, 43, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #94A3B8;
+  transition: all 0.2s ease;
+}
+
+.gender-pill input:checked + span {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38BDF8;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* Contact Section */
+.contact-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
+.contact-section h3 {
+  font-size: 1.1rem;
+  color: #FFFFFF;
+}
+
+.section-desc {
+  font-size: 0.8rem;
+  color: #94A3B8;
+  margin-bottom: 15px;
+}
+
+/* Proceed Button */
+.btn-proceed {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #0EA5E9, #0284C7);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-proceed:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+}

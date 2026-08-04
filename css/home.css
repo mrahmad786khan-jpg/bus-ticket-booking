@@ -1,0 +1,210 @@
+/* ==========================================
+   TravelGo - Home Page Styles
+   ========================================== */
+
+/* Hero Banner */
+.hero-section {
+  position: relative;
+  height: 380px;
+  background: linear-gradient(rgba(11, 25, 44, 0.75), rgba(11, 25, 44, 0.6)), 
+              url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  padding: 0 8%;
+  color: #FFFFFF;
+}
+
+.hero-text h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.hero-text p {
+  font-size: 1.05rem;
+  color: #E2E8F0;
+}
+
+/* Floating Search Widget */
+.search-container {
+  max-width: 1100px;
+  margin: -50px auto 40px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.search-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+}
+
+.search-form {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr 1fr 0.8fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-group label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F8FAFC;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.input-box input, .input-box select {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.swap-btn {
+  background: #F1F5F9;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 16px;
+  font-size: 0.8rem;
+  transition: transform 0.2s;
+}
+
+.swap-btn:hover {
+  transform: rotate(180deg);
+}
+
+.btn-search {
+  background: var(--accent-pink);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  height: 48px;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background 0.2s;
+}
+
+.btn-search:hover {
+  background: var(--accent-pink-hover);
+}
+
+/* Sections Layout */
+.main-content {
+  max-width: 1100px;
+  margin: 0 auto 60px;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 40px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+/* Popular Routes Grid */
+.routes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.route-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.route-card h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.route-price {
+  color: var(--accent-pink);
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+/* Special Offers & Trust Badges */
+.offers-flex {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.offer-badge {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.offer-pink { background: linear-gradient(135deg, #FF385C, #E00B41); }
+.offer-blue { background: linear-gradient(135deg, #1E40AF, #3B82F6); }
+
+.trust-grid {
+  display: flex;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  padding: 18px;
+  border-radius: 12px;
+}
+
+.trust-item {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.trust-item span {
+  display: block;
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}

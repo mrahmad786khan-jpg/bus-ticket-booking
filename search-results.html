@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bus Search Results - TravelGo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🚌</span> Travel<span class="logo-accent">Go</span>
+      </a>
+      <span class="nav-badge">Bus Tickets</span>
+    </div>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="my-bookings.html">My Bookings</a></li>
+        <li><a href="offers.html">Offers</a></li>
+      </ul>
+      <a href="login.html" class="btn-login">Login / Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- Glassmorphic Modify Search Header -->
+  <div class="modify-search-bar">
+    <form class="modify-form">
+      <div class="mod-group">
+        <label>📍 FROM</label>
+        <input type="text" value="Mumbai" required>
+      </div>
+      <button type="button" class="btn-swap-sm">⇄</button>
+      <div class="mod-group">
+        <label>🚩 TO</label>
+        <input type="text" value="Goa" required>
+      </div>
+      <div class="mod-group">
+        <label>📅 DATE</label>
+        <input type="date" id="dateInput" name="date" >
+      </div>
+      <div class="mod-group">
+        <label>🚌 BUS TYPE</label>
+        <select>
+          <option>All Types</option>
+          <option>AC Sleeper</option>
+          <option>Non-AC Seater</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-modify-submit">✏️ Modify Search</button>
+    </form>
+  </div>
+
+  <!-- Results Page Layout -->
+  <div class="results-container">
+    
+    <!-- Sidebar Filters -->
+    <aside class="filters-sidebar">
+      <h3 class="filter-title">Filter Results</h3>
+
+      <div class="filter-group">
+        <label class="filter-heading">Bus Type</label>
+        <label class="checkbox-label"><input type="checkbox" checked> AC Sleeper</label>
+        <label class="checkbox-label"><input type="checkbox" checked> Seater / Non-AC</label>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-heading">Max Price: <span id="priceVal">₹3000</span></label>
+        <input type="range" id="priceRange" min="500" max="3000" value="3000" class="price-slider">
+      </div>
+    </aside>
+
+    <!-- Bus Listings -->
+    <main class="bus-list">
+      
+      <!-- Bus Card 1 -->
+      <div class="bus-card" data-price="1200">
+        <div class="bus-details">
+          <h2 class="bus-name">IntrCity SmartBus</h2>
+          <p class="bus-type"><span class="bus-type-text">AC Sleeper (2+1)</span> • <span class="rating">⭐ 4.8</span></p>
+          <div class="bus-timing">
+            <span>21:00</span>
+            <span class="duration">10h 30m</span>
+            <span>07:30</span>
+          </div>
+        </div>
+        <div class="bus-price-action">
+          <div class="price">₹1200</div>
+          <button class="btn-select-seat">Select Seat</button>
+        </div>
+      </div>
+
+      <!-- Bus Card 2 -->
+      <div class="bus-card" data-price="850">
+        <div class="bus-details">
+          <h2 class="bus-name">Zingbus Express</h2>
+          <p class="bus-type"><span class="bus-type-text">Non-AC Seater (2+2)</span> • <span class="rating">⭐ 4.3</span></p>
+          <div class="bus-timing">
+            <span>22:15</span>
+            <span class="duration">10h 45m</span>
+            <span>09:00</span>
+          </div>
+        </div>
+        <div class="bus-price-action">
+          <div class="price">₹850</div>
+          <button class="btn-select-seat">Select Seat</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/search-results.js"></script>
+</body>
+</html>

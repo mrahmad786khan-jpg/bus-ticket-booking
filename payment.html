@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TravelGo - Payment</title>
+  <link rel="stylesheet" href="css/payment.css">
+</head>
+<body>
+
+  <div class="page-container">
+    <div class="glass-card">
+      
+      <!-- Header -->
+      <div class="card-header">
+        <a href="passenger.html" class="back-link">← Back to Passenger Details</a>
+        <h2>Select Payment Method</h2>
+      </div>
+
+      <!-- Booking Summary -->
+      <div class="summary-box">
+        <div class="summary-row">
+          <span>Seats Selected:</span>
+          <strong id="summarySeats">--</strong>
+        </div>
+        <div class="summary-row">
+          <span>Passengers:</span>
+          <strong id="summaryPassengers">0</strong>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total Amount:</span>
+          <strong id="summaryAmount" class="price-text">₹0</strong>
+        </div>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="payment-options">
+        
+        <label class="payment-method active">
+          <input type="radio" name="paymentType" value="upi" checked>
+          <div class="method-details">
+            <span class="method-title">UPI / QR Code</span>
+            <span class="method-sub">Google Pay, PhonePe, Paytm, BHIM</span>
+          </div>
+        </label>
+
+        <label class="payment-method">
+          <input type="radio" name="paymentType" value="card">
+          <div class="method-details">
+            <span class="method-title">Credit / Debit Card</span>
+            <span class="method-sub">Visa, Mastercard, RuPay</span>
+          </div>
+        </label>
+
+        <label class="payment-method">
+          <input type="radio" name="paymentType" value="netbanking">
+          <div class="method-details">
+            <span class="method-title">Net Banking</span>
+            <span class="method-sub">All major Indian banks</span>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- Payment Forms -->
+      <div class="payment-form-area">
+        
+        <div id="upiForm" class="form-section active">
+          <div class="form-group">
+            <label for="upiId">Enter UPI ID</label>
+            <input type="text" id="upiId" class="glass-input" placeholder="username@upi">
+          </div>
+        </div>
+
+        <div id="cardForm" class="form-section">
+          <div class="form-group">
+            <label for="cardNumber">Card Number</label>
+            <input type="text" id="cardNumber" class="glass-input" placeholder="4532 •••• •••• 8921" maxlength="19">
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="cardExpiry">Expiry Date</label>
+              <input type="text" id="cardExpiry" class="glass-input" placeholder="MM/YY" maxlength="5">
+            </div>
+            <div class="form-group">
+              <label for="cardCvv">CVV</label>
+              <input type="password" id="cardCvv" class="glass-input" placeholder="•••" maxlength="3">
+            </div>
+          </div>
+        </div>
+
+        <div id="netbankingForm" class="form-section">
+          <div class="form-group">
+            <label for="bankSelect">Select Bank</label>
+            <select id="bankSelect" class="glass-input select-input">
+              <option value="">-- Choose Bank --</option>
+              <option value="sbi">State Bank of India</option>
+              <option value="hdfc">HDFC Bank</option>
+              <option value="icici">ICICI Bank</option>
+              <option value="axis">Axis Bank</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Button -->
+      <button id="payNowBtn" class="btn-pay">Pay & Confirm Booking</button>
+
+    </div>
+  </div>
+
+  <!-- Custom Success Modal Popup -->
+  <div id="successModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="success-icon">✓</div>
+      <h2>Payment Successful!</h2>
+      <p class="success-msg">Your booking has been confirmed.</p>
+      
+      <div class="ticket-info">
+        <span class="ticket-label">TICKET ID / PNR</span>
+        <strong id="ticketId" class="ticket-code">--</strong>
+      </div>
+
+      <button id="doneBtn" class="btn-done">Go to Home Page</button>
+    </div>
+  </div>
+
+  <script src="js/payment.js"></script>
+</body>
+</html>
