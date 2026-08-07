@@ -1,318 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TravelGo - Payment</title>
-
-  <!-- FontAwesome Icons -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TravelGo - Complete Payment</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/passenger.css">
   <style>
-    /* Global Variables & Dark Glassmorphism Theme */
-    :root {
-      --bg-dark: #0f172a;
-      --card-bg: rgba(30, 41, 59, 0.75);
-      --accent-cyan: #38bdf8;
-      --accent-hover: #0284c7;
-      --text-white: #f8fafc;
-      --text-gray: #94a3b8;
-      --border-glow: rgba(56, 189, 248, 0.3);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background: var(--bg-dark);
-      background-image: radial-gradient(
-          circle at 15% 15%,
-          rgba(56, 189, 248, 0.1) 0%,
-          transparent 40%
-        ),
-        radial-gradient(
-          circle at 85% 85%,
-          rgba(14, 165, 233, 0.08) 0%,
-          transparent 40%
-        );
-      color: var(--text-white);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .page-container {
-      width: 100%;
-      max-width: 480px;
-    }
-
-    /* Glassmorphic Card Container */
-    .payment-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-glow);
-      border-radius: 20px;
-      padding: 32px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(56, 189, 248, 0.15);
-    }
-
-    .payment-header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .payment-header h2 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--text-white);
-    }
-
-    .payment-header p {
-      font-size: 0.9rem;
-      color: var(--text-gray);
-      margin-top: 6px;
-    }
-
-    .summary-box {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 24px;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      font-size: 0.95rem;
-      color: var(--text-gray);
-    }
-
-    .summary-row:last-child {
-      margin-bottom: 0;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(255, 255, 255, 0.15);
-      color: var(--text-white);
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .summary-row .total-amount {
-      color: var(--accent-cyan);
-    }
-
-    .pay-btn {
-      width: 100%;
-      background: var(--accent-cyan);
-      color: #030712;
-      font-size: 1rem;
-      font-weight: 700;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .pay-btn:hover {
-      background: var(--accent-hover);
-      color: #ffffff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
-    }
-
-    /* Custom Glassmorphic Toast Notification */
-    .toast-container {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 99999;
-      pointer-events: none;
-    }
-
-    .custom-toast {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--accent-cyan);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.25);
-      padding: 16px 20px;
-      border-radius: 16px;
-      color: #ffffff;
-      transform: translateY(-50px) scale(0.9);
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .custom-toast.show {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-
-    .toast-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent-cyan);
-      font-size: 1.2rem;
-    }
-
-    .toast-content h4 {
-      margin: 0;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--accent-cyan);
-    }
-
-    .toast-content p {
-      margin: 3px 0 0 0;
-      font-size: 0.85rem;
-      color: var(--text-gray);
-    }
+    .payment-options { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
+    .payment-method { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; cursor: pointer; }
+    .payment-method.active { border-color: #38bdf8; background: rgba(56, 189, 248, 0.1); }
+    .method-header { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #fff; cursor: pointer; }
+    .form-panel { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .form-panel.active { display: block; }
+    .row-inputs { display: flex; gap: 10px; margin-top: 8px; }
+    
+    /* Modal Styling */
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.show { display: flex; }
+    .modal-card { background: #1e293b; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 25px; text-align: center; max-width: 350px; width: 90%; }
+    .success-icon { font-size: 45px; color: #34d399; margin-bottom: 10px; }
+    .pnr-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin: 15px 0; font-size: 1.1rem; font-weight: bold; color: #38bdf8; }
+    .done-btn { width: 100%; padding: 10px; background: #38bdf8; border: none; color: #0f172a; font-weight: bold; border-radius: 6px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- Custom Styled Alert Toast Popup -->
-  <div id="toast-container" class="toast-container">
-    <div id="custom-toast" class="custom-toast">
-      <div class="toast-icon">
-        <i id="toast-icon-i" class="fa-solid fa-shield-halved"></i>
-      </div>
-      <div class="toast-content">
-        <h4 id="toast-title">Authentication Required</h4>
-        <p id="toast-message">Please login first to complete your payment!</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Payment Form Card -->
   <div class="page-container">
-    <div class="payment-card">
-      <div class="payment-header">
+    <div class="glass-card">
+      
+      <!-- Header -->
+      <div class="card-header">
+        <a href="passenger.html" class="back-link">← Back to Passengers</a>
         <h2>Complete Payment</h2>
-        <p>Review ticket fare & secure payment checkout</p>
       </div>
 
-      <div class="summary-box">
-        <div class="summary-row">
-          <span>Bus Ticket Fare</span>
-          <span id="display-base-fare">₹750.00</span>
+      <!-- Booking Fare Summary -->
+      <div class="summary-bar" style="flex-direction: column; gap: 8px; align-items: stretch;">
+        <div style="display: flex; justify-content: space-between;">
+          <span>Selected Seats:</span>
+          <strong id="summarySeats">--</strong>
         </div>
-        <div class="summary-row">
-          <span>GST & Service Charge</span>
-          <span id="display-tax-fare">₹45.00</span>
+        <div style="display: flex; justify-content: space-between;">
+          <span>Passengers Count:</span>
+          <strong id="summaryPassengers">0</strong>
         </div>
-        <div class="summary-row">
-          <span>Total Payable</span>
-          <span class="total-amount" id="display-total-fare">₹795.00</span>
+        <div style="display: flex; justify-content: space-between;">
+          <span>Base Ticket Fare:</span>
+          <strong id="display-base-fare">₹0</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span>GST & Service Charge:</span>
+          <strong id="display-tax-fare">₹0</strong>
+        </div>
+        <hr style="border-color: rgba(255,255,255,0.1);">
+        <div style="display: flex; justify-content: space-between; font-size: 1.1rem;">
+          <span>Total Payable:</span>
+          <strong id="summaryAmount" class="price-text">₹0</strong>
         </div>
       </div>
 
-      <button class="pay-btn" id="confirm-pay-btn">
-        <i class="fa-solid fa-lock"></i> <span id="btn-pay-text">Pay ₹795.00 Securely</span>
-      </button>
+      <!-- Payment Form -->
+      <form id="paymentForm">
+        <h3 style="margin-top: 15px; font-size: 1rem; color: #cbd5e1;">Choose Payment Method</h3>
+        
+        <div class="payment-options">
+          
+          <!-- UPI Option -->
+          <div class="payment-method active">
+            <label class="method-header">
+              <input type="radio" name="paymentType" value="upi" checked>
+              <i class="fa-solid fa-qrcode" style="color: #38bdf8;"></i> UPI / Google Pay / PhonePe
+            </label>
+            <div class="form-panel active" id="upiForm">
+              <input type="text" class="glass-input" placeholder="Enter UPI ID (e.g. mobile@upi)">
+            </div>
+          </div>
+
+          <!-- Card Option -->
+          <div class="payment-method">
+            <label class="method-header">
+              <input type="radio" name="paymentType" value="card">
+              <i class="fa-solid fa-credit-card" style="color: #38bdf8;"></i> Credit / Debit Card
+            </label>
+            <div class="form-panel" id="cardForm">
+              <input type="text" class="glass-input" placeholder="Card Number (16 Digits)">
+              <div class="row-inputs">
+                <input type="text" class="glass-input" placeholder="MM/YY">
+                <input type="password" class="glass-input" placeholder="CVV">
+              </div>
+            </div>
+          </div>
+
+          <!-- Net Banking Option -->
+          <div class="payment-method">
+            <label class="method-header">
+              <input type="radio" name="paymentType" value="netbanking">
+              <i class="fa-solid fa-building-columns" style="color: #38bdf8;"></i> Net Banking
+            </label>
+            <div class="form-panel" id="netbankingForm">
+              <select class="glass-input" style="background: #1e293b; color: #fff;">
+                <option>Select Bank</option>
+                <option>SBI - State Bank of India</option>
+                <option>HDFC Bank</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-proceed" id="payNowBtn" style="margin-top: 20px;">
+          <i class="fa-solid fa-lock"></i> <span id="btn-pay-text">Proceed to Pay</span>
+        </button>
+      </form>
+
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Success Modal Popup -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+      <i class="fa-solid fa-circle-check success-icon"></i>
+      <h3 style="color: #fff;">Payment Successful!</h3>
+      <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 5px;">Your ticket has been confirmed.</p>
+      
+      <div class="pnr-box">
+        PNR: <span id="ticketId">SS-000000</span>
+      </div>
+
+      <button type="button" class="done-btn" id="doneBtn">View My Bookings</button>
+    </div>
+  </div>
+
   <script src="js/auth-check.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // 1. Dynamic Fare Fetching from LocalStorage
-      const storedFare = localStorage.getItem('booking_total_fare');
-      let totalAmount = storedFare ? parseFloat(storedFare) : 795;
-
-      // Base & Tax calculation
-      let baseFare = Math.round(totalAmount * 0.94);
-      let taxFare = totalAmount - baseFare;
-
-      // Dynamic Text Updates in UI
-      document.getElementById('display-base-fare').innerText = `₹${baseFare}.00`;
-      document.getElementById('display-tax-fare').innerText = `₹${taxFare}.00`;
-      document.getElementById('display-total-fare').innerText = `₹${totalAmount}.00`;
-      document.getElementById('btn-pay-text').innerText = `Pay ₹${totalAmount}.00 Securely`;
-
-      // 2. Auth Check Validation
-      const user = typeof getLoggedInUser === 'function' ? getLoggedInUser() : null;
-
-      if (!user) {
-        const toast = document.getElementById('custom-toast');
-        if (toast) {
-          setTimeout(() => toast.classList.add('show'), 150);
-
-          setTimeout(() => {
-            toast.classList.remove('show');
-            window.location.href = 'auth.html?redirect=payment.html';
-          }, 1800);
-        } else {
-          window.location.href = 'auth.html?redirect=payment.html';
-        }
-      }
-
-      // 3. Confirm Payment Click Action
-      const confirmPayBtn = document.getElementById('confirm-pay-btn');
-      if (confirmPayBtn) {
-        confirmPayBtn.addEventListener('click', () => {
-          const currentUser = typeof getLoggedInUser === 'function' ? getLoggedInUser() : null;
-
-          if (!currentUser) {
-            window.location.href = 'auth.html?redirect=payment.html';
-            return;
-          }
-
-          const toast = document.getElementById('custom-toast');
-          const toastTitle = document.getElementById('toast-title');
-          const toastMsg = document.getElementById('toast-message');
-          const toastIcon = document.getElementById('toast-icon-i');
-
-          if (toast && toastTitle && toastMsg) {
-            toastTitle.innerText = "Payment Successful!";
-            toastMsg.innerText = `₹${totalAmount}.00 paid. Ticket booked successfully!`;
-            
-            if (toastIcon) {
-              toastIcon.className = "fa-solid fa-circle-check";
-              toastIcon.style.color = "#4ADE80";
-            }
-
-            toast.classList.add('show');
-
-            setTimeout(() => {
-              toast.classList.remove('show');
-              localStorage.removeItem('booking_total_fare'); // Clear storage after payment
-              window.location.href = 'index.html';
-            }, 2000);
-          } else {
-            window.location.href = 'index.html';
-          }
-        });
-      }
-    });
-  </script>
+  <script src="js/payment.js"></script>
 </body>
 </html>

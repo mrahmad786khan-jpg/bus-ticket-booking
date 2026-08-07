@@ -87,8 +87,28 @@ const TRAVELGO_DB = {
       boardingPoints: ["Majestic - 21:30", "Silk Board - 22:00"],
       droppingPoints: ["Koyambedu - 05:30"],
       seats: [
-        { id: "BC1", type: "sleeper", deck: "lower", price: 1200, status: "available", gender: null },
-        { id: "BC2", type: "sleeper", deck: "lower", price: 1200, status: "available", gender: null }
+        { id: "BC1", type: "sleeper", deck: "lower", price: 1200, status: "available", gender: null }
+      ]
+    },
+    {
+      id: "BUS-401",
+      name: "Lucknow Express Comfort",
+      type: "AC Sleeper (2+1)",
+      category: "ac",
+      from: "Lucknow",
+      to: "Goa",
+      departureTime: "20:00",
+      arrivalTime: "14:30",
+      duration: "18h 30m",
+      price: 1850,
+      rating: 4.6,
+      totalSeats: 28,
+      amenities: ["WiFi", "Charging Point", "Blanket", "Snacks"],
+      boardingPoints: ["Alambagh Bus Stand - 19:30", "Charbagh - 20:00"],
+      droppingPoints: ["Panjim - 14:00", "Madgaon - 14:30"],
+      seats: [
+        { id: "LK1", type: "sleeper", deck: "lower", price: 1850, status: "available", gender: null },
+        { id: "LK2", type: "sleeper", deck: "lower", price: 1850, status: "available", gender: null }
       ]
     }
   ],
@@ -100,9 +120,8 @@ const TRAVELGO_DB = {
   ]
 };
 
-// LocalStorage Initialization System
+// LocalStorage Initialization System (Fixed Non-Overwriting)
 function initMockData() {
-  // Always keep DB updated with fresh routes
   localStorage.setItem("travelgo_buses", JSON.stringify(TRAVELGO_DB.buses));
   if (!localStorage.getItem("travelgo_offers")) {
     localStorage.setItem("travelgo_offers", JSON.stringify(TRAVELGO_DB.offers));
@@ -155,44 +174,41 @@ function calculateBookingPrice(seatCount, pricePerSeat) {
 initMockData();
 
 // ==========================================
-// POPULAR ROUTES CLICK HANDLER (index.html integration)
+// SEARCH FORM & ROUTE HANDLERS
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-  const popularCards = document.querySelectorAll('.route-card, .popular-route-card, [data-route]');
+  const searchForm = document.getElementById('searchForm');
+  const fromInput = document.getElementById('fromInput');
+  const toInput = document.getElementById('toInput');
+  const swapBtn = document.getElementById('btn-swap');
 
-  popularCards.forEach(card => {
-    card.addEventListener('click', (e) => {
+  // Swap From & To values
+  if (swapBtn && fromInput && toInput) {
+    swapBtn.addEventListener('click', () => {
+      const temp = fromInput.value;
+      fromInput.value = toInput.value;
+      toInput.value = temp;
+    });
+  }
+
+  // Handle Form Submit
+  if (searchForm) {
+    searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const text = card.innerText || '';
-      let from = 'Mumbai';
-      let to = 'Goa';
-      let price = 1200;
-
-      if (text.includes('Delhi') || text.includes('Manali')) {
-        from = 'Delhi';
-        to = 'Manali';
-        price = 1800;
-      } else if (text.includes('Bangalore') || text.includes('Chennai')) {
-        from = 'Bangalore';
-        to = 'Chennai';
-        price = 1000;
-      } else if (text.includes('Mumbai') || text.includes('Goa')) {
-        from = 'Mumbai';
-        to = 'Goa';
-        price = 1200;
-      }
+      const fromVal = fromInput ? fromInput.value.trim() : '';
+      const toVal = toInput ? toInput.value.trim() : '';
+      const dateInput = document.getElementById('dateInput');
+      const dateVal = dateInput ? dateInput.value : '';
 
       const searchQuery = {
-        from: from,
-        to: to,
-        date: new Date().toISOString().split('T')[0],
-        busType: 'All',
-        routeMinPrice: price
+        from: fromVal,
+        to: toVal,
+        date: dateVal
       };
 
       localStorage.setItem('searchQuery', JSON.stringify(searchQuery));
-      window.location.href = `search-results.html?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&price=${price}`;
+      window.location.href = `search-results.html?from=${encodeURIComponent(fromVal)}&to=${encodeURIComponent(toVal)}&date=${encodeURIComponent(dateVal)}`;
     });
-  });
+  }
 });

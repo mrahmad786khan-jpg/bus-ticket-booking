@@ -1,116 +1,182 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-  // 1. URL Params aur LocalStorage Data Restore
+  // 1. URL Query Parameters Read Karein
   const urlParams = new URLSearchParams(window.location.search);
-  
-  const fromParam = urlParams.get('from');
-  const toParam = urlParams.get('to');
-  const dateParam = urlParams.get('date');
-  const busTypeParam = urlParams.get('busType');
-  const priceParam = urlParams.get('price'); // Extracted price param from URL
+  const fromLocation = urlParams.get('from') ? urlParams.get('from').trim() : '';
+  const toLocation = urlParams.get('to') ? urlParams.get('to').trim() : '';
+  const travelDate = urlParams.get('date') || 'Today';
 
-  const savedQuery = JSON.parse(localStorage.getItem('searchQuery')) || {};
-  const modInputs = document.querySelectorAll('.modify-search-bar input, .mod-group input');
-  const modSelect = document.querySelector('.modify-search-bar select, .mod-group select');
+  // Input Fields Sync
+  const fromInput = document.querySelector('input[name="from"]') || document.getElementById('fromInput');
+  const toInput = document.querySelector('input[name="to"]') || document.getElementById('toInput');
+  const dateInput = document.querySelector('input[name="date"]') || document.getElementById('dateInput');
 
-  // Input fields populating logic
-  if (modInputs.length >= 3) {
-    if (fromParam || savedQuery.from) modInputs[0].value = fromParam || savedQuery.from;
-    if (toParam || savedQuery.to) modInputs[1].value = toParam || savedQuery.to;
-    if (dateParam || savedQuery.date) modInputs[2].value = dateParam || savedQuery.date;
-  }
-  
-  if (modSelect && (busTypeParam || savedQuery.busType)) {
-    modSelect.value = busTypeParam || savedQuery.busType;
+  if (fromInput && fromLocation) fromInput.value = fromLocation;
+  if (toInput && toLocation) toInput.value = toLocation;
+  if (dateInput && travelDate !== 'Today') dateInput.value = travelDate;
+
+  // Header Title Update
+  const routeHeaderEl = document.getElementById('searchRouteHeader');
+  if (routeHeaderEl && fromLocation && toLocation) {
+    routeHeaderEl.textContent = `${fromLocation} ➔ ${toLocation} (${travelDate})`;
   }
 
-  // =========================================================
-  // FIX: Route Price Synchronization Logic (Selected Route Price Updates)
-  // =========================================================
-  const busCards = document.querySelectorAll('.bus-card');
-  const targetBasePrice = parseInt(priceParam || savedQuery.routeMinPrice);
+  // 2. Fetch Data from Central Mock Database (mockData.js)
+  const allBuses = typeof getStoredBuses === 'function' 
+    ? getStoredBuses() 
+    : (typeof TRAVELGO_DB !== 'undefined' ? TRAVELGO_DB.buses : []);
 
-  if (targetBasePrice && busCards.length > 0) {
-    busCards.forEach((card, index) => {
-      // Pehle card par exact minimum route price (e.g., 1800 ya 1000) set karega, baaki par slight variation
-      const cardPrice = targetBasePrice + (index * 150);
-
-      // Attribute Update for Seat Selection & Filters
-      card.setAttribute('data-price', cardPrice);
-
-      // DOM Text Update for Price Display
-      const priceDisplay = card.querySelector('.price-tag, .bus-price, h3');
-      if (priceDisplay) {
-        priceDisplay.innerText = `₹${cardPrice}`;
-      }
-    });
-  }
-  // =========================================================
-
-  // 2. Swap Button Logic
-  const swapBtn = document.querySelector('.btn-swap-sm');
-  if (swapBtn) {
-    swapBtn.addEventListener('click', () => {
-      const inputs = document.querySelectorAll('.modify-search-bar input, .mod-group input');
-      if (inputs.length >= 2) {
-        const tempValue = inputs[0].value;
-        inputs[0].value = inputs[1].value;
-        inputs[1].value = tempValue;
-
-        swapBtn.style.transition = 'transform 0.3s ease';
-        swapBtn.style.transform = swapBtn.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
-      }
-    });
+  // Filter Buses strictly based on Route Match
+  let routeMatchedBuses = [];
+  if (fromLocation && toLocation) {
+    routeMatchedBuses = allBuses.filter(bus => 
+      bus.from.toLowerCase() === fromLocation.toLowerCase() && 
+      bus.to.toLowerCase() === toLocation.toLowerCase()
+    );
+  } else {
+    routeMatchedBuses = allBuses; // Show all if no route selected
   }
 
-  // 3. Price Filter Slider Logic
-  const priceSlider = document.getElementById('priceRange');
+  // DOM Elements
+  const busListContainer = document.querySelector('.bus-list') || document.getElementById('busListContainer') || document.getElementById('busResults');
+  const checkboxes = document.querySelectorAll('.filter-group input[type="checkbox"]');
+  const priceRange = document.getElementById('priceRange');
   const priceVal = document.getElementById('priceVal');
 
-  if (priceSlider && priceVal) {
-    priceSlider.addEventListener('input', (e) => {
-      const maxPrice = parseInt(e.target.value);
-      priceVal.innerText = `₹${maxPrice}`;
+  // 3. Bus Cards Render Function
+  function renderBuses(buses) {
+    if (!busListContainer) return;
 
-      busCards.forEach(card => {
-        const cardPrice = parseInt(card.getAttribute('data-price')) || 0;
-        if (cardPrice <= maxPrice) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
+    if (!buses || buses.length === 0) {
+      busListContainer.innerHTML = `
+        <div class="no-buses" style="color: #94a3b8; text-align: center; padding: 40px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin-top: 20px;">
+          <h3 style="color: #fff; margin-bottom: 8px;">No Buses Available</h3>
+          <p style="margin: 0;">No buses found matching ${fromLocation ? `"${fromLocation} ➔ ${toLocation}"` : 'your search criteria'}.</p>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Try searching popular routes like "Mumbai to Goa", "Delhi to Manali", or "Bangalore to Chennai".</p>
+        </div>
+      `;
+      return;
+    }
+
+    busListContainer.innerHTML = buses.map((bus) => {
+      const busPrice = bus.price || 1200;
+      const availableSeats = bus.seats 
+        ? bus.seats.filter(s => s.status === 'available').length 
+        : (bus.totalSeats || 20);
+
+      return `
+        <div class="bus-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          
+          <div class="bus-info">
+            <h3 style="color: #fff; margin: 0 0 5px 0;">${bus.name}</h3>
+            <p style="color: #94a3b8; margin: 0; font-size: 0.9rem;">${bus.type}</p>
+            <div style="margin-top: 8px; color: #38bdf8; font-size: 0.85rem;">
+              <span>⭐ ${bus.rating || '4.5'}</span> | <span>${availableSeats} Seats Left</span>
+            </div>
+          </div>
+
+          <div class="bus-timing" style="text-align: center;">
+            <div style="font-weight: bold; color: #fff;">${bus.departureTime} ➔ ${bus.arrivalTime}</div>
+            <div style="color: #64748b; font-size: 0.85rem;">${bus.duration}</div>
+          </div>
+
+          <div class="bus-action" style="text-align: right;">
+            <div style="font-size: 1.4rem; font-weight: bold; color: #34d399; margin-bottom: 8px;">₹${busPrice}</div>
+            <button type="button" class="btn-select-bus" data-bus-id="${bus.id}" style="padding: 10px 20px; background: #38bdf8; border: none; color: #0f172a; font-weight: bold; border-radius: 6px; cursor: pointer; display: inline-block;">
+              Select Seats
+            </button>
+          </div>
+
+        </div>
+      `;
+    }).join('');
+
+    // Reliable Click Handler
+    document.querySelectorAll('.btn-select-bus').forEach((button) => {
+      button.addEventListener('click', (e) => {
+        const busId = e.currentTarget.getAttribute('data-bus-id');
+        const selectedBusObj = buses.find(b => b.id === busId);
+        if (selectedBusObj) {
+          handleBusSelect(selectedBusObj);
         }
       });
     });
   }
 
-  // 4. Select Seat Button Redirect & Price Sync Fix
-  const selectSeatBtns = document.querySelectorAll('.btn-select-seat');
-  selectSeatBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const busCard = e.target.closest('.bus-card');
-      const busName = busCard ? busCard.querySelector('.bus-name')?.innerText || 'Bus' : 'Bus';
-      const busType = busCard ? busCard.querySelector('.bus-type-text')?.innerText || 'AC' : 'AC';
-      const busPrice = parseInt(busCard?.getAttribute('data-price') || '750');
+  // 4. Apply Filters Logic
+  function applyFilters() {
+    const maxPrice = priceRange ? Number(priceRange.value) : 3000;
+    if (priceVal) priceVal.textContent = `₹${maxPrice}`;
 
-      const selectedBus = {
-        name: busName,
-        type: busType,
-        price: busPrice
-      };
+    let acChecked = true;
+    let nonAcChecked = true;
 
-      // Synchronize with Central Booking State
-      const currentBookingData = JSON.parse(localStorage.getItem('travelgo_booking_data')) || {};
-      const updatedBookingData = {
-        ...currentBookingData,
-        busName: busName,
-        busType: busType,
-        baseSeatPrice: busPrice
-      };
-
-      localStorage.setItem('selectedBus', JSON.stringify(selectedBus));
-      localStorage.setItem('travelgo_booking_data', JSON.stringify(updatedBookingData));
-
-      window.location.href = 'seat-selection.html';
+    checkboxes.forEach(cb => {
+      const labelText = cb.parentElement ? cb.parentElement.textContent.toLowerCase() : '';
+      if (labelText.includes('ac sleeper') || labelText.includes('ac')) {
+        acChecked = cb.checked;
+      }
+      if (labelText.includes('non-ac') || labelText.includes('seater')) {
+        nonAcChecked = cb.checked;
+      }
     });
+
+    const filteredBuses = routeMatchedBuses.filter(bus => {
+      const matchesPrice = bus.price <= maxPrice;
+
+      const busCategory = bus.category || bus.type.toLowerCase();
+      const isAcBus = busCategory.includes('ac') && !busCategory.includes('non-ac');
+      const isNonAcBus = busCategory.includes('non-ac') || busCategory.includes('seater');
+
+      let matchesType = false;
+      if (isAcBus && acChecked) matchesType = true;
+      if (isNonAcBus && nonAcChecked) matchesType = true;
+      if (!isAcBus && !isNonAcBus) matchesType = true; // Fallback for general types
+
+      return matchesPrice && matchesType;
+    });
+
+    renderBuses(filteredBuses);
+  }
+
+  // Attach Event Listeners
+  if (priceRange) {
+    priceRange.addEventListener('input', applyFilters);
+  }
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', applyFilters);
   });
+
+  // 5. Select Bus & Data Save Handling
+  function handleBusSelect(bus) {
+    const busPrice = bus.price || 1200;
+
+    const selectedBusObject = {
+      id: bus.id,
+      name: bus.name,
+      type: bus.type,
+      price: busPrice,
+      from: bus.from || fromLocation,
+      to: bus.to || toLocation
+    };
+
+    const bookingData = {
+      busName: bus.name,
+      busType: bus.type,
+      baseSeatPrice: busPrice,
+      totalAmount: busPrice,
+      from: bus.from || fromLocation,
+      to: bus.to || toLocation
+    };
+
+    localStorage.setItem('selectedBus', JSON.stringify(selectedBusObject));
+    localStorage.setItem('travelgo_booking_data', JSON.stringify(bookingData));
+    localStorage.setItem('bus_single_price', busPrice.toString());
+
+    const fromParam = encodeURIComponent(fromLocation || bus.from);
+    const toParam = encodeURIComponent(toLocation || bus.to);
+    window.location.href = `seat-selection.html?from=${fromParam}&to=${toParam}&busId=${bus.id}`;
+  }
+
+  // Initial Filter Execution
+  applyFilters();
 });

@@ -27,19 +27,19 @@
 
   <!-- Glassmorphic Modify Search Header -->
   <div class="modify-search-bar">
-    <form class="modify-form">
+    <form class="modify-form" id="searchForm">
       <div class="mod-group">
         <label>📍 FROM</label>
-        <input type="text" value="Mumbai" required>
+        <input type="text" name="from" id="fromInput" placeholder="Departure City" required>
       </div>
-      <button type="button" class="btn-swap-sm">⇄</button>
+      <button type="button" class="btn-swap-sm" id="btn-swap">⇄</button>
       <div class="mod-group">
         <label>🚩 TO</label>
-        <input type="text" value="Goa" required>
+        <input type="text" name="to" id="toInput" placeholder="Destination City" required>
       </div>
       <div class="mod-group">
         <label>📅 DATE</label>
-        <input type="date" id="dateInput" name="date" >
+        <input type="date" id="dateInput" name="date">
       </div>
       <div class="mod-group">
         <label>🚌 BUS TYPE</label>
@@ -72,46 +72,14 @@
       </div>
     </aside>
 
-    <!-- Bus Listings -->
-    <main class="bus-list">
-      
-      <!-- Bus Card 1 -->
-      <div class="bus-card" data-price="1200">
-        <div class="bus-details">
-          <h2 class="bus-name">IntrCity SmartBus</h2>
-          <p class="bus-type"><span class="bus-type-text">AC Sleeper (2+1)</span> • <span class="rating">⭐ 4.8</span></p>
-          <div class="bus-timing">
-            <span>21:00</span>
-            <span class="duration">10h 30m</span>
-            <span>07:30</span>
-          </div>
-        </div>
-        <div class="bus-price-action">
-          <div class="price">₹1200</div>
-          <button class="btn-select-seat">Select Seat</button>
-        </div>
-      </div>
-
-      <!-- Bus Card 2 -->
-      <div class="bus-card" data-price="850">
-        <div class="bus-details">
-          <h2 class="bus-name">Zingbus Express</h2>
-          <p class="bus-type"><span class="bus-type-text">Non-AC Seater (2+2)</span> • <span class="rating">⭐ 4.3</span></p>
-          <div class="bus-timing">
-            <span>22:15</span>
-            <span class="duration">10h 45m</span>
-            <span>09:00</span>
-          </div>
-        </div>
-        <div class="bus-price-action">
-          <div class="price">₹850</div>
-          <button class="btn-select-seat">Select Seat</button>
-        </div>
-      </div>
-
+    <!-- Bus Listings Container (Dynamic Render via JS) -->
+    <main class="bus-list" id="busListContainer">
+      <!-- Bus Cards will be injected dynamically by search-results.js -->
     </main>
   </div>
 
+  <!-- Central Mock Database & Scripts -->
+  <script src="js/mockData.js"></script>
   <script src="js/search-results.js"></script>
   <script src="js/auth-check.js"></script>
 </body>

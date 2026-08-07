@@ -23,7 +23,7 @@
         <li><a href="offers.html">Offers</a></li>
         <li><a href="support.html">Help</a></li>
       </ul>
-      <a href="auth.html" class=" btn-login nav-login-btn" id=" nav-login-btn">Login / Sign Up</a>
+      <a href="auth.html" class="btn-login nav-login-btn" id="nav-login-btn">Login / Sign Up</a>
     </div>
   </nav>
 
@@ -38,45 +38,43 @@
 
   <!-- Search Floating Bar -->
   <div class="search-widget-container">
-  <form id="searchForm" action="search-results.html" method="GET" class="search-widget-form">
-    
-    <!-- FROM INPUT -->
-    <div class="form-group">
-      <label for="fromInput">FROM</label>
-      <input type="text" id="fromInput" name="from" value="Mumbai" placeholder="Departure" required>
-    </div>
+    <form id="searchForm" action="search-results.html" method="GET" class="search-widget-form">
+      
+      <!-- FROM INPUT -->
+      <div class="form-group">
+        <label for="fromInput">FROM</label>
+        <input type="text" id="fromInput" name="from" placeholder="Departure City" required>
+      </div>
 
-    <!-- SWAP BUTTON -->
-    <button type="button" id="btn-swap" class="btn-swap" title="Swap Locations">⇄</button>
+      <!-- SWAP BUTTON -->
+      <button type="button" id="btn-swap" class="btn-swap" title="Swap Locations">⇄</button>
 
-    <!-- TO INPUT -->
-    <div class="form-group">
-      <label for="toInput">TO</label>
-      <input type="text" id="toInput" name="to" value="Goa" placeholder="Destination" required>
-    </div>
+      <!-- TO INPUT -->
+      <div class="form-group">
+        <label for="toInput">TO</label>
+        <input type="text" id="toInput" name="to" placeholder="Destination City" required>
+      </div>
 
-    <!-- DATE INPUT -->
-    <div class="form-group">
-      <label for="dateInput">DATE</label>
-      <input type="date" id="dateInput" name="date" required>
-    </div>
+      <!-- DATE INPUT -->
+      <div class="form-group">
+        <label for="dateInput">DATE</label>
+        <input type="date" id="dateInput" name="date" required>
+      </div>
 
-    <!-- BUS TYPE -->
-  <form class="search-form">
-  
-  
-  <div class="form-group">
-    <label>BUS TYPE</label>
-    <select class="glass-select">
-      <option>All Types</option>
-      <option value="ac-sleeper">AC Sleeper</option>
-    <option value="non-ac-seater">Non-AC Seater</option>
-    </select>
+      <!-- BUS TYPE -->
+      <div class="form-group">
+        <label>BUS TYPE</label>
+        <select name="busType" class="glass-select">
+          <option value="All">All Types</option>
+          <option value="ac-sleeper">AC Sleeper</option>
+          <option value="non-ac-seater">Non-AC Seater</option>
+        </select>
+      </div>
+      
+      <button type="submit" class="btn-search">Search Buses</button>
+    </form>
   </div>
-  
-  <button type="submit" class="btn-search">Search Buses</button>
-</form>
-</div>
+
   <!-- Sections Below Search -->
   <main class="content-section">
     
