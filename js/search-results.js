@@ -1,61 +1,61 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // URL se URLSearchParams extract karna
+  // 1. URL Params aur LocalStorage Data Restore
   const urlParams = new URLSearchParams(window.location.search);
   
   const fromParam = urlParams.get('from');
   const toParam = urlParams.get('to');
   const dateParam = urlParams.get('date');
   const busTypeParam = urlParams.get('busType');
+  const priceParam = urlParams.get('price'); // Extracted price param from URL
 
-  // Page inputs par selected value set karna
+  const savedQuery = JSON.parse(localStorage.getItem('searchQuery')) || {};
   const modInputs = document.querySelectorAll('.modify-search-bar input, .mod-group input');
   const modSelect = document.querySelector('.modify-search-bar select, .mod-group select');
 
+  // Input fields populating logic
   if (modInputs.length >= 3) {
-    if (fromParam) modInputs[0].value = fromParam;
-    if (toParam) modInputs[1].value = toParam;
-    if (dateParam) modInputs[2].value = dateParam; // Updated date set ho jayegi!
+    if (fromParam || savedQuery.from) modInputs[0].value = fromParam || savedQuery.from;
+    if (toParam || savedQuery.to) modInputs[1].value = toParam || savedQuery.to;
+    if (dateParam || savedQuery.date) modInputs[2].value = dateParam || savedQuery.date;
   }
   
-  if (modSelect && busTypeParam) {
-    modSelect.value = busTypeParam;
+  if (modSelect && (busTypeParam || savedQuery.busType)) {
+    modSelect.value = busTypeParam || savedQuery.busType;
   }
 
-});
+  // =========================================================
+  // FIX: Route Price Synchronization Logic (Selected Route Price Updates)
+  // =========================================================
+  const busCards = document.querySelectorAll('.bus-card');
+  const targetBasePrice = parseInt(priceParam || savedQuery.routeMinPrice);
 
-document.addEventListener('DOMContentLoaded', () => {
-  
-  // -------------------------------------------------------------
-  // 1. Saved Date aur Route ko Page par Dikhana (Reset Issue Fix)
-  // -------------------------------------------------------------
-  const savedQuery = JSON.parse(localStorage.getItem('searchQuery'));
+  if (targetBasePrice && busCards.length > 0) {
+    busCards.forEach((card, index) => {
+      // Pehle card par exact minimum route price (e.g., 1800 ya 1000) set karega, baaki par slight variation
+      const cardPrice = targetBasePrice + (index * 150);
 
-  if (savedQuery) {
-    const modInputs = document.querySelectorAll('.modify-search-bar input, .mod-group input');
-    const modSelect = document.querySelector('.modify-search-bar select, .mod-group select');
+      // Attribute Update for Seat Selection & Filters
+      card.setAttribute('data-price', cardPrice);
 
-    if (modInputs.length >= 3) {
-      if (savedQuery.from) modInputs[0].value = savedQuery.from;
-      if (savedQuery.to) modInputs[1].value = savedQuery.to;
-      if (savedQuery.date) modInputs[2].value = savedQuery.date; // Date retained!
-    }
-    if (modSelect && savedQuery.busType) {
-      modSelect.value = savedQuery.busType;
-    }
+      // DOM Text Update for Price Display
+      const priceDisplay = card.querySelector('.price-tag, .bus-price, h3');
+      if (priceDisplay) {
+        priceDisplay.innerText = `₹${cardPrice}`;
+      }
+    });
   }
+  // =========================================================
 
-  // -------------------------------------------------------------
-  // 2. Modify Bar Swap Button Logic
-  // -------------------------------------------------------------
+  // 2. Swap Button Logic
   const swapBtn = document.querySelector('.btn-swap-sm');
   if (swapBtn) {
     swapBtn.addEventListener('click', () => {
-      const modInputs = document.querySelectorAll('.modify-search-bar input, .mod-group input');
-      if (modInputs.length >= 2) {
-        const tempValue = modInputs[0].value;
-        modInputs[0].value = modInputs[1].value;
-        modInputs[1].value = tempValue;
+      const inputs = document.querySelectorAll('.modify-search-bar input, .mod-group input');
+      if (inputs.length >= 2) {
+        const tempValue = inputs[0].value;
+        inputs[0].value = inputs[1].value;
+        inputs[1].value = tempValue;
 
         swapBtn.style.transition = 'transform 0.3s ease';
         swapBtn.style.transform = swapBtn.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
@@ -63,12 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // -------------------------------------------------------------
   // 3. Price Filter Slider Logic
-  // -------------------------------------------------------------
   const priceSlider = document.getElementById('priceRange');
   const priceVal = document.getElementById('priceVal');
-  const busCards = document.querySelectorAll('.bus-card');
 
   if (priceSlider && priceVal) {
     priceSlider.addEventListener('input', (e) => {
@@ -76,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
       priceVal.innerText = `₹${maxPrice}`;
 
       busCards.forEach(card => {
-        const cardPrice = parseInt(card.getAttribute('data-price'));
+        const cardPrice = parseInt(card.getAttribute('data-price')) || 0;
         if (cardPrice <= maxPrice) {
           card.style.display = 'flex';
         } else {
@@ -86,23 +83,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // -------------------------------------------------------------
-  // 4. Select Seat Button Redirect
-  // -------------------------------------------------------------
+  // 4. Select Seat Button Redirect & Price Sync Fix
   const selectSeatBtns = document.querySelectorAll('.btn-select-seat');
   selectSeatBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       const busCard = e.target.closest('.bus-card');
-      const busName = busCard.querySelector('.bus-name')?.innerText || 'Bus';
-      const busType = busCard.querySelector('.bus-type-text')?.innerText || 'AC';
-      const busPrice = busCard.getAttribute('data-price') || '1000';
+      const busName = busCard ? busCard.querySelector('.bus-name')?.innerText || 'Bus' : 'Bus';
+      const busType = busCard ? busCard.querySelector('.bus-type-text')?.innerText || 'AC' : 'AC';
+      const busPrice = parseInt(busCard?.getAttribute('data-price') || '750');
 
       const selectedBus = {
         name: busName,
         type: busType,
-        price: parseInt(busPrice)
+        price: busPrice
       };
+
+      // Synchronize with Central Booking State
+      const currentBookingData = JSON.parse(localStorage.getItem('travelgo_booking_data')) || {};
+      const updatedBookingData = {
+        ...currentBookingData,
+        busName: busName,
+        busType: busType,
+        baseSeatPrice: busPrice
+      };
+
       localStorage.setItem('selectedBus', JSON.stringify(selectedBus));
+      localStorage.setItem('travelgo_booking_data', JSON.stringify(updatedBookingData));
 
       window.location.href = 'seat-selection.html';
     });

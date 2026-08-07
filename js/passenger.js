@@ -1,14 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Seats page se saved data read karein (LocalStorage)
-  const savedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || ['A1', 'A2'];
-  const savedFare = localStorage.getItem('totalFare') || '₹1,800';
+  // 1. Unified booking data LocalStorage se read karein
+  const rawBookingData = localStorage.getItem('travelgo_booking_data');
+  const bookingData = rawBookingData ? JSON.parse(rawBookingData) : null;
+
+  // Fallback support agar purani key maujood ho
+  const savedSeats = (bookingData && bookingData.seats && bookingData.seats.length > 0)
+    ? bookingData.seats
+    : (JSON.parse(localStorage.getItem('selectedSeats')) || ['S1']);
+
+  const totalAmount = (bookingData && bookingData.totalAmount)
+    ? bookingData.totalAmount
+    : 750;
+
+  const displayFareText = `₹${totalAmount}`;
 
   // 2. Summary display updates
   const displaySeats = document.getElementById('displaySeats');
   const displayFare = document.getElementById('displayFare');
 
   if (displaySeats) displaySeats.textContent = savedSeats.join(', ');
-  if (displayFare) displayFare.textContent = savedFare;
+  if (displayFare) displayFare.textContent = displayFareText;
 
   // 3. Dynamic Passenger Cards Render
   const cardsContainer = document.getElementById('passengerCardsContainer');
@@ -53,29 +64,41 @@ document.addEventListener('DOMContentLoaded', () => {
       // Collect passenger details
       const passengerData = savedSeats.map(seat => ({
         seat: seat,
-        name: form[`name_${seat}`].value,
-        age: form[`age_${seat}`].value,
-        gender: form[`gender_${seat}`].value
+        name: form[`name_${seat}`] ? form[`name_${seat}`].value : '',
+        age: form[`age_${seat}`] ? form[`age_${seat}`].value : '',
+        gender: form[`gender_${seat}`] ? form[`gender_${seat}`].value : 'Male'
       }));
 
+      const emailElem = document.getElementById('contactEmail');
+      const phoneElem = document.getElementById('contactPhone');
+
       const contactData = {
-        email: document.getElementById('contactEmail').value,
-        phone: document.getElementById('contactPhone').value
+        email: emailElem ? emailElem.value : '',
+        phone: phoneElem ? phoneElem.value : ''
       };
 
-      // Store data for payment/ticket generation
+      // Calculate Fare components dynamically
+      const baseFare = Math.round(totalAmount * 0.95);
+      const taxFare = totalAmount - baseFare;
+
+      // Single synchronized payload updated for Payment Page
+      const updatedBookingData = {
+        ...(bookingData || {}),
+        seats: savedSeats,
+        seatCount: savedSeats.length,
+        baseFare: baseFare,
+        taxFare: taxFare,
+        totalAmount: totalAmount,
+        passengers: passengerData,
+        contact: contactData
+      };
+
+      localStorage.setItem('travelgo_booking_data', JSON.stringify(updatedBookingData));
       localStorage.setItem('passengerDetails', JSON.stringify(passengerData));
       localStorage.setItem('contactDetails', JSON.stringify(contactData));
-      // Example: Aapka final selected total fare variable
-const totalFare = 1250; // Yahan aapka dynamic total price variable aayega
+      localStorage.setItem('booking_total_fare', totalAmount);
 
-// Payment page par bhejne se pehle price localStorage me save karein
-localStorage.setItem('booking_total_fare', totalFare);
-
-// Phir payment page par redirect karein
-window.location.href = 'payment.html';
-
-      // Redirect to Payment Page (e.g., payment.html)
+      // Clean redirect to Payment Page
       window.location.href = 'payment.html';
     });
   }
