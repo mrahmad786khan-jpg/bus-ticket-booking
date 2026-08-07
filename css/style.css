@@ -1016,3 +1016,29 @@ input[type="date"]::-webkit-datetime-edit-fields-wrapper {
   color: #FFFFFF !important;
   padding: 12px;
 }
+/* Input focus aur typing style fix */
+.search-bar input:focus,
+.search-card input:focus,
+input[type="text"]:focus,
+input[type="date"]:focus {
+  background: rgba(15, 23, 42, 0.8) !important; /* Focus hone par dark background */
+  color: #FFFFFF !important;                     /* Text humesha readable white rahega */
+  border-color: #38BDF8 !important;              /* Neon cyan outline */
+  outline: none !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4) !important;
+}
+
+/* Chrome/Edge Autofill (White Background Fix) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #FFFFFF !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0F172A inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Datepicker calendar icon styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Date icon white dikhega */
+}

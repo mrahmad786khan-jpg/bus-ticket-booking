@@ -1,0 +1,186 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: #030712;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.12) 0px, transparent 50%);
+  color: #F8FAFC;
+  min-height: 100vh;
+  display: flex;
+  justify-content: flex-start; /* Left side alignment */
+  align-items: flex-start;
+  padding: 40px 20px 40px 60px; /* Top Right Bottom Left padding */
+}
+
+.page-container {
+  width: 100%;
+  max-width: 750px;
+  margin: 0; /* Auto margin remove karke left push kiya */
+}
+
+.glass-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.1);
+  padding: 36px;
+}
+
+.card-header {
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 16px;
+}
+
+.back-link {
+  color: #38BDF8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 10px;
+  transition: transform 0.2s ease;
+}
+
+.back-link:hover {
+  transform: translateX(-4px);
+  color: #7DD3FC;
+}
+
+.card-header h2 {
+  font-size: 1.8rem;
+  color: #FFFFFF;
+  letter-spacing: 0.5px;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Individual Ticket Card */
+.booking-ticket {
+  background: rgba(11, 19, 43, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 5px solid #10B981;
+  border-radius: 16px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s ease;
+}
+
+.booking-ticket:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.15);
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+.pnr-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.pnr-label {
+  font-size: 0.7rem;
+  color: #94A3B8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.pnr-tag {
+  color: #38BDF8;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.status-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34D399;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ticket-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-item span {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-item strong {
+  font-size: 1rem;
+  color: #F8FAFC;
+  font-weight: 600;
+}
+
+.fare-text {
+  color: #34D399 !important;
+  font-size: 1.15rem !important;
+}
+
+/* Empty State */
+.no-bookings {
+  text-align: center;
+  padding: 50px 20px;
+  color: #94A3B8;
+}
+
+.no-bookings p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.btn-book-now {
+  display: inline-block;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #38BDF8, #0284C7);
+  color: #030712;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-book-now:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+}

@@ -66,6 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // Store data for payment/ticket generation
       localStorage.setItem('passengerDetails', JSON.stringify(passengerData));
       localStorage.setItem('contactDetails', JSON.stringify(contactData));
+      // Example: Aapka final selected total fare variable
+const totalFare = 1250; // Yahan aapka dynamic total price variable aayega
+
+// Payment page par bhejne se pehle price localStorage me save karein
+localStorage.setItem('booking_total_fare', totalFare);
+
+// Phir payment page par redirect karein
+window.location.href = 'payment.html';
 
       // Redirect to Payment Page (e.g., payment.html)
       window.location.href = 'payment.html';

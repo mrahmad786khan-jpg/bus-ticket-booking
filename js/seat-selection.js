@@ -84,28 +84,29 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Proceed to Checkout
+// Proceed to Checkout
 checkoutBtn.addEventListener('click', () => {
   try {
-    // 1. Check karein ki selectedSeats exists karti hai
-    if (typeof selectedSeats !== 'undefined' && selectedSeats.length > 0) {
-      localStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
-    }
+    // Current UI se price padhein
+    const priceElem = document.getElementById('total-price');
+    let totalFare = priceElem ? parseFloat(priceElem.innerText.replace(/[^0-9]/g, '')) : 795;
+    if (!totalFare || isNaN(totalFare)) totalFare = 795;
 
-    // 2. Safely total price save karein (bina code crash kiye)
-    const priceElement = document.getElementById('totalPrice') || document.getElementById('totalFareAmount');
-    if (priceElement) {
-      localStorage.setItem('totalFare', priceElement.textContent);
-    }
+    const baseFare = Math.round(totalFare * 0.95);
+    const taxFare = totalFare - baseFare;
 
-    // 3. Passenger page par redirect karein
+    const bookingData = {
+      seats: typeof selectedSeats !== 'undefined' ? selectedSeats : [],
+      baseFare: baseFare,
+      taxFare: taxFare,
+      totalAmount: totalFare
+    };
+
+    localStorage.setItem('travelgo_booking_data', JSON.stringify(bookingData));
     window.location.href = 'passenger.html';
-  } catch (error) {
-    console.error("Redirect Error:", error);
-    // Fallback redirect agar koi minor issue aaye tab bhi page open ho jaye
+  } catch (err) {
     window.location.href = 'passenger.html';
   }
 });
-  
-
   renderSeats();
 });

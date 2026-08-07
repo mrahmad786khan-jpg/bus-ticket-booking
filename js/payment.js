@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let savedFare = localStorage.getItem('totalFare');
   const passengerDetails = JSON.parse(localStorage.getItem('passengerDetails')) || [];
 
-  // Price fallback
   const pricePerSeat = 850;
   if (!savedFare || savedFare === '₹0' || savedFare === '0') {
     const calculatedAmount = savedSeats.length * pricePerSeat;
@@ -22,20 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   radios.forEach(radio => {
     radio.addEventListener('change', (e) => {
-      upiForm.classList.remove('active');
-      cardForm.classList.remove('active');
-      netbankingForm.classList.remove('active');
+      upiForm?.classList.remove('active');
+      cardForm?.classList.remove('active');
+      netbankingForm?.classList.remove('active');
 
       document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('active'));
       e.target.closest('.payment-method').classList.add('active');
 
-      if (e.target.value === 'upi') upiForm.classList.add('active');
-      else if (e.target.value === 'card') cardForm.classList.add('active');
-      else if (e.target.value === 'netbanking') netbankingForm.classList.add('active');
+      if (e.target.value === 'upi') upiForm?.classList.add('active');
+      else if (e.target.value === 'card') cardForm?.classList.add('active');
+      else if (e.target.value === 'netbanking') netbankingForm?.classList.add('active');
     });
   });
 
-  // Random Ticket ID Generator Function
   function generateTicketId() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = 'TGO-';
@@ -45,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return result;
   }
 
-  // Pay Action
   const payBtn = document.getElementById('payNowBtn');
   const successModal = document.getElementById('successModal');
   const ticketIdEl = document.getElementById('ticketId');
@@ -60,6 +57,23 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const randomID = generateTicketId();
         ticketIdEl.textContent = randomID;
+
+        // Save to My Bookings History
+        const newBooking = {
+          pnr: randomID,
+          seats: savedSeats.join(', '),
+          passengersCount: passengerDetails.length || savedSeats.length,
+          totalFare: savedFare,
+          bookingDate: new Date().toLocaleDateString('en-IN', {
+            day: 'numeric', month: 'short', year: 'numeric'
+          }),
+          status: 'Confirmed'
+        };
+
+        const existingBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+        existingBookings.unshift(newBooking); // Naye booking ko top par add karein
+        localStorage.setItem('myBookings', JSON.stringify(existingBookings));
+
         successModal.classList.add('show');
       }, 1500);
     });
@@ -67,8 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (doneBtn) {
     doneBtn.addEventListener('click', () => {
-      localStorage.clear();
-      window.location.href = "index.html";
+      // Temporary active selections clear karein but myBookings retain rahega
+      localStorage.removeItem('selectedSeats');
+      localStorage.removeItem('totalFare');
+      localStorage.removeItem('passengerDetails');
+      window.location.href = "my-bookings.html";
     });
   }
 });
