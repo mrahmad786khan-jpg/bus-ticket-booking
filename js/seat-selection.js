@@ -1,31 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const TOTAL_SEATS = 24;
   const BOOKED_SEATS = [2, 5, 11, 14, 18];
-
-  // 1. Selected Bus Price Get Function
-  function getSelectedBusPrice() {
-    // 1st Priority: selectedBus Object
-    try {
-      const selectedBus = JSON.parse(localStorage.getItem('selectedBus'));
-      if (selectedBus && selectedBus.price) {
-        return Number(selectedBus.price);
-      }
-    } catch (e) {
-      console.error('Error reading selectedBus from localStorage', e);
-    }
-
-    // 2nd Priority: bus_single_price string
-    const singlePrice = localStorage.getItem('bus_single_price');
-    if (singlePrice && !isNaN(singlePrice)) {
-      return Number(singlePrice);
-    }
-
-    // Fallback Price
-    return 850;
-  }
-
-  const SEAT_PRICE = getSelectedBusPrice();
-  let selectedSeats = [];
 
   // DOM Elements
   const busGrid = document.getElementById('busGrid');
@@ -36,20 +11,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const routeText = document.getElementById('routeText');
   const busNameText = document.getElementById('busNameText');
 
-  // URL Query Params
+  // URL Query Params Read
   const urlParams = new URLSearchParams(window.location.search);
+  const busId = urlParams.get('busId');
   const fromLoc = urlParams.get('from') || 'Mumbai';
   const toLoc = urlParams.get('to') || 'Goa';
 
   if (routeText) routeText.textContent = `${fromLoc} ➔ ${toLoc}`;
 
-  // Read saved bus name for display
+  let SEAT_PRICE = 850;
+  let currentBusName = 'Express Bus';
+  let selectedSeats = [];
+
+  // 1. Database API se Selected Bus Fetch Karein
   try {
-    const busObj = JSON.parse(localStorage.getItem('selectedBus'));
-    if (busObj && busObj.name && busNameText) {
-      busNameText.textContent = `${busObj.name} (₹${SEAT_PRICE}/seat)`;
+    const response = await fetch('http://localhost:5000/api/buses');
+    const buses = await response.json();
+    
+    // Exact bus ID se match karein
+    const selectedBusObj = buses.find(b => String(b.id) === String(busId));
+
+    if (selectedBusObj) {
+      SEAT_PRICE = Number(selectedBusObj.fare) || 850;
+      currentBusName = selectedBusObj.bus_name || 'Express Bus';
+      if (selectedBusObj.bus_number) {
+        currentBusName += ` (${selectedBusObj.bus_number})`;
+      }
     }
-  } catch (e) {}
+
+    if (busNameText) {
+      busNameText.textContent = `${currentBusName} (₹${SEAT_PRICE}/seat)`;
+    }
+
+  } catch (error) {
+    console.error("Backend se bus details lane me error:", error);
+    if (busNameText) busNameText.textContent = `Express Bus (₹${SEAT_PRICE}/seat)`;
+  }
 
   // 2. Render Bus Layout
   function renderSeats() {
@@ -97,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Update Price Summary
   function updateSummary() {
     const count = selectedSeats.length;
-    const baseTotal = count * SEAT_PRICE; // Dynamic multiplier (850 or 1200)
+    const baseTotal = count * SEAT_PRICE;
 
     if (seatCountText) seatCountText.textContent = count;
     if (totalPriceText) totalPriceText.textContent = `₹${baseTotal}`;
@@ -121,10 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const taxFare = Math.round(pureBaseFare * 0.05); // 5% GST
       const finalTotal = pureBaseFare + taxFare;
 
-      const existingData = JSON.parse(localStorage.getItem('travelgo_booking_data')) || {};
-
       const updatedData = {
-        ...existingData,
+        busId: busId,
+        busName: currentBusName,
         seats: selectedSeats,
         seatCount: count,
         baseSeatPrice: SEAT_PRICE,

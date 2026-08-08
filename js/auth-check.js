@@ -1,58 +1,57 @@
-// Get logged in user data from localStorage
-function getLoggedInUser() {
-  const userStr = localStorage.getItem('travelgo_user');
-  if (!userStr) return null;
-  try {
-    const user = JSON.parse(userStr);
-    return user.isLoggedIn ? user : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-// Check auth state before opening payment page
-function checkAuthBeforePayment(targetPage = 'payment.html') {
-  const user = getLoggedInUser();
-  if (!user) {
-    alert("Please Login or Sign Up to proceed with ticket payment.");
-    window.location.href = `auth.html?redirect=${targetPage}`;
-    return false;
-  }
-  return true;
-}
-
-// Clear session and logout user
-function logoutUser() {
-  localStorage.removeItem('travelgo_user');
-  window.location.reload();
-}
-
-// Automatically update Login/Signup button in Navbar to show User Profile & Logout
-function updateNavbarUI() {
-  const user = getLoggedInUser();
+document.addEventListener('DOMContentLoaded', () => {
+  // HTML me ID na hone par class-based fallback selector
+  const loginBtn = document.getElementById('nav-login-btn') || document.querySelector('.btn-login');
   
-  // Find navbar login button
-  const navAuthBtn = document.querySelector('.nav-login-btn') || 
-                     document.getElementById('nav-login-btn') || 
-                     document.querySelector('a[href="auth.html"]');
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem('safarsathi_user') || localStorage.getItem('travelgo_user'));
+  } catch(e) {}
 
-  if (navAuthBtn && user) {
-    navAuthBtn.outerHTML = `
-      <div class="user-nav-profile" style="display: inline-flex; align-items: center; gap: 12px; background: rgba(15, 23, 42, 0.6); padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3);">
-        <span style="color: #38BDF8; font-weight: 600; font-size: 0.95rem; white-space: nowrap;">
-          <i class="fa-solid fa-user-check" style="margin-right: 6px;"></i>${user.name}
-        </span>
-        <button onclick="logoutUser()" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #FCA5A5; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease;">
-          Logout
-        </button>
-      </div>
-    `;
+  if (loginBtn) {
+    if (user && (user.name || user.email)) {
+      const displayName = user.name || user.email.split('@')[0];
+
+      loginBtn.style.display = 'inline-flex';
+      loginBtn.style.alignItems = 'center';
+      loginBtn.style.gap = '10px';
+      loginBtn.style.padding = '8px 16px';
+      loginBtn.style.textTransform = 'uppercase';
+
+      loginBtn.innerHTML = `
+        <span>👤 ${displayName}</span>
+        <span id="logout-btn" style="
+          background: rgba(255, 255, 255, 0.2);
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          margin-left: 5px;
+          cursor: pointer;
+          transition: background 0.2s ease;
+        " title="Click to Logout">Logout</span>
+      `;
+      loginBtn.href = "javascript:void(0);";
+
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('mouseenter', () => {
+          logoutBtn.style.background = 'rgba(239, 68, 68, 0.8)';
+        });
+        logoutBtn.addEventListener('mouseleave', () => {
+          logoutBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+        });
+
+        logoutBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          localStorage.removeItem('safarsathi_user');
+          localStorage.removeItem('travelgo_user');
+          window.location.reload();
+        });
+      }
+    } else {
+      // Login na hone par auth.html par redirect ensure karega
+      loginBtn.innerText = "Login / Sign Up";
+      loginBtn.href = "auth.html";
+    }
   }
-}
-
-// Run updateNavbarUI on DOM load
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', updateNavbarUI);
-} else {
-  updateNavbarUI();
-}
+});

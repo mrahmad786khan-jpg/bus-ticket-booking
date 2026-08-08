@@ -31,12 +31,12 @@
       <form id="login-form" class="auth-form active-form">
         <div class="input-group">
           <label><i class="fa-solid fa-envelope"></i> Mobile or Email</label>
-          <input type="text" id="login-identifier" placeholder="Enter mobile or email" required value="8081627647">
+          <input type="text" id="login-identifier" placeholder="Enter mobile or email" required>
         </div>
 
         <div class="input-group">
           <label><i class="fa-solid fa-lock"></i> Password</label>
-          <input type="password" id="login-password" placeholder="Enter password" required value="123456">
+          <input type="password" id="login-password" placeholder="Enter password" required>
         </div>
 
         <button type="submit" class="submit-btn" id="login-btn">Login & Continue</button>
@@ -73,19 +73,21 @@
 
     </div>
   </div>
+
   <!-- Custom Glassmorphic Toast Modal -->
-<div id="custom-toast" class="toast-container">
-  <div class="toast-card">
-    <div class="toast-icon">
-      <i class="fa-solid fa-circle-check"></i>
-    </div>
-    <div class="toast-content">
-      <h4 id="toast-title">Success!</h4>
-      <p id="toast-message">Welcome back, Ahmad Hasan Khan!</p>
+  <div id="custom-toast" class="toast-container">
+    <div class="toast-card">
+      <div class="toast-icon">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div class="toast-content">
+        <h4 id="toast-title">Success!</h4>
+        <p id="toast-message">Welcome back!</p>
+      </div>
     </div>
   </div>
-</div>
-<script src="js/auth-check.js"></script>
+
   <script src="js/auth.js"></script>
+  <script src="js/auth-check.js"></script>
 </body>
 </html>

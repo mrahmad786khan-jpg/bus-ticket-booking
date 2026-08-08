@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const taxFareEl = document.getElementById('display-tax-fare');
   const btnPayText = document.getElementById('btn-pay-text');
 
-  if (summarySeatsEl) summarySeatsEl.textContent = savedSeats.join(', ');
-  if (summaryPassengersEl) summaryPassengersEl.textContent = passengerDetails.length || savedSeats.length;
+  if (summarySeatsEl) summarySeatsEl.textContent = Array.isArray(savedSeats) ? savedSeats.join(', ') : savedSeats;
+  if (summaryPassengersEl) summaryPassengersEl.textContent = passengerDetails.length || (Array.isArray(savedSeats) ? savedSeats.length : 1);
   if (baseFareEl) baseFareEl.textContent = `₹${baseFare}`;
   if (taxFareEl) taxFareEl.textContent = `₹${taxFare}`;
   if (summaryAmountEl) summaryAmountEl.textContent = `₹${totalAmount}`;
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function generateTicketId() {
-    return 'SS-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    return 'TG-' + Math.random().toString(36).substr(2, 6).toUpperCase();
   }
 
   const paymentForm = document.getElementById('paymentForm');
@@ -52,6 +52,32 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
+      // Flexible Logged In User Detection Across Various LocalStorage Keys
+      let loggedInUser = null;
+
+      if (typeof getLoggedInUser === 'function') {
+        loggedInUser = getLoggedInUser();
+      }
+
+      if (!loggedInUser) {
+        try {
+          loggedInUser = JSON.parse(localStorage.getItem('user')) || 
+                         JSON.parse(localStorage.getItem('loggedInUser')) || 
+                         JSON.parse(localStorage.getItem('travelgo_user'));
+        } catch (err) {
+          loggedInUser = null;
+        }
+      }
+
+      // Check if user object exists and contains ID or Name or Email
+      const isUserValid = loggedInUser && (loggedInUser.id || loggedInUser.email || loggedInUser.name || loggedInUser.isLoggedIn);
+
+      if (!isUserValid) {
+        alert("Please log in or sign up to complete your ticket booking.");
+        window.location.href = `auth.html?redirect=payment.html`;
+        return;
+      }
+
       if (payBtn) {
         payBtn.innerHTML = 'Processing...';
         payBtn.disabled = true;
@@ -61,15 +87,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const randomID = generateTicketId();
         if (ticketIdEl) ticketIdEl.textContent = randomID;
 
+        // Create new booking tied to the LOGGED-IN user's identity
         const newBooking = {
           pnr: randomID,
+          userId: loggedInUser.id || '',
+          userEmail: loggedInUser.email || '',
+          userPhone: loggedInUser.mobile || loggedInUser.phone || '',
+          userName: loggedInUser.name || 'Passenger',
+          from: (bookingData && bookingData.from) ? bookingData.from : 'Source',
+          to: (bookingData && bookingData.to) ? bookingData.to : 'Destination',
           status: 'Confirmed',
-          seats: savedSeats.join(', '),
-          passengersCount: passengerDetails.length || savedSeats.length,
+          seats: Array.isArray(savedSeats) ? savedSeats : [savedSeats],
+          passengersCount: passengerDetails.length || (Array.isArray(savedSeats) ? savedSeats.length : 1),
           bookingDate: new Date().toLocaleDateString('en-IN', {
             day: 'numeric', month: 'short', year: 'numeric'
           }),
-          totalFare: `₹${totalAmount}`
+          totalFare: totalAmount
         };
 
         let existingBookings = JSON.parse(localStorage.getItem('myBookings')) || [];

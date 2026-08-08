@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // 1. URL Query Parameters Read Karein
   const urlParams = new URLSearchParams(window.location.search);
   const fromLocation = urlParams.get('from') ? urlParams.get('from').trim() : '';
@@ -16,24 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Header Title Update
   const routeHeaderEl = document.getElementById('searchRouteHeader');
-  if (routeHeaderEl && fromLocation && toLocation) {
-    routeHeaderEl.textContent = `${fromLocation} ➔ ${toLocation} (${travelDate})`;
-  }
-
-  // 2. Fetch Data from Central Mock Database (mockData.js)
-  const allBuses = typeof getStoredBuses === 'function' 
-    ? getStoredBuses() 
-    : (typeof TRAVELGO_DB !== 'undefined' ? TRAVELGO_DB.buses : []);
-
-  // Filter Buses strictly based on Route Match
-  let routeMatchedBuses = [];
-  if (fromLocation && toLocation) {
-    routeMatchedBuses = allBuses.filter(bus => 
-      bus.from.toLowerCase() === fromLocation.toLowerCase() && 
-      bus.to.toLowerCase() === toLocation.toLowerCase()
-    );
-  } else {
-    routeMatchedBuses = allBuses; // Show all if no route selected
+  if (routeHeaderEl) {
+    if (fromLocation || toLocation) {
+      routeHeaderEl.textContent = `${fromLocation || 'Any'} ➔ ${toLocation || 'Any'} (${travelDate})`;
+    } else {
+      routeHeaderEl.textContent = `All Available Buses (${travelDate})`;
+    }
   }
 
   // DOM Elements
@@ -41,6 +29,53 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkboxes = document.querySelectorAll('.filter-group input[type="checkbox"]');
   const priceRange = document.getElementById('priceRange');
   const priceVal = document.getElementById('priceVal');
+
+  let routeMatchedBuses = [];
+
+  // 2. Fetch Data Directly From Backend Database API with Route Parameters
+  try {
+    const apiUrl = `http://127.0.0.1:5000/api/buses?from=${encodeURIComponent(fromLocation)}&to=${encodeURIComponent(toLocation)}`;
+    const response = await fetch(apiUrl);
+    const dbBuses = await response.json();
+
+    // Database columns ko frontend structure me map karna
+    routeMatchedBuses = (Array.isArray(dbBuses) ? dbBuses : []).map(bus => ({
+      id: bus.id,
+      name: bus.bus_name || 'Express Bus',
+      number: bus.bus_number || '',
+      type: bus.bus_type || 'AC Sleeper / Seater',
+      from: bus.source || '',
+      to: bus.destination || '',
+      departureTime: bus.departure_time || '10:00 AM',
+      arrivalTime: bus.arrival_time || '06:00 PM',
+      duration: bus.duration || '8 hrs',
+      price: Number(bus.fare) || 1200,
+      rating: bus.rating || '4.5',
+      availableSeats: bus.available_seats || 20
+    }));
+
+    // Dynamic Price Range Slider Adjustment
+    if (priceRange && routeMatchedBuses.length > 0) {
+      const highestPrice = Math.max(...routeMatchedBuses.map(b => b.price), 2000);
+      priceRange.max = highestPrice;
+      priceRange.value = highestPrice;
+      if (priceVal) priceVal.textContent = `₹${highestPrice}`;
+    }
+
+    // Load hone par filters run karein
+    applyFilters();
+
+  } catch (error) {
+    console.error("Backend Database se buses fetch karne me error aayi:", error);
+    if (busListContainer) {
+      busListContainer.innerHTML = `
+        <div style="color: #ef4444; text-align: center; padding: 25px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; margin-top: 20px;">
+          <h3>Server Connection Error!</h3>
+          <p style="margin-top: 5px; color: #f87171;">Backend server running nahi hai ya connection fail ho gaya hai.</p>
+        </div>
+      `;
+    }
+  }
 
   // 3. Bus Cards Render Function
   function renderBuses(buses) {
@@ -51,36 +86,32 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="no-buses" style="color: #94a3b8; text-align: center; padding: 40px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin-top: 20px;">
           <h3 style="color: #fff; margin-bottom: 8px;">No Buses Available</h3>
           <p style="margin: 0;">No buses found matching ${fromLocation ? `"${fromLocation} ➔ ${toLocation}"` : 'your search criteria'}.</p>
-          <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Try searching popular routes like "Mumbai to Goa", "Delhi to Manali", or "Bangalore to Chennai".</p>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Admin Panel se new bus add karein ya route change karke try karein.</p>
         </div>
       `;
       return;
     }
 
     busListContainer.innerHTML = buses.map((bus) => {
-      const busPrice = bus.price || 1200;
-      const availableSeats = bus.seats 
-        ? bus.seats.filter(s => s.status === 'available').length 
-        : (bus.totalSeats || 20);
-
       return `
         <div class="bus-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
           
           <div class="bus-info">
-            <h3 style="color: #fff; margin: 0 0 5px 0;">${bus.name}</h3>
-            <p style="color: #94a3b8; margin: 0; font-size: 0.9rem;">${bus.type}</p>
-            <div style="margin-top: 8px; color: #38bdf8; font-size: 0.85rem;">
-              <span>⭐ ${bus.rating || '4.5'}</span> | <span>${availableSeats} Seats Left</span>
+            <h3 style="color: #fff; margin: 0 0 5px 0;">${bus.name} ${bus.number ? `(${bus.number})` : ''}</h3>
+            <p style="color: #38bdf8; margin: 0 0 5px 0; font-weight: 600; font-size: 0.95rem;">${bus.from} ➔ ${bus.to}</p>
+            <p style="color: #94a3b8; margin: 0; font-size: 0.85rem;">${bus.type}</p>
+            <div style="margin-top: 8px; color: #e2e8f0; font-size: 0.85rem;">
+              <span>⭐ ${bus.rating}</span> | <span style="color:#34d399;">${bus.availableSeats} Seats Left</span>
             </div>
           </div>
 
           <div class="bus-timing" style="text-align: center;">
-            <div style="font-weight: bold; color: #fff;">${bus.departureTime} ➔ ${bus.arrivalTime}</div>
-            <div style="color: #64748b; font-size: 0.85rem;">${bus.duration}</div>
+            <div style="font-weight: bold; color: #fff; font-size: 1.1rem;">${bus.departureTime} ➔ ${bus.arrivalTime}</div>
+            <div style="color: #64748b; font-size: 0.85rem; margin-top: 4px;">${bus.duration}</div>
           </div>
 
           <div class="bus-action" style="text-align: right;">
-            <div style="font-size: 1.4rem; font-weight: bold; color: #34d399; margin-bottom: 8px;">₹${busPrice}</div>
+            <div style="font-size: 1.4rem; font-weight: bold; color: #34d399; margin-bottom: 8px;">₹${bus.price}</div>
             <button type="button" class="btn-select-bus" data-bus-id="${bus.id}" style="padding: 10px 20px; background: #38bdf8; border: none; color: #0f172a; font-weight: bold; border-radius: 6px; cursor: pointer; display: inline-block;">
               Select Seats
             </button>
@@ -90,11 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }).join('');
 
-    // Reliable Click Handler
+    // Click Handler for Seat Selection
     document.querySelectorAll('.btn-select-bus').forEach((button) => {
       button.addEventListener('click', (e) => {
         const busId = e.currentTarget.getAttribute('data-bus-id');
-        const selectedBusObj = buses.find(b => b.id === busId);
+        const selectedBusObj = buses.find(b => String(b.id) === String(busId));
         if (selectedBusObj) {
           handleBusSelect(selectedBusObj);
         }
@@ -104,33 +135,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 4. Apply Filters Logic
   function applyFilters() {
-    const maxPrice = priceRange ? Number(priceRange.value) : 3000;
+    const maxPrice = priceRange ? Number(priceRange.value) : 100000;
     if (priceVal) priceVal.textContent = `₹${maxPrice}`;
 
-    let acChecked = true;
-    let nonAcChecked = true;
-
+    let activeTypeFilters = [];
     checkboxes.forEach(cb => {
-      const labelText = cb.parentElement ? cb.parentElement.textContent.toLowerCase() : '';
-      if (labelText.includes('ac sleeper') || labelText.includes('ac')) {
-        acChecked = cb.checked;
-      }
-      if (labelText.includes('non-ac') || labelText.includes('seater')) {
-        nonAcChecked = cb.checked;
+      if (cb.checked) {
+        const labelText = cb.parentElement ? cb.parentElement.textContent.toLowerCase() : '';
+        activeTypeFilters.push(labelText);
       }
     });
 
     const filteredBuses = routeMatchedBuses.filter(bus => {
       const matchesPrice = bus.price <= maxPrice;
 
-      const busCategory = bus.category || bus.type.toLowerCase();
-      const isAcBus = busCategory.includes('ac') && !busCategory.includes('non-ac');
-      const isNonAcBus = busCategory.includes('non-ac') || busCategory.includes('seater');
+      if (activeTypeFilters.length === 0) return matchesPrice;
 
-      let matchesType = false;
-      if (isAcBus && acChecked) matchesType = true;
-      if (isNonAcBus && nonAcChecked) matchesType = true;
-      if (!isAcBus && !isNonAcBus) matchesType = true; // Fallback for general types
+      const busCategory = bus.type.toLowerCase();
+      const matchesType = activeTypeFilters.some(filter => {
+        if (filter.includes('ac') && busCategory.includes('ac')) return true;
+        if (filter.includes('sleeper') && busCategory.includes('sleeper')) return true;
+        if (filter.includes('seater') && busCategory.includes('seater')) return true;
+        return false;
+      });
 
       return matchesPrice && matchesType;
     });
@@ -138,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderBuses(filteredBuses);
   }
 
-  // Attach Event Listeners
+  // Event Listeners for Filters
   if (priceRange) {
     priceRange.addEventListener('input', applyFilters);
   }
@@ -146,37 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
     cb.addEventListener('change', applyFilters);
   });
 
-  // 5. Select Bus & Data Save Handling
+  // 5. Select Bus Redirect Handler
   function handleBusSelect(bus) {
-    const busPrice = bus.price || 1200;
-
-    const selectedBusObject = {
-      id: bus.id,
-      name: bus.name,
-      type: bus.type,
-      price: busPrice,
-      from: bus.from || fromLocation,
-      to: bus.to || toLocation
-    };
-
-    const bookingData = {
-      busName: bus.name,
-      busType: bus.type,
-      baseSeatPrice: busPrice,
-      totalAmount: busPrice,
-      from: bus.from || fromLocation,
-      to: bus.to || toLocation
-    };
-
-    localStorage.setItem('selectedBus', JSON.stringify(selectedBusObject));
-    localStorage.setItem('travelgo_booking_data', JSON.stringify(bookingData));
-    localStorage.setItem('bus_single_price', busPrice.toString());
-
     const fromParam = encodeURIComponent(fromLocation || bus.from);
     const toParam = encodeURIComponent(toLocation || bus.to);
     window.location.href = `seat-selection.html?from=${fromParam}&to=${toParam}&busId=${bus.id}`;
   }
 
-  // Initial Filter Execution
-  applyFilters();
 });

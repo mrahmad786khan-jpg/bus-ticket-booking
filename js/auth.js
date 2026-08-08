@@ -9,8 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const title = document.getElementById('auth-title');
   const subtitle = document.getElementById('auth-subtitle');
 
-  // Custom Toast Popup Function
-  function showToast(message, heading = "Success!", callback) {
+  // Unified API URL using localhost
+  const API_URL = 'http://localhost:5000/api';
+
+  function showToast(message, heading = "Notification", callback = null) {
     const toast = document.getElementById('custom-toast');
     const toastTitle = document.getElementById('toast-title');
     const toastMsg = document.getElementById('toast-message');
@@ -22,78 +24,118 @@ document.addEventListener('DOMContentLoaded', () => {
 
       setTimeout(() => {
         toast.classList.remove('show');
-        if (callback) callback();
-      }, 1800); // 1.8 second tak alert dikhega fir redirect hoga
+        if (typeof callback === 'function') callback();
+      }, 1800);
     } else {
-      alert(message);
-      if (callback) callback();
+      alert(`${heading}: ${message}`);
+      if (typeof callback === 'function') callback();
     }
   }
 
-  // Switch to Login Tab
-  tabLogin.addEventListener('click', () => {
-    tabLogin.classList.add('active');
-    tabSignup.classList.remove('active');
-    loginForm.classList.add('active-form');
-    signupForm.classList.remove('active-form');
-    title.innerText = 'Welcome Back';
-    subtitle.innerText = 'Log in to manage your bus bookings & fast checkout.';
-  });
-
-  // Switch to Signup Tab
-  tabSignup.addEventListener('click', () => {
-    tabSignup.classList.add('active');
-    tabLogin.classList.remove('active');
-    signupForm.classList.add('active-form');
-    loginForm.classList.remove('active-form');
-    title.innerText = 'Create Account';
-    subtitle.innerText = 'Sign up once to book buses with zero hassle.';
-  });
-
-  // Handle Login Submit
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const identifier = document.getElementById('login-identifier').value.trim();
-    
-    let userName = "Ahmad Hasan Khan";
-    if (identifier && isNaN(identifier) && identifier.includes('@')) {
-      userName = identifier.split('@')[0];
-    }
-
-    const userData = {
-      isLoggedIn: true,
-      name: userName,
-      phone: "8081627647",
-      email: identifier.includes('@') ? identifier : "ahmad@travelgo.com"
-    };
-
-    localStorage.setItem('travelgo_user', JSON.stringify(userData));
-
-    // Custom Toast Alert Call
-    showToast(`Welcome back, ${userData.name}!`, "Login Successful", () => {
-      window.location.href = redirectTarget;
+  // Switch Tabs Logic
+  if (tabLogin && tabSignup) {
+    tabLogin.addEventListener('click', (e) => {
+      e.preventDefault();
+      tabLogin.classList.add('active');
+      tabSignup.classList.remove('active');
+      loginForm.classList.add('active-form');
+      signupForm.classList.remove('active-form');
+      if (title) title.innerText = 'Welcome Back';
+      if (subtitle) subtitle.innerText = 'Log in to manage your bus bookings & fast checkout.';
     });
-  });
 
-  // Handle Signup Submit
-  signupForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('signup-name').value.trim();
-    const phone = document.getElementById('signup-phone').value.trim();
-    const email = document.getElementById('signup-email').value.trim();
-
-    const userData = {
-      isLoggedIn: true,
-      name: name || "Ahmad Hasan Khan",
-      phone: phone || "8081627647",
-      email: email
-    };
-
-    localStorage.setItem('travelgo_user', JSON.stringify(userData));
-
-    // Custom Toast Alert Call
-    showToast(`Welcome aboard, ${userData.name}!`, "Account Created", () => {
-      window.location.href = redirectTarget;
+    tabSignup.addEventListener('click', (e) => {
+      e.preventDefault();
+      tabSignup.classList.add('active');
+      tabLogin.classList.remove('active');
+      signupForm.classList.add('active-form');
+      loginForm.classList.remove('active-form');
+      if (title) title.innerText = 'Create Account';
+      if (subtitle) subtitle.innerText = 'Sign up once to book buses with zero hassle.';
     });
-  });
+  }
+
+  // Handle Login Form Submission
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const identifierInput = document.getElementById('login-identifier');
+      const passwordInput = document.getElementById('login-password');
+
+      if (!identifierInput || !passwordInput) {
+        showToast("Form fields missing in HTML!", "Error");
+        return;
+      }
+
+      const identifier = identifierInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!identifier || !password) {
+        showToast("Email/Mobile aur Password dono bharein!", "Warning");
+        return;
+      }
+
+      console.log('Sending login payload:', { identifier, password });
+
+      try {
+        const response = await fetch(`${API_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: identifier, mobile: identifier, identifier: identifier, password: password })
+        });
+
+        const data = await response.json();
+        console.log('Login server response:', data);
+
+        if (response.ok && data.success) {
+          localStorage.setItem('safarsathi_user', JSON.stringify(data.user));
+          localStorage.setItem('travelgo_user', JSON.stringify(data.user));
+
+          const destination = data.user.role === 'admin' ? 'admin.html' : redirectTarget;
+
+          showToast(`Welcome back, ${data.user.name}!`, "Login Successful", () => {
+            window.location.href = destination;
+          });
+        } else {
+          showToast(data.message || data.error || "Invalid Credentials!", "Login Failed");
+        }
+      } catch (err) {
+        console.error("Login Error:", err);
+        showToast("Server se connect nahi ho paya. Node.js backend check karein!", "Connection Error");
+      }
+    });
+  }
+
+  // Handle Signup Form Submission
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+
+      try {
+        const response = await fetch(`${API_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          showToast(`Account created successfully! Ab login karein.`, "Account Created", () => {
+            if (tabLogin) tabLogin.click();
+          });
+        } else {
+          showToast(data.message || data.error || "Registration failed!", "Error");
+        }
+      } catch (err) {
+        console.error("Signup Error:", err);
+        showToast("Server se connect nahi ho paya. Node.js backend check karein!", "Connection Error");
+      }
+    });
+  }
 });
