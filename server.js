@@ -1,182 +1,181 @@
 const express = require('express');
+const mysql = require('mysql2');
 const cors = require('cors');
-const db = require('./db');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// MySQL Connection
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '10760618608ffmax1', // Aapka MySQL Password
+  database: 'safarsathi_db'
+});
+
+db.connect((err) => {
+  if (err) {
+    console.error('❌ Database Connection Failed:', err.message);
+  } else {
+    console.log('✅ Connected to MySQL Database (safarsathi_db)');
+  }
+});
+
 // ==========================================
-// 1. AUTHENTICATION APIs (Login & Register)
+// AUTHENTICATION APIS (LOGIN & REGISTER)
 // ==========================================
 
-// Register User (Email & Mobile Support)
-app.post('/api/register', async (req, res) => {
-  const name = req.body.name ? req.body.name.trim() : '';
-  const email = req.body.email ? req.body.email.trim().toLowerCase() : '';
-  const mobile = req.body.mobile || req.body.phone ? (req.body.mobile || req.body.phone).toString().trim() : '';
-  const password = req.body.password ? req.body.password.trim() : '';
+// 1. Register API
+app.post('/api/register', (req, res) => {
+  const { name, email, password } = req.body;
 
-  if ((!email && !mobile) || !password || !name) {
-    return res.status(400).json({ success: false, message: 'Name, Password aur Email ya Mobile bharna zaroori hai!' });
+  if (!name || !email || !password) {
+    return res.status(400).json({ success: false, message: 'Sabhi fields bharna zaroori hai!' });
   }
 
-  try {
-    // Check if user already exists via Email or Mobile
-    const [existing] = await db.query(
-      `SELECT * FROM users 
-       WHERE (email != '' AND LOWER(TRIM(email)) = LOWER(?)) 
-       OR (name = ?) 
-       OR (LOWER(TRIM(email)) = LOWER(?))`, 
-      [email, mobile, mobile]
-    );
-
-    if (existing.length > 0) {
-      return res.status(400).json({ success: false, message: 'Yeh Email ya Mobile Number pehle se registered hai!' });
-    }
+  // Check if user already exists
+  const checkSql = 'SELECT * FROM users WHERE email = ?';
+  db.query(checkSql, [email], (err, results) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
     
-    // Fallback: Agar email na ho toh dummy/identifier value save karein
-    const finalEmail = email || `${mobile}@mobileuser.com`;
-
-    await db.query(
-      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, "user")',
-      [name, finalEmail, password]
-    );
-
-    console.log(`[REGISTER SUCCESS] New user registered: ${name} (${finalEmail})`);
-    res.json({ success: true, message: 'Registration successful!' });
-  } catch (err) {
-    console.error("Register Error:", err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// Login User (Mobile / Name / Email Se Login Allowed)
-app.post('/api/login', async (req, res) => {
-  const rawIdentifier = req.body.email || req.body.mobile || req.body.identifier || req.body.phone || '';
-  const cleanIdentifier = rawIdentifier.toString().trim();
-  const password = req.body.password ? req.body.password.trim() : '';
-
-  console.log(`[LOGIN TRY] Input Identifier: "${cleanIdentifier}" | Password: "${password}"`);
-
-  if (!cleanIdentifier || !password) {
-    return res.status(400).json({ success: false, message: 'Mobile/Email aur Password zaroori hai!' });
-  }
-
-  try {
-    const [users] = await db.query(
-      `SELECT id, name, email, role FROM users 
-       WHERE (LOWER(TRIM(email)) = LOWER(?) OR TRIM(name) = ? OR LOWER(TRIM(email)) LIKE LOWER(?)) 
-       AND BINARY TRIM(password) = ?`, 
-      [cleanIdentifier, cleanIdentifier, `%${cleanIdentifier}%`, password]
-    );
-
-    if (users.length === 0) {
-      console.log(`[LOGIN FAILED] Invalid credentials for: "${cleanIdentifier}"`);
-      return res.status(401).json({ success: false, message: 'Invalid Mobile/Email ya Password!' });
+    if (results.length > 0) {
+      return res.status(400).json({ success: false, message: 'Yeh email pehle se registered hai!' });
     }
 
-    const user = users[0];
-    console.log(`[LOGIN SUCCESS] User logged in: ${user.name} (${user.role})`);
+    // Insert new user
+    const insertSql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+    db.query(insertSql, [name, email, password], (err, result) => {
+      if (err) return res.status(500).json({ success: false, error: err.message });
 
-    res.json({
-      success: true,
-      message: 'Login successful!',
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
+      res.json({
+        success: true,
+        message: 'Registration successful!',
+        user: { id: result.insertId, name, email, role: 'user' }
+      });
     });
-  } catch (err) {
-    console.error("Login DB Error:", err);
-    res.status(500).json({ success: false, error: err.message });
+  });
+});
+
+// 2. Login API
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email aur Password zaroori hain!' });
   }
+
+  const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
+  db.query(sql, [email, password], (err, results) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+
+    if (results.length > 0) {
+      const user = results[0];
+      res.json({
+        success: true,
+        message: 'Login successful!',
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }
+      });
+    } else {
+      res.status(401).json({ success: false, message: 'Galat Email ya Password!' });
+    }
+  });
 });
 
 // ==========================================
-// 2. BUS SEARCH & ADMIN APIs
+// BUSES & BOOKING APIS
 // ==========================================
 
-// Get All Buses / Search Buses with Source & Destination Filter
-app.get('/api/buses', async (req, res) => {
-  const from = req.query.from ? req.query.from.trim() : '';
-  const to = req.query.to ? req.query.to.trim() : '';
+// 3. Get Buses API (Search Results)
+app.get('/api/buses', (req, res) => {
+  const { source, destination } = req.query;
+  let sql = 'SELECT * FROM buses';
+  let params = [];
 
-  try {
-    let sql = 'SELECT * FROM buses';
-    let params = [];
+  if (source && destination) {
+    sql += ' WHERE source LIKE ? AND destination LIKE ?';
+    params = [`%${source}%`, `%${destination}%`];
+  }
 
-    if (from || to) {
-      sql += ' WHERE 1=1';
-      if (from) {
-        sql += ' AND LOWER(TRIM(source)) LIKE LOWER(?)';
-        params.push(`%${from}%`);
+  db.query(sql, params, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// 4. Get Booked Seats API (Date Wise Filter)
+app.get('/api/booked-seats', (req, res) => {
+  const { busId, date } = req.query;
+
+  if (!busId || !date) {
+    return res.status(400).json({ error: 'busId and date are required' });
+  }
+
+  const sql = `
+    SELECT seat_no 
+    FROM bookings 
+    WHERE bus_id = ? 
+      AND DATE(travel_date) = DATE(?)
+  `;
+
+  db.query(sql, [busId, date], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    let bookedSeats = [];
+    results.forEach(row => {
+      if (row.seat_no) {
+        const seats = String(row.seat_no).split(',');
+        bookedSeats.push(...seats);
       }
-      if (to) {
-        sql += ' AND LOWER(TRIM(destination)) LIKE LOWER(?)';
-        params.push(`%${to}%`);
-      }
-    }
-
-    sql += ' ORDER BY id DESC';
-
-    const [buses] = await db.query(sql, params);
-    res.json(buses);
-  } catch (err) {
-    console.error("Fetch Buses Error:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Admin: Add New Bus
-app.post('/api/admin/add-bus', async (req, res) => {
-  const { bus_name, bus_number, source, destination, departure_time, arrival_time, fare } = req.body;
-  try {
-    await db.query(
-      'INSERT INTO buses (bus_name, bus_number, source, destination, departure_time, arrival_time, fare) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [bus_name, bus_number, source, destination, departure_time, arrival_time, fare]
-    );
-    res.json({ success: true, message: 'Bus successfully add ho gayi!' });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// Admin: Delete Bus
-app.delete('/api/admin/delete-bus/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    await db.query('DELETE FROM buses WHERE id = ?', [id]);
-    res.json({ success: true, message: 'Bus delete ho gayi!' });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// Admin: Dashboard Analytics
-app.get('/api/admin/dashboard-stats', async (req, res) => {
-  try {
-    const [bookings] = await db.query('SELECT * FROM bookings ORDER BY id DESC');
-    const [totalBuses] = await db.query('SELECT COUNT(*) as count FROM buses');
-    const [revenue] = await db.query('SELECT SUM(total_fare) as total FROM bookings');
-
-    res.json({
-      success: true,
-      stats: {
-        totalBookings: bookings.length,
-        totalBuses: totalBuses[0]?.count || 0,
-        totalRevenue: revenue[0]?.total || 0
-      },
-      bookings: bookings
     });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
+
+    res.json(bookedSeats);
+  });
 });
 
+// 5. Get My Bookings API (User Specific Filter)
+app.get('/api/my-bookings', (req, res) => {
+  const { email } = req.query;
+
+  let sql = 'SELECT * FROM bookings';
+  let params = [];
+
+  if (email) {
+    sql += ' WHERE passenger_email = ?';
+    params.push(email);
+  }
+
+  sql += ' ORDER BY created_at DESC';
+
+  db.query(sql, params, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// 6. Create New Booking API
+app.post('/api/bookings', (req, res) => {
+  const { pnr, user_id, bus_id, passenger_name, passenger_email, source, destination, seat_no, travel_date, total_fare } = req.body;
+
+  const sql = `
+    INSERT INTO bookings 
+    (pnr, user_id, bus_id, passenger_name, passenger_email, source, destination, seat_no, travel_date, total_fare) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(sql, [pnr, user_id, bus_id, passenger_name, passenger_email, source, destination, seat_no, travel_date, total_fare], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Booking successful!', bookingId: result.insertId });
+  });
+});
+
+// Start Server
 const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Safar Sathi Backend Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });

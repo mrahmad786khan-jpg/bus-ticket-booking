@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // 1. Set Default Date to Today
+  // 1. Set Default Date to Today & Set Minimum Date Constraint
   const dateInput = document.querySelector('input[type="date"]');
-  if (dateInput && !dateInput.value) {
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.value = today;
+  const todayStr = new Date().toISOString().split('T')[0];
+  
+  if (dateInput) {
+    dateInput.min = todayStr; // Past dates select nahi hone dega
+    if (!dateInput.value) {
+      dateInput.value = todayStr;
+    }
   }
 
   // 2. Swap Button Functionality
@@ -38,11 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const fromVal = inputs[0] ? inputs[0].value.trim() : 'Mumbai';
       const toVal = inputs[1] ? inputs[1].value.trim() : 'Goa';
-      const dateVal = searchForm.querySelector('input[type="date"]')?.value || new Date().toISOString().split('T')[0];
+      const dateVal = searchForm.querySelector('input[type="date"]')?.value || todayStr;
       const busTypeVal = select ? select.value : 'All Types';
 
       if (!fromVal || !toVal) {
         alert('Kripya From aur To cities select karein!');
+        return;
+      }
+
+      if (fromVal.toLowerCase() === toVal.toLowerCase()) {
+        alert('Source aur Destination city same nahi ho sakti!');
         return;
       }
 
@@ -57,5 +66,26 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = `search-results.html?from=${encodeURIComponent(fromVal)}&to=${encodeURIComponent(toVal)}&date=${dateVal}`;
     });
   }
+
+  // 4. Popular Bus Routes Click Handler (Auto-attaches current date parameter)
+  const popularRouteLinks = document.querySelectorAll('.popular-route-link');
+  popularRouteLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const from = link.getAttribute('data-from');
+      const to = link.getAttribute('data-to');
+      const selectedDate = (dateInput && dateInput.value) ? dateInput.value : todayStr;
+      
+      const searchQuery = {
+        from: from,
+        to: to,
+        date: selectedDate,
+        busType: 'All Types'
+      };
+
+      localStorage.setItem('searchQuery', JSON.stringify(searchQuery));
+      window.location.href = `search-results.html?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${selectedDate}`;
+    });
+  });
 
 });

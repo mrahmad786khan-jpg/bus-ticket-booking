@@ -2,7 +2,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const rawBookingData = localStorage.getItem('travelgo_booking_data');
   const bookingData = rawBookingData ? JSON.parse(rawBookingData) : null;
 
-  // Logged-in user session se default contact detail autofill karne ke liye
+  // URL Query Params Read
+  const urlParams = new URLSearchParams(window.location.search);
+  let travelDate = urlParams.get('date') || urlParams.get('travelDate');
+  let busId = urlParams.get('busId') || (bookingData ? bookingData.busId : '');
+
+  if (!travelDate && bookingData && bookingData.travelDate) {
+    travelDate = bookingData.travelDate;
+  }
+  if (!travelDate) {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    travelDate = `${year}-${month}-${day}`;
+  }
+
   const loggedInUser = JSON.parse(
     localStorage.getItem('safarsathi_user') || 
     localStorage.getItem('travelgo_user') || 
@@ -66,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Form Submit Handler
   const form = document.getElementById('passengerForm');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const passengerData = savedSeats.map(seat => ({
@@ -76,8 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
         gender: form[`gender_${seat}`] ? form[`gender_${seat}`].value : 'Male'
       }));
 
+      const contactEmail = emailElem ? emailElem.value : (loggedInUser.email || '');
+      const contactPhone = phoneElem ? phoneElem.value : (loggedInUser.phone || '');
+
       const updatedBookingData = {
         ...(bookingData || {}),
+        busId: busId,
+        travelDate: travelDate,
         seats: savedSeats,
         seatCount: savedSeats.length,
         baseFare: baseFare,
@@ -85,16 +105,59 @@ document.addEventListener('DOMContentLoaded', () => {
         totalAmount: totalAmount,
         passengers: passengerData,
         contact: {
-          email: emailElem ? emailElem.value : (loggedInUser.email || ''),
-          phone: phoneElem ? phoneElem.value : (loggedInUser.phone || '')
+          email: contactEmail,
+          phone: contactPhone
         }
       };
 
+      // 1. LocalStorage update
       localStorage.setItem('travelgo_booking_data', JSON.stringify(updatedBookingData));
       localStorage.setItem('passengerDetails', JSON.stringify(passengerData));
 
-      // Redirect to Payment page
-      window.location.href = 'payment.html';
+      // 2. 🔥 FIX: Database API call to save booked seats immediately in Backend
+      try {
+        const response = await fetch('http://localhost:5000/api/book-ticket', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: loggedInUser.id || null,
+            userEmail: contactEmail,
+            busId: busId,
+            source: (bookingData && bookingData.from) || 'Mumbai',
+            destination: (bookingData && bookingData.to) || 'Goa',
+            seatNumbers: savedSeats,
+            passengerCount: savedSeats.length,
+            travelDate: travelDate,
+            totalFare: totalAmount
+          })
+        });
+
+        const resData = await response.json();
+        if (resData.success) {
+          updatedBookingData.pnr = resData.pnr;
+          localStorage.setItem('travelgo_booking_data', JSON.stringify(updatedBookingData));
+        }
+      } catch (err) {
+        console.warn("Backend save failed, booking stored in LocalStorage fallback:", err);
+      }
+
+      // Also save in LocalStorage myBookings array for offline support
+      try {
+        const existingMyBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+        existingMyBookings.push({
+          busId: busId,
+          travelDate: travelDate,
+          seats: savedSeats,
+          from: (bookingData && bookingData.from) || 'Mumbai',
+          to: (bookingData && bookingData.to) || 'Goa',
+          totalAmount: totalAmount,
+          status: 'Confirmed'
+        });
+        localStorage.setItem('myBookings', JSON.stringify(existingMyBookings));
+      } catch(e) {}
+
+      // 3. Redirect to Payment Page
+      window.location.href = `payment.html?date=${encodeURIComponent(travelDate)}&busId=${encodeURIComponent(busId)}`;
     });
   }
 });

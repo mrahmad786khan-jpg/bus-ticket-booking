@@ -10,14 +10,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const date = urlParams.get("date") || "2026-08-15";
 
   // Update Header text
-  document.getElementById("routeTitle").textContent = `${from} ➔ ${to}`;
-  document.getElementById("travelDate").textContent = date;
+  const routeTitle = document.getElementById("routeTitle");
+  const travelDate = document.getElementById("travelDate");
+  if (routeTitle) routeTitle.textContent = `${from} ➔ ${to}`;
+  if (travelDate) travelDate.textContent = date;
 
   // 2. Fetch Buses from Mock Database
-  const allBuses = getStoredBuses();
+  const allBuses = typeof getStoredBuses === 'function' ? getStoredBuses() : [];
   const container = document.getElementById("busResultsList");
 
   function renderBuses(busList) {
+    if (!container) return;
     container.innerHTML = "";
 
     if (busList.length === 0) {
@@ -28,6 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
     busList.forEach(bus => {
       const card = document.createElement("div");
       card.className = "bus-card";
+
+      // FIXED HERE: Bus ID ke sath-sath date, from, aur to parameters URL me attach kiye gaye hain
+      const seatSelectionUrl = `seat-selection.html?busId=${encodeURIComponent(bus.id)}&date=${encodeURIComponent(date)}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+
       card.innerHTML = `
         <div class="bus-info">
           <h3>${bus.name}</h3>
@@ -40,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div class="bus-pricing">
           <div class="bus-price">₹${bus.price}</div>
-          <a href="seat-selection.html?busId=${bus.id}" class="btn-select-seats">Select Seats</a>
+          <a href="${seatSelectionUrl}" class="btn-select-seats">Select Seats</a>
         </div>
       `;
       container.appendChild(card);
@@ -49,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Filter matching route buses
   const filtered = allBuses.filter(
-    b => b.from.toLowerCase() === from.toLowerCase() && b.to.toLowerCase() === to.toLowerCase()
+    b => b.from && b.to && b.from.toLowerCase() === from.toLowerCase() && b.to.toLowerCase() === to.toLowerCase()
   );
 
   // Initial Render (Fallback to all buses if route exact match not found)
@@ -58,9 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Price Slider Event
   const priceRange = document.getElementById("priceRange");
   const priceValue = document.getElementById("priceValue");
-  if(priceRange) {
+  if (priceRange) {
     priceRange.addEventListener("input", (e) => {
-      priceValue.textContent = e.target.value;
+      if (priceValue) priceValue.textContent = e.target.value;
       const filteredByPrice = allBuses.filter(b => b.price <= e.target.value);
       renderBuses(filteredByPrice);
     });

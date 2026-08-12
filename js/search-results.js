@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dbBuses = await response.json();
 
     // Database columns ko frontend structure me map karna
-    routeMatchedBuses = (Array.isArray(dbBuses) ? dbBuses : []).map(bus => ({
+    const allBuses = (Array.isArray(dbBuses) ? dbBuses : []).map(bus => ({
       id: bus.id,
       name: bus.bus_name || 'Express Bus',
       number: bus.bus_number || '',
@@ -48,11 +48,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       to: bus.destination || '',
       departureTime: bus.departure_time || '10:00 AM',
       arrivalTime: bus.arrival_time || '06:00 PM',
-      duration: bus.duration || '8 hrs',
+      duration: bus.duration || '',
       price: Number(bus.fare) || 1200,
       rating: bus.rating || '4.5',
       availableSeats: bus.available_seats || 20
     }));
+
+    // Client-side Space & Case Insensitive Match (Saare spaces aur capital letters hata kar compare karega)
+    const cleanFrom = fromLocation.toLowerCase().replace(/\s+/g, '');
+    const cleanTo = toLocation.toLowerCase().replace(/\s+/g, '');
+
+    if (cleanFrom || cleanTo) {
+      routeMatchedBuses = allBuses.filter(bus => {
+        const busFrom = (bus.from || '').toLowerCase().replace(/\s+/g, '');
+        const busTo = (bus.to || '').toLowerCase().replace(/\s+/g, '');
+
+        const matchFrom = !cleanFrom || busFrom.includes(cleanFrom) || cleanFrom.includes(busFrom);
+        const matchTo = !cleanTo || busTo.includes(cleanTo) || cleanTo.includes(busTo);
+
+        return matchFrom && matchTo;
+      });
+    } else {
+      routeMatchedBuses = allBuses;
+    }
 
     // Dynamic Price Range Slider Adjustment
     if (priceRange && routeMatchedBuses.length > 0) {

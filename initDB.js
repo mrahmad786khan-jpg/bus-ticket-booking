@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '10760618608ffmax1' // XAMPP ka default password blank (empty) hota hai
+  password: '10760618608ffmax1' // XAMPP ka default password
 });
 
 db.connect((err) => {
@@ -48,6 +48,7 @@ db.connect((err) => {
       source VARCHAR(50) NOT NULL,
       destination VARCHAR(50) NOT NULL,
       seat_no VARCHAR(100) NOT NULL,
+      travel_date DATE,
       total_fare DECIMAL(10, 2) NOT NULL,
       booking_date DATE DEFAULT (CURRENT_DATE),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -60,6 +61,8 @@ db.connect((err) => {
   ];
 
   let completed = 0;
+  
+  // Pehle saare base queries run karenge
   queries.forEach((q) => {
     db.query(q, (err) => {
       if (err) {
@@ -67,8 +70,14 @@ db.connect((err) => {
       }
       completed++;
       if (completed === queries.length) {
-        console.log('🎉 Safar Sathi Database aur All Tables Successfully Ban Gaye Hain!');
-        db.end();
+        // Safe Alter Query Column add karne ke liye
+        db.query(`ALTER TABLE bookings ADD COLUMN travel_date DATE AFTER seat_no;`, (alterErr) => {
+          if (alterErr && !alterErr.message.includes("Duplicate column name")) {
+            // Safe ignore if column already exists
+          }
+          console.log('🎉 Safar Sathi Database aur All Tables Successfully Ban Gaye Hain!');
+          db.end();
+        });
       }
     });
   });

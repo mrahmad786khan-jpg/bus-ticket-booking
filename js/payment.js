@@ -5,6 +5,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (raw) bookingData = JSON.parse(raw);
   } catch (e) {}
 
+  // Extract Travel Date from URL query params or bookingData
+  const urlParams = new URLSearchParams(window.location.search);
+  let travelDate = urlParams.get('date') || urlParams.get('travelDate');
+  if (!travelDate && bookingData && bookingData.travelDate) {
+    travelDate = bookingData.travelDate;
+  }
+  if (!travelDate) {
+    const today = new Date();
+    travelDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+  }
+
+  // Extract Bus ID
+  const busId = (bookingData && bookingData.busId) ? bookingData.busId : (urlParams.get('busId') || '1');
+
   let savedSeats = (bookingData && bookingData.seats) ? bookingData.seats : ['S1'];
   let passengerDetails = (bookingData && bookingData.passengers) ? bookingData.passengers : [];
 
@@ -49,10 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const doneBtn = document.getElementById('doneBtn');
 
   if (paymentForm) {
-    paymentForm.addEventListener('submit', (e) => {
+    paymentForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Flexible Logged In User Detection Across Various LocalStorage Keys
+      // Flexible Logged In User Detection (Included 'safarsathi_user')
       let loggedInUser = null;
 
       if (typeof getLoggedInUser === 'function') {
@@ -61,16 +75,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!loggedInUser) {
         try {
-          loggedInUser = JSON.parse(localStorage.getItem('user')) || 
-                         JSON.parse(localStorage.getItem('loggedInUser')) || 
-                         JSON.parse(localStorage.getItem('travelgo_user'));
+          loggedInUser = JSON.parse(localStorage.getItem('safarsathi_user')) || 
+                         JSON.parse(localStorage.getItem('travelgo_user')) || 
+                         JSON.parse(localStorage.getItem('user')) || 
+                         JSON.parse(localStorage.getItem('loggedInUser'));
         } catch (err) {
           loggedInUser = null;
         }
       }
 
-      // Check if user object exists and contains ID or Name or Email
-      const isUserValid = loggedInUser && (loggedInUser.id || loggedInUser.email || loggedInUser.name || loggedInUser.isLoggedIn);
+      // Check if user object exists
+      const isUserValid = loggedInUser && (loggedInUser.id || loggedInUser.email || loggedInUser.name);
 
       if (!isUserValid) {
         alert("Please log in or sign up to complete your ticket booking.");
@@ -83,38 +98,72 @@ document.addEventListener('DOMContentLoaded', () => {
         payBtn.disabled = true;
       }
 
-      setTimeout(() => {
-        const randomID = generateTicketId();
-        if (ticketIdEl) ticketIdEl.textContent = randomID;
+      const randomID = generateTicketId();
 
-        // Create new booking tied to the LOGGED-IN user's identity
-        const newBooking = {
-          pnr: randomID,
-          userId: loggedInUser.id || '',
-          userEmail: loggedInUser.email || '',
-          userPhone: loggedInUser.mobile || loggedInUser.phone || '',
-          userName: loggedInUser.name || 'Passenger',
-          from: (bookingData && bookingData.from) ? bookingData.from : 'Source',
-          to: (bookingData && bookingData.to) ? bookingData.to : 'Destination',
-          status: 'Confirmed',
-          seats: Array.isArray(savedSeats) ? savedSeats : [savedSeats],
-          passengersCount: passengerDetails.length || (Array.isArray(savedSeats) ? savedSeats.length : 1),
-          bookingDate: new Date().toLocaleDateString('en-IN', {
-            day: 'numeric', month: 'short', year: 'numeric'
-          }),
-          totalFare: totalAmount
-        };
+      // Formed Object for MySQL Database API Payload
+      const dbBookingPayload = {
+        pnr: randomID,
+        user_id: loggedInUser.id || null,
+        bus_id: busId,
+        passenger_name: passengerDetails[0]?.name || loggedInUser.name || 'Passenger',
+        passenger_email: loggedInUser.email || 'user@example.com',
+        source: (bookingData && bookingData.from) ? bookingData.from : 'Source',
+        destination: (bookingData && bookingData.to) ? bookingData.to : 'Destination',
+        seat_no: Array.isArray(savedSeats) ? savedSeats.join(',') : String(savedSeats),
+        travel_date: travelDate,
+        total_fare: totalAmount
+      };
 
-        let existingBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
-        existingBookings.unshift(newBooking);
-        localStorage.setItem('myBookings', JSON.stringify(existingBookings));
+      try {
+        // Save to Database via API First
+        const response = await fetch('http://localhost:5000/api/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dbBookingPayload)
+        });
 
-        if (successModal) {
-          successModal.classList.add('show');
-        } else {
-          window.location.href = "my-bookings.html";
-        }
-      }, 1000);
+        const resData = await response.json();
+        console.log("Database booking save response:", resData);
+
+      } catch (apiError) {
+        console.warn("Backend DB Save Error, falling back to LocalStorage:", apiError);
+      }
+
+      // Save to LocalStorage Fallback
+      const newBooking = {
+        pnr: randomID,
+        busId: busId,
+        travelDate: travelDate,
+        userId: loggedInUser.id || '',
+        userEmail: loggedInUser.email || '',
+        passengerEmail: loggedInUser.email || '',
+        passenger_email: loggedInUser.email || '',
+        userPhone: loggedInUser.mobile || loggedInUser.phone || '',
+        userName: loggedInUser.name || 'Passenger',
+        from: dbBookingPayload.source,
+        to: dbBookingPayload.destination,
+        busName: (bookingData && bookingData.busName) ? bookingData.busName : 'Express Bus',
+        status: 'Confirmed',
+        seats: Array.isArray(savedSeats) ? savedSeats : [savedSeats],
+        passengersCount: passengerDetails.length || (Array.isArray(savedSeats) ? savedSeats.length : 1),
+        passengers: passengerDetails,
+        bookingDate: new Date().toLocaleDateString('en-IN', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        }),
+        totalFare: totalAmount
+      };
+
+      let existingBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+      existingBookings.unshift(newBooking);
+      localStorage.setItem('myBookings', JSON.stringify(existingBookings));
+
+      if (ticketIdEl) ticketIdEl.textContent = randomID;
+
+      if (successModal) {
+        successModal.classList.add('show');
+      } else {
+        window.location.href = "my-bookings.html";
+      }
     });
   }
 
