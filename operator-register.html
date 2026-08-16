@@ -184,19 +184,19 @@
       <form id="operatorForm">
         <div class="form-group">
           <label>Operator / Agency Name</label>
-          <input type="text" placeholder="e.g. Royal Travels" required>
+          <input type="text" id="agencyName" placeholder="e.g. Royal Travels" required>
         </div>
         <div class="form-group">
           <label>Owner / Manager Name</label>
-          <input type="text" placeholder="Enter Full Name" required>
+          <input type="text" id="ownerName" placeholder="Enter Full Name" required>
         </div>
         <div class="form-group">
           <label>Phone Number</label>
-          <input type="tel" placeholder="+91 XXXXX XXXXX" required>
+          <input type="tel" id="phoneNumber" placeholder="+91 XXXXX XXXXX" required>
         </div>
         <div class="form-group">
           <label>Fleet Size (Number of Buses)</label>
-          <select required>
+          <select id="fleetSize" required>
             <option value="">Select Fleet Size</option>
             <option value="1-5">1 - 5 Buses</option>
             <option value="6-20">6 - 20 Buses</option>
@@ -222,13 +222,39 @@
     const form = document.getElementById('operatorForm');
     const modal = document.getElementById('successModal');
 
-    // Form submit hone par custom popup dikhayein
-    form.addEventListener('submit', function(e) {
+    // Backend API par data bhejna (Keys match kar di gayi hain)
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
-      modal.classList.add('active');
+
+      const operatorData = {
+        agency_name: document.getElementById('agencyName').value,
+        owner_name: document.getElementById('ownerName').value,
+        phone: document.getElementById('phoneNumber').value,
+        fleet_size: document.getElementById('fleetSize').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:5000/api/operators', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(operatorData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          modal.classList.add('active');
+        } else {
+          alert('Error: ' + (result.message || result.error || 'Registration fail ho gaya!'));
+        }
+      } catch (err) {
+        console.error('Registration Error:', err);
+        alert('Server se connect nahi ho paya! Make sure Node server chal raha ho.');
+      }
     });
 
-    // OK button dabane par index.html par redirect karein
     function redirectToHome() {
       window.location.href = 'index.html';
     }

@@ -14,8 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     adminNameElement.innerText = `Welcome, ${savedUser.name}`;
   }
 
-  // Fetch Dashboard Analytics & Fleet Data
+  // Fetch Dashboard Analytics, Fleet, Operators & Agents Data
   loadDashboardData();
+  loadOperatorsData();
+  loadAgentsData();
 
   // Add New Bus Form Handler
   const addBusForm = document.getElementById('add-bus-form');
@@ -187,6 +189,120 @@ async function loadDashboardData() {
     } else {
       busesTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No active buses in database. Add one above!</td></tr>`;
     }
+  }
+}
+
+// -----------------------------------------------------------
+// OPERATORS & AGENTS DATA LOADERS (NEW)
+// -----------------------------------------------------------
+
+// 3. Load Operators Data
+async function loadOperatorsData() {
+  const API_URL = 'http://127.0.0.1:5000/api';
+  const operatorsTable = document.getElementById('operators-table-body');
+  
+  if (!operatorsTable) return;
+
+  try {
+    const res = await fetch(`${API_URL}/operators`);
+    const operators = await res.json();
+
+    operatorsTable.innerHTML = '';
+    if (Array.isArray(operators) && operators.length > 0) {
+      operators.forEach((op, index) => {
+        operatorsTable.innerHTML += `
+          <tr>
+            <td>${index + 1}</td>
+            <td><strong>${op.agency_name}</strong></td>
+            <td>${op.owner_name}</td>
+            <td><a href="tel:${op.phone}">${op.phone}</a></td>
+            <td>${op.fleet_size}</td>
+            <td>${new Date(op.created_at).toLocaleDateString()}</td>
+            <td>
+              <button class="btn-delete" onclick="deleteOperator(${op.id})">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    } else {
+      operatorsTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No registered operators found.</td></tr>`;
+    }
+  } catch (err) {
+    console.error('Failed to load operators:', err);
+  }
+}
+
+// 4. Load Agents Data
+async function loadAgentsData() {
+  const API_URL = 'http://127.0.0.1:5000/api';
+  const agentsTable = document.getElementById('agents-table-body');
+
+  if (!agentsTable) return;
+
+  try {
+    const res = await fetch(`${API_URL}/agents`);
+    const agents = await res.json();
+
+    agentsTable.innerHTML = '';
+    if (Array.isArray(agents) && agents.length > 0) {
+      agents.forEach((ag, index) => {
+        agentsTable.innerHTML += `
+          <tr>
+            <td>${index + 1}</td>
+            <td><strong>${ag.full_name}</strong></td>
+            <td>${ag.agency_shop}</td>
+            <td><a href="tel:${ag.phone}">${ag.phone}</a></td>
+            <td>${ag.city}</td>
+            <td>${new Date(ag.created_at).toLocaleDateString()}</td>
+            <td>
+              <button class="btn-delete" onclick="deleteAgent(${ag.id})">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    } else {
+      agentsTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No agent applications found.</td></tr>`;
+    }
+  } catch (err) {
+    console.error('Failed to load agents:', err);
+  }
+}
+
+// Delete Operator
+async function deleteOperator(id) {
+  if (!confirm('Kya aap is Bus Operator ko remove karna chahte hain?')) return;
+
+  const API_URL = 'http://127.0.0.1:5000/api';
+  try {
+    const res = await fetch(`${API_URL}/operators/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      alert('🗑️ Operator deleted successfully!');
+      loadOperatorsData();
+    }
+  } catch (err) {
+    console.error('Delete Operator Error:', err);
+  }
+}
+
+// Delete Agent
+async function deleteAgent(id) {
+  if (!confirm('Kya aap is Agent Application ko remove karna chahte hain?')) return;
+
+  const API_URL = 'http://127.0.0.1:5000/api';
+  try {
+    const res = await fetch(`${API_URL}/agents/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      alert('🗑️ Agent deleted successfully!');
+      loadAgentsData();
+    }
+  } catch (err) {
+    console.error('Delete Agent Error:', err);
   }
 }
 

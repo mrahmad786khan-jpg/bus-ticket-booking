@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <head>
-  <!-- Baaki ke head elements (title, meta, etc.) -->
-
   <!-- Google Translate Top Banner Force Hide -->
   <style type="text/css">
     iframe.goog-te-banner-frame,
@@ -30,7 +27,7 @@
       box-shadow: none !important;
     }
   </style>
-</head>
+  
   <!-- Google Translate ki speed badhane ke liye preconnect -->
   <link rel="preconnect" href="https://translate.googleapis.com" />
   <link rel="preconnect" href="https://translate.google.com" />
@@ -70,6 +67,8 @@
     table { width: 100%; border-collapse: collapse; margin-top: 15px; }
     th, td { text-align: left; padding: 12px; border-bottom: 1px solid #282a36; }
     th { color: #bd93f9; }
+    td a { color: #8be9fd; text-decoration: none; }
+    td a:hover { text-decoration: underline; }
     .btn-delete { background-color: #ff5555; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
   </style>
 </head>
@@ -143,6 +142,48 @@
       </table>
     </div>
 
+    <!-- Registered Operators Table -->
+    <div class="section-box">
+      <h3><i class="fa-solid fa-building-user"></i> Registered Bus Operators</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Agency Name</th>
+            <th>Owner Name</th>
+            <th>Phone</th>
+            <th>Fleet Size</th>
+            <th>Joined Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="operators-table-body">
+          <!-- Dynamic Operator Rows -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Agent Applications Table -->
+    <div class="section-box">
+      <h3><i class="fa-solid fa-user-tie"></i> Agent Applications</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Full Name</th>
+            <th>Agency/Shop Name</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th>Applied Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="agents-table-body">
+          <!-- Dynamic Agent Rows -->
+        </tbody>
+      </table>
+    </div>
+
     <!-- Bookings Table -->
     <div class="section-box">
       <h3><i class="fa-solid fa-ticket"></i> Recent Passenger Bookings</h3>
@@ -165,19 +206,20 @@
   </div>
 
   <script src="js/admin.js"></script>
-  <!-- Google Translate Fast Background Engine -->
-<div id="google_translate_element" style="display:none;"></div>
 
-<script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'en',
-      includedLanguages: 'en,hi,bn,mr,te,ta,gu,ur',
-      autoDisplay: false,
-      multilanguagePage: true
-    }, 'google_translate_element');
-  }
-</script>
-<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <!-- Google Translate Fast Background Engine -->
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,bn,mr,te,ta,gu,ur',
+        autoDisplay: false,
+        multilanguagePage: true
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

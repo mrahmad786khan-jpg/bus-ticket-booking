@@ -34,19 +34,17 @@ app.post('/api/register', (req, res) => {
     return res.status(400).json({ success: false, message: 'Sabhi fields bharna zaroori hai!' });
   }
 
-  // Check if user already exists
   const checkSql = 'SELECT * FROM users WHERE email = ?';
   db.query(checkSql, [email], (err, results) => {
-    if (err) return res.status(500).json({ success: false, error: err.message });
+    if (err) return res.status(500).json({ success: false, message: err.message });
     
     if (results.length > 0) {
       return res.status(400).json({ success: false, message: 'Yeh email pehle se registered hai!' });
     }
 
-    // Insert new user
     const insertSql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
     db.query(insertSql, [name, email, password], (err, result) => {
-      if (err) return res.status(500).json({ success: false, error: err.message });
+      if (err) return res.status(500).json({ success: false, message: err.message });
 
       res.json({
         success: true,
@@ -67,7 +65,7 @@ app.post('/api/login', (req, res) => {
 
   const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
   db.query(sql, [email, password], (err, results) => {
-    if (err) return res.status(500).json({ success: false, error: err.message });
+    if (err) return res.status(500).json({ success: false, message: err.message });
 
     if (results.length > 0) {
       const user = results[0];
@@ -91,7 +89,7 @@ app.post('/api/login', (req, res) => {
 // BUSES & BOOKING APIS
 // ==========================================
 
-// 3. Get Buses API (Search Results)
+// 3. Get Buses API
 app.get('/api/buses', (req, res) => {
   const { source, destination } = req.query;
   let sql = 'SELECT * FROM buses';
@@ -103,17 +101,17 @@ app.get('/api/buses', (req, res) => {
   }
 
   db.query(sql, params, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) return res.status(500).json({ success: false, message: err.message });
     res.json(results);
   });
 });
 
-// 4. Get Booked Seats API (Date Wise Filter)
+// 4. Get Booked Seats API
 app.get('/api/booked-seats', (req, res) => {
   const { busId, date } = req.query;
 
   if (!busId || !date) {
-    return res.status(400).json({ error: 'busId and date are required' });
+    return res.status(400).json({ success: false, message: 'busId and date are required' });
   }
 
   const sql = `
@@ -124,7 +122,7 @@ app.get('/api/booked-seats', (req, res) => {
   `;
 
   db.query(sql, [busId, date], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) return res.status(500).json({ success: false, message: err.message });
 
     let bookedSeats = [];
     results.forEach(row => {
@@ -138,7 +136,7 @@ app.get('/api/booked-seats', (req, res) => {
   });
 });
 
-// 5. Get My Bookings API (User Specific Filter)
+// 5. Get My Bookings API
 app.get('/api/my-bookings', (req, res) => {
   const { email } = req.query;
 
@@ -153,7 +151,7 @@ app.get('/api/my-bookings', (req, res) => {
   sql += ' ORDER BY created_at DESC';
 
   db.query(sql, params, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) return res.status(500).json({ success: false, message: err.message });
     res.json(results);
   });
 });
@@ -169,8 +167,122 @@ app.post('/api/bookings', (req, res) => {
   `;
 
   db.query(sql, [pnr, user_id, bus_id, passenger_name, passenger_email, source, destination, seat_no, travel_date, total_fare], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'Booking successful!', bookingId: result.insertId });
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'Booking successful!', bookingId: result.insertId });
+  });
+});
+
+// ==========================================
+// AGENTS & OPERATORS APIS
+// ==========================================
+
+// 7. Agent Application Submit (Fixed undefined message)
+app.post('/api/agents', (req, res) => {
+  const { name, shop, phone, city } = req.body;
+
+  if (!name || !shop || !phone || !city) {
+    return res.status(400).json({ success: false, message: 'Kripya sabhi fields bharein!' });
+  }
+
+  const sql = 'INSERT INTO agents (full_name, agency_shop, phone, city) VALUES (?, ?, ?, ?)';
+  
+  db.query(sql, [name, shop, phone, city], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'Agent Registered Successfully!' });
+  });
+});
+
+// 8. Fetch All Agents
+app.get('/api/agents', (req, res) => {
+  db.query('SELECT * FROM agents ORDER BY created_at DESC', (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json(results);
+  });
+});
+
+// 9. Delete Agent
+app.delete('/api/agents/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM agents WHERE id = ?', [id], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'Agent deleted successfully' });
+  });
+});
+
+// 10. Operator Application Submit
+app.post('/api/operators', (req, res) => {
+  const { agency_name, owner_name, phone, fleet_size } = req.body;
+
+  if (!agency_name || !owner_name || !phone) {
+    return res.status(400).json({ success: false, message: 'Kripya zaroori details bharein!' });
+  }
+
+  const sql = 'INSERT INTO operators (agency_name, owner_name, phone, fleet_size) VALUES (?, ?, ?, ?)';
+
+  db.query(sql, [agency_name, owner_name, phone, fleet_size || 1], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'Operator Registered Successfully!' });
+  });
+});
+
+// 11. Fetch All Operators
+app.get('/api/operators', (req, res) => {
+  db.query('SELECT * FROM operators ORDER BY created_at DESC', (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json(results);
+  });
+});
+
+// 12. Delete Operator
+app.delete('/api/operators/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM operators WHERE id = ?', [id], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'Operator deleted successfully' });
+  });
+});
+
+// ==========================================
+// ADMIN DASHBOARD & MANAGEMENT APIS
+// ==========================================
+
+// 13. Admin Add New Bus
+app.post('/api/admin/add-bus', (req, res) => {
+  const { bus_name, bus_number, source, destination, departure_time, arrival_time, fare } = req.body;
+  const sql = 'INSERT INTO buses (bus_name, bus_number, source, destination, departure_time, arrival_time, fare) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  
+  db.query(sql, [bus_name, bus_number, source, destination, departure_time, arrival_time, fare], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'Bus Added Successfully' });
+  });
+});
+
+// 14. Admin Delete Bus Route
+app.delete('/api/admin/delete-bus/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM buses WHERE id = ?', [id], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'Bus deleted successfully' });
+  });
+});
+
+// 15. Admin Dashboard Analytics
+app.get('/api/admin/dashboard-stats', (req, res) => {
+  const sqlBookings = 'SELECT * FROM bookings ORDER BY created_at DESC';
+  const sqlStats = 'SELECT COUNT(*) AS totalBookings, SUM(total_fare) AS totalRevenue FROM bookings';
+
+  db.query(sqlBookings, (err, bookings) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+
+    db.query(sqlStats, (err, stats) => {
+      if (err) return res.status(500).json({ success: false, message: err.message });
+
+      res.json({
+        success: true,
+        bookings: bookings,
+        stats: stats[0] || { totalBookings: 0, totalRevenue: 0 }
+      });
+    });
   });
 });
 
