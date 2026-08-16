@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become an Agent - SafarSathi</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background-color: #f8f9fa !important;
+      color: #333333 !important;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .agent-hero {
+      background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+      color: #ffffff;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .agent-hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #ffffff !important;
+    }
+    .agent-hero p {
+      font-size: 1.2rem;
+      color: #fff3e0 !important;
+    }
+    .agent-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .agent-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .agent-card h2 {
+      color: #d9534f !important;
+      margin-top: 0;
+    }
+    .agent-card p {
+      color: #555555 !important;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .btn-submit {
+      background: #ff7e5f;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-submit:hover {
+      background: #e0694e;
+    }
+
+    /* --- Custom Modal (Alert Popup) Styling --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-icon {
+      font-size: 50px;
+      margin-bottom: 10px;
+    }
+
+    .modal-card h3 {
+      margin: 10px 0 5px;
+      color: #ff7e5f;
+      font-size: 1.5rem;
+    }
+
+    .modal-card p {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    .btn-modal {
+      background: #ff7e5f;
+      color: #ffffff;
+      border: none;
+      padding: 10px 30px;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255, 126, 95, 0.3);
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-modal:hover {
+      background: #e0694e;
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="index.html" class="logo notranslate">
+        <span class="logo-icon">🚌</span> Safar<span class="logo-accent">Sathi</span>
+      </a>
+    </div>
+    <div class="nav-right">
+      <a href="index.html" style="color: #007bff; font-weight: bold; text-decoration: none;">← Back to Home</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="agent-hero">
+    <h1>Become a SafarSathi Agent</h1>
+    <p>Earn high commissions on every ticket booked for your customers</p>
+  </header>
+
+  <!-- Content Section -->
+  <main class="agent-container">
+    <div class="grid-2">
+      <div class="agent-card">
+        <h2>💰 High Commissions</h2>
+        <p>Earn up to 10% instant commission on every successful ticket booking with transparent weekly payouts.</p>
+      </div>
+      <div class="agent-card">
+        <h2>⚡ Dedicated Agent Portal</h2>
+        <p>Get access to a fast agent dashboard to manage ticket bookings, cancellations, and earnings easily.</p>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <h2>Apply for Agent Program</h2>
+      <form id="agentForm">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" placeholder="Enter Full Name" required>
+        </div>
+        <div class="form-group">
+          <label>Agency / Shop Name</label>
+          <input type="text" placeholder="e.g. Unique Travel Agency" required>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" placeholder="+91 XXXXX XXXXX" required>
+        </div>
+        <div class="form-group">
+          <label>City / Location</label>
+          <input type="text" placeholder="e.g. Lucknow, Kanpur" required>
+        </div>
+        <button type="submit" class="btn-submit">Submit Agent Application</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Custom Success Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+      <div class="modal-icon">🎉</div>
+      <h3>Application Submitted!</h3>
+      <p>Thank you for applying for the Agent Program! Our team will review your application and contact you soon.</p>
+      <button class="btn-modal" onclick="redirectToHome()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('agentForm');
+    const modal = document.getElementById('successModal');
+
+    // Form submit hone par custom popup dikhayein
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      modal.classList.add('active');
+    });
+
+    // OK button dabane par index.html par redirect karein
+    function redirectToHome() {
+      window.location.href = 'index.html';
+    }
+  </script>
+
+</body>
+</html>

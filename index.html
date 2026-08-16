@@ -8,6 +8,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TravelGo - Bus Ticket Booking</title>
   <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Google Translate Top Banner Permanent Hide CSS -->
+  <style type="text/css">
+    iframe.goog-te-banner-frame,
+    .goog-te-banner-frame,
+    .goog-te-banner,
+    #goog-gt-tt,
+    .goog-te-balloon-frame,
+    div.skiptranslate,
+    #google_translate_element .goog-te-gadget-simple {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      width: 0 !important;
+    }
+
+    body {
+      top: 0px !important;
+      position: static !important;
+      min-height: 100% !important;
+    }
+
+    .goog-text-highlight {
+      background-color: transparent !important;
+      box-shadow: none !important;
+    }
+  </style>
 </head>
 <body>
 
@@ -152,22 +179,93 @@
     </div>
 
   </main>
-  
+
+  <!-- Amazon-Style Footer Section -->
+  <footer class="amazon-footer">
+    <!-- Back to top button -->
+    <a href="#" class="back-to-top">Back to top</a>
+
+    <!-- Main Links Section -->
+    <div class="footer-links-container">
+      <div class="footer-column">
+        <h3>Get to Know Us</h3>
+        <ul>
+          <li><a href="about.html">About SafarSathi</a></li>
+          <li><a href="careers.html">Careers</a></li>
+          <li><a href="press.html">Press Releases</a></li>
+          <li><a href="science.html">SafarSathi Science</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Connect with Us</h3>
+        <ul>
+          <li><a href="https://www.linkedin.com/in/ahmad-hasan-khan-a43975271">Facebook</a></li>
+          <li><a href="https://www.instagram.com/khan_786_ahmad?igsh=cmsxbHdkamNnb3E1">Twitter / X</a></li>
+          <li><a href="https://www.instagram.com/khan_786_ahmad?igsh=cmsxbHdkamNnb3E1">Instagram</a></li>
+          <li><a href="https://www.linkedin.com/in/ahmad-hasan-khan-a43975271">LinkedIn</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Partner with Us</h3>
+        <ul>
+          <li><a href="operator-register.html">Register Bus Operator</a></li>
+          <li><a href="agent-register.html">Become an Agent</a></li>
+          <li><a href="advertise.html">Advertise Your Bus Route</a></li>
+          <li><a href="affiliate.html">Affiliate Program</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Let Us Help You</h3>
+        <ul>
+          <li><a href="my-bookings.html">Your Account</a></li>
+          <li><a href="my-bookings.html">Cancel Ticket</a></li>
+          <li><a href="support.html">Customer Care & Support</a></li>
+          <li><a href="support.html">100% Booking Protection</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Divider Line -->
+    <div class="footer-divider"></div>
+
+    <!-- Logo & Language Row -->
+    <div class="footer-middle-branding">
+      <div class="logo notranslate">
+        <span class="logo-icon">🚌</span> Safar<span class="logo-accent">Sathi</span>
+      </div>
+      <div class="footer-lang-pill">🌐 India (English)</div>
+    </div>
+
+    <!-- Bottom Copyright & Legal Links -->
+    <div class="footer-bottom">
+      <ul class="legal-links">
+        <li><a href="#">Conditions of Use & Sale</a></li>
+        <li><a href="#">Privacy Notice</a></li>
+        <li><a href="#">Interest-Based Ads</a></li>
+      </ul>
+      <p class="copyright-text">© 2026, SafarSathi.com, Inc. or its affiliates</p>
+    </div>
+  </footer>
+
   <script src="js/main.js"></script>
   <script src="js/auth-check.js"></script>
+  
   <!-- Google Translate Fast Background Engine -->
-<div id="google_translate_element" style="display:none;"></div>
+  <div id="google_translate_element" style="display:none;"></div>
 
-<script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'en',
-      includedLanguages: 'en,hi,bn,mr,te,ta,gu,ur',
-      autoDisplay: false,
-      multilanguagePage: true
-    }, 'google_translate_element');
-  }
-</script>
-<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,bn,mr,te,ta,gu,ur',
+        autoDisplay: false,
+        multilanguagePage: true
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
