@@ -1,12 +1,18 @@
-/* Global Variables & Dark Glassmorphism Theme */
+/* ==========================================
+   TravelGo - Modern Payment Page Light Theme (RedBus + MMT Hybrid)
+   ========================================== */
+
 :root {
-  --bg-dark: #0f172a;
-  --card-bg: rgba(30, 41, 59, 0.75);
-  --accent-cyan: #38bdf8;
-  --accent-hover: #0284c7;
-  --text-white: #f8fafc;
-  --text-gray: #94a3b8;
-  --border-glow: rgba(56, 189, 248, 0.3);
+  --bg-dark: #f2f5f8;
+  --card-bg: #ffffff;
+  --accent-blue: #008cff;
+  --accent-cyan: #0052cc;
+  --accent-pink: #d84e55;
+  --text-main: #1c2430;
+  --text-sub: #606f7b;
+  --input-bg: #f8fafc;
+  --border-color: #e0e6ed;
+  --border-glow: #008cff;
 }
 
 * {
@@ -17,18 +23,8 @@
 }
 
 body {
-  background: var(--bg-dark);
-  background-image: radial-gradient(
-      circle at 15% 15%,
-      rgba(56, 189, 248, 0.1) 0%,
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at 85% 85%,
-      rgba(14, 165, 233, 0.08) 0%,
-      transparent 40%
-    );
-  color: var(--text-white);
+  background-color: var(--bg-dark);
+  color: var(--text-main);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -42,15 +38,13 @@ body {
   max-width: 520px;
 }
 
-/* Glassmorphic Card Container */
+/* Light Elevated Payment Card Container */
 .payment-card {
   background: var(--card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-glow);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 28px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(56, 189, 248, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 140, 255, 0.12);
 }
 
 .payment-header {
@@ -60,20 +54,21 @@ body {
 
 .payment-header h2 {
   font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--text-white);
+  font-weight: 800;
+  color: var(--text-main);
 }
 
 .payment-header p {
   font-size: 0.9rem;
-  color: var(--text-gray);
+  color: var(--text-sub);
   margin-top: 4px;
+  font-weight: 600;
 }
 
 /* Summary Box */
 .summary-box {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
@@ -84,28 +79,30 @@ body {
   justify-content: space-between;
   margin-bottom: 10px;
   font-size: 0.9rem;
-  color: var(--text-gray);
+  color: var(--text-sub);
+  font-weight: 600;
 }
 
 .summary-row:last-child {
   margin-bottom: 0;
   padding-top: 10px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.15);
-  color: var(--text-white);
-  font-weight: 700;
+  border-top: 1px dashed var(--border-color);
+  color: var(--text-main);
+  font-weight: 800;
   font-size: 1.05rem;
 }
 
 .summary-row .total-amount {
-  color: var(--accent-cyan);
+  color: var(--accent-pink);
+  font-weight: 800;
 }
 
 /* Payment Methods Options Styling */
 .payment-methods-title {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 800;
   margin-bottom: 12px;
-  color: var(--text-white);
+  color: var(--text-main);
 }
 
 .payment-options {
@@ -116,8 +113,8 @@ body {
 }
 
 .payment-method {
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 12px 14px;
   cursor: pointer;
@@ -125,12 +122,13 @@ body {
 }
 
 .payment-method:hover {
-  border-color: rgba(56, 189, 248, 0.4);
+  border-color: var(--accent-blue);
+  background: #ffffff;
 }
 
 .payment-method.active {
-  border-color: var(--accent-cyan);
-  background: rgba(56, 189, 248, 0.1);
+  border-color: var(--accent-blue);
+  background: rgba(0, 140, 255, 0.06);
 }
 
 .method-header {
@@ -138,12 +136,13 @@ body {
   align-items: center;
   gap: 10px;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--text-main);
   cursor: pointer;
 }
 
 .method-header input[type="radio"] {
-  accent-color: var(--accent-cyan);
+  accent-color: var(--accent-blue);
   cursor: pointer;
 }
 
@@ -151,7 +150,7 @@ body {
   display: none;
   margin-top: 12px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-color);
 }
 
 .form-panel.active {
@@ -160,18 +159,25 @@ body {
 
 .input-field {
   width: 100%;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 10px;
-  color: var(--text-white);
+  color: var(--text-main);
   font-size: 0.88rem;
+  font-weight: 600;
   margin-bottom: 8px;
   outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field::placeholder {
+  color: #a0aec0;
 }
 
 .input-field:focus {
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 8px rgba(0, 140, 255, 0.15);
 }
 
 .row-inputs {
@@ -179,19 +185,19 @@ body {
   gap: 8px;
 }
 
-/* Pay Button */
+/* RedBus Red Pay Button */
 .pay-btn {
   width: 100%;
-  background: var(--accent-cyan);
-  color: #030712;
+  background: linear-gradient(135deg, #d84e55, #e53935);
+  color: #ffffff;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   padding: 14px;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 4px 14px rgba(216, 78, 85, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -199,10 +205,8 @@ body {
 }
 
 .pay-btn:hover {
-  background: var(--accent-hover);
-  color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
+  box-shadow: 0 6px 20px rgba(216, 78, 85, 0.45);
 }
 
 /* Toast Notification Styling */
@@ -218,14 +222,12 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: rgba(15, 23, 42, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--accent-cyan);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.25);
+  background: #ffffff;
+  border: 1px solid var(--accent-blue);
+  box-shadow: 0 10px 30px rgba(0, 140, 255, 0.2);
   padding: 16px 20px;
   border-radius: 16px;
-  color: #ffffff;
+  color: var(--text-main);
   transform: translateY(-50px) scale(0.9);
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -240,34 +242,35 @@ body {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(0, 140, 255, 0.1);
+  border: 1px solid var(--accent-blue);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-cyan);
+  color: var(--accent-blue);
   font-size: 1.2rem;
 }
 
 .toast-content h4 {
   margin: 0;
   font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--accent-cyan);
+  font-weight: 800;
+  color: var(--accent-blue);
 }
 
 .toast-content p {
   margin: 3px 0 0 0;
   font-size: 0.85rem;
-  color: var(--text-gray);
+  color: var(--text-sub);
+  font-weight: 600;
 }
 
 /* Success Modal Overlay */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
+  background: rgba(28, 36, 48, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -283,14 +286,14 @@ body {
 }
 
 .modal-card {
-  background: var(--bg-dark);
-  border: 1px solid var(--accent-cyan);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 30px;
   text-align: center;
   max-width: 380px;
   width: 90%;
-  box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   transform: scale(0.8);
   transition: all 0.3s ease;
 }
@@ -299,32 +302,51 @@ body {
   transform: scale(1);
 }
 
+.modal-card h3 {
+  color: var(--text-main);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.modal-card p {
+  color: var(--text-sub);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 .success-icon {
   font-size: 3.5rem;
-  color: #4ade80;
+  color: #10b981;
   margin-bottom: 15px;
 }
 
 .pnr-box {
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px dashed var(--accent-cyan);
-  padding: 10px;
-  border-radius: 8px;
-  margin: 15px 0;
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--accent-cyan);
+  background: rgba(0, 140, 255, 0.08);
+  border: 2px dashed var(--accent-blue);
+  padding: 12px;
+  border-radius: 10px;
+  margin: 18px 0;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--accent-blue);
   letter-spacing: 1px;
 }
 
 .done-btn {
   width: 100%;
-  background: var(--accent-cyan);
+  background: linear-gradient(135deg, #008cff, #0052cc);
   border: none;
   padding: 12px;
   border-radius: 10px;
-  font-weight: bold;
-  color: #000;
+  font-weight: 800;
+  color: #ffffff;
   cursor: pointer;
   margin-top: 10px;
+  box-shadow: 0 4px 12px rgba(0, 140, 255, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.done-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 140, 255, 0.4);
 }

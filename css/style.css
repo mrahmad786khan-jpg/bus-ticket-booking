@@ -1,16 +1,17 @@
 /* ==========================================
-   TravelGo - Robust High-Contrast Stylesheet
+   TravelGo - Robust High-Contrast Stylesheet (RedBus + MMT Hybrid Theme)
    ========================================== */
 
 :root {
-  --bg-dark: #0B132B;
-  --bg-card: #1C2541;
-  --accent-blue: #3A86FF;
-  --accent-cyan: #38BDF8;
-  --accent-pink: #FF007F;
-  --text-main: #FFFFFF;
-  --text-sub: #94A3B8;
-  --input-bg: #FFFFFF;
+  --bg-dark: #f2f5f8;
+  --bg-card: #ffffff;
+  --accent-blue: #008cff;
+  --accent-cyan: #0052cc;
+  --accent-pink: #d84e55;
+  --text-main: #1c2430;
+  --text-sub: #606f7b;
+  --input-bg: #ffffff;
+  --border-color: #e0e6ed;
 }
 
 * {
@@ -32,11 +33,12 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 16px 6%;
-  background: #0B132B;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border-bottom: 2px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .nav-left {
@@ -48,22 +50,22 @@ body {
 .logo {
   font-size: 1.6rem;
   font-weight: 900;
-  color: #FFFFFF;
+  color: #1c2430;
   text-decoration: none;
 }
 
 .logo-accent {
-  color: var(--accent-cyan);
+  color: var(--accent-pink);
 }
 
 .nav-badge {
-  background: rgba(56, 189, 248, 0.15);
-  color: var(--accent-cyan);
+  background: rgba(0, 140, 255, 0.1);
+  color: var(--accent-blue);
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 700;
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid var(--accent-blue);
 }
 
 .nav-right {
@@ -79,14 +81,15 @@ body {
 }
 
 .nav-links a {
-  color: #E2E8F0;
+  color: #1c2430;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
+  transition: color 0.2s;
 }
 
 .nav-links a:hover {
-  color: var(--accent-cyan);
+  color: var(--accent-blue);
 }
 
 .btn-login {
@@ -97,18 +100,19 @@ body {
   text-decoration: none;
   font-weight: 700;
   font-size: 0.9rem;
+  box-shadow: 0 4px 10px rgba(0, 140, 255, 0.25);
 }
 
 /* 2. Banner Hero Section */
-/* Hero Banner - Clear Bus Image Without Overlay */
+/* 2. Banner Hero Section (Blue Overlay Removed) */
 .hero-section {
   position: relative;
   width: 100%;
-  height: 380px; /* Hero height for full visibility */
+  height: 380px;
   background-image: url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center center;
-  background-repeat: no-no-repeat;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -117,44 +121,32 @@ body {
   padding: 0 20px 40px 20px;
 }
 
-/* Background image ke upar text clearly read hone ke liye drop-shadow */
 .hero-title {
   font-size: 2.3rem;
   font-weight: 900;
   letter-spacing: 0.5px;
   margin-bottom: 10px;
   color: #FFFFFF;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
 }
 
 .hero-subtitle {
   color: #FFFFFF;
   font-size: 1rem;
-  font-weight: 700;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 0, 0, 0.9);
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
 .hero-badge {
   display: inline-block;
-  background: rgba(255, 0, 127, 0.2);
-  color: #FF66B2;
+  background: rgba(0, 0, 0, 0.5);
+  color: #FFFFFF;
   padding: 6px 16px;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 800;
   margin-bottom: 16px;
-}
-
-.hero-title {
-  font-size: 2.3rem;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-}
-
-.hero-subtitle {
-  color: var(--text-sub);
-  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 /* 3. High-Contrast Search Card Container */
@@ -170,7 +162,8 @@ body {
   background: #FFFFFF;
   padding: 24px;
   border-radius: 14px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 25px rgba(0, 140, 255, 0.12);
+  border: 1px solid var(--border-color);
   display: grid;
   grid-template-columns: 1.8fr 40px 1.8fr 1.4fr 1.4fr 1.6fr;
   gap: 12px;
@@ -186,8 +179,9 @@ body {
 .form-group label {
   font-size: 0.75rem;
   font-weight: 800;
-  color: #475569;
+  color: var(--accent-blue);
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .form-group input, 
@@ -195,11 +189,11 @@ body {
   width: 100%;
   height: 42px;
   padding: 0 12px;
-  border: 2px solid #CBD5E1;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #0F172A;
+  color: #1c2430;
   background: #F8FAFC;
   outline: none;
 }
@@ -208,11 +202,12 @@ body {
 .form-group select:focus {
   border-color: var(--accent-blue);
   background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.15);
 }
 
 .btn-swap {
-  background: #E2E8F0;
-  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -222,14 +217,21 @@ body {
   cursor: pointer;
   margin-top: 18px;
   font-weight: bold;
-  color: #1E293B;
+  color: var(--accent-blue);
   font-size: 1.1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.btn-swap:hover {
+  background: var(--accent-blue);
+  color: #FFFFFF;
+  border-color: var(--accent-blue);
 }
 
 .btn-search-submit {
   margin-top: 18px;
   height: 42px;
-  background: linear-gradient(135deg, #FF007F, #D0006F);
+  background: linear-gradient(135deg, #d84e55, #e53935);
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -237,6 +239,7 @@ body {
   font-size: 0.9rem;
   cursor: pointer;
   letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(216, 78, 85, 0.3);
 }
 
 /* 4. Sections Below Search */
@@ -252,7 +255,7 @@ body {
 .block-title {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #1c2430;
   margin-bottom: 16px;
 }
 
@@ -263,15 +266,23 @@ body {
 }
 
 .route-card {
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
   padding: 20px;
   border-radius: 12px;
   text-decoration: none;
-  color: #FFFFFF;
+  color: #1c2430;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  transition: all 0.2s ease;
+}
+
+.route-card:hover {
+  border-color: var(--accent-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 140, 255, 0.1);
 }
 
 .route-info h3 {
@@ -282,7 +293,7 @@ body {
 
 .route-info p {
   font-size: 0.85rem;
-  color: var(--accent-cyan);
+  color: var(--accent-pink);
   font-weight: 700;
 }
 
@@ -295,14 +306,15 @@ body {
   padding: 22px;
   border-radius: 12px;
   color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .pink-card {
-  background: linear-gradient(135deg, #FF007F, #B30059);
+  background: linear-gradient(135deg, #d84e55, #e53935);
 }
 
 .blue-card {
-  background: linear-gradient(135deg, #3A86FF, #1D4ED8);
+  background: linear-gradient(135deg, #0052cc, #008cff);
 }
 
 .offer-tag {
@@ -323,21 +335,16 @@ body {
   font-size: 0.85rem;
   opacity: 0.9;
 }
+
 /* ==========================================
    Modify Search & Results Page Styles
    ========================================== */
 
-/* Top Modify Search Bar */
-/* ==========================================
-   Premium Glassmorphic Modify Search Header
-   ========================================== */
-
 .modify-search-bar {
-  background: rgba(28, 37, 65, 0.85);
-  backdrop-filter: blur(12px);
+  background: #FFFFFF;
   padding: 18px 6%;
-  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   position: relative;
   z-index: 100;
 }
@@ -362,7 +369,7 @@ body {
 .mod-group label {
   font-size: 0.72rem;
   font-weight: 800;
-  color: #38BDF8;
+  color: var(--accent-blue);
   letter-spacing: 0.8px;
   display: flex;
   align-items: center;
@@ -379,27 +386,26 @@ body {
   height: 42px;
   padding: 0 14px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(11, 19, 43, 0.9);
-  color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  background: #F8FAFC;
+  color: #1c2430;
   font-weight: 700;
   font-size: 0.9rem;
   outline: none;
   transition: all 0.25s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .mod-group input:focus, 
 .mod-group select:focus {
-  border-color: #38BDF8;
-  background: #0B132B;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  border-color: var(--accent-blue);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.15);
 }
 
 .btn-swap-sm {
-  background: rgba(255, 255, 255, 0.08);
-  color: #38BDF8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: #FFFFFF;
+  color: var(--accent-blue);
+  border: 1px solid var(--border-color);
   width: 42px;
   height: 42px;
   border-radius: 8px;
@@ -413,15 +419,15 @@ body {
 }
 
 .btn-swap-sm:hover {
-  background: #38BDF8;
-  color: #0B132B;
+  background: var(--accent-blue);
+  color: #FFFFFF;
   transform: rotate(180deg);
 }
 
 .btn-modify-submit {
   height: 42px;
   padding: 0 24px;
-  background: linear-gradient(135deg, #FF007F 0%, #3A86FF 100%);
+  background: linear-gradient(135deg, #d84e55, #e53935);
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -429,7 +435,7 @@ body {
   font-size: 0.9rem;
   cursor: pointer;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 15px rgba(255, 0, 127, 0.35);
+  box-shadow: 0 4px 12px rgba(216, 78, 85, 0.3);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -439,11 +445,8 @@ body {
 
 .btn-modify-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
-  background: linear-gradient(135deg, #3A86FF 0%, #FF007F 100%);
+  box-shadow: 0 6px 16px rgba(216, 78, 85, 0.4);
 }
-
-
 
 /* Page Layout: Sidebar + Listings */
 .results-container {
@@ -457,19 +460,20 @@ body {
 
 /* Sidebar Filters */
 .filters-sidebar {
-  background: #1C2541;
+  background: #FFFFFF;
   padding: 20px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
   height: fit-content;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
 
 .filter-title {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #1c2430;
   margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 8px;
 }
 
@@ -483,13 +487,13 @@ body {
 .filter-heading {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #38BDF8;
+  color: var(--accent-blue);
   margin-bottom: 4px;
 }
 
 .checkbox-label {
   font-size: 0.85rem;
-  color: #E2E8F0;
+  color: #1c2430;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -498,7 +502,7 @@ body {
 
 .price-slider {
   width: 100%;
-  accent-color: #38BDF8;
+  accent-color: var(--accent-blue);
 }
 
 /* Bus Listing Cards */
@@ -509,30 +513,31 @@ body {
 }
 
 .bus-card {
-  background: #1C2541;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 20px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
 .bus-name {
   font-size: 1.2rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #1c2430;
   margin-bottom: 4px;
 }
 
 .bus-type {
   font-size: 0.85rem;
-  color: #94A3B8;
+  color: var(--text-sub);
   margin-bottom: 12px;
 }
 
 .rating {
-  color: #FACC15;
+  color: #eab308;
   font-weight: 700;
 }
 
@@ -542,13 +547,13 @@ body {
   gap: 16px;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #1c2430;
 }
 
 .duration {
   font-size: 0.75rem;
-  color: #94A3B8;
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-sub);
+  background: #F1F5F9;
   padding: 3px 8px;
   border-radius: 4px;
 }
@@ -564,11 +569,11 @@ body {
 .price {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: var(--accent-pink);
 }
 
 .btn-select-seat {
-  background: linear-gradient(135deg, #FF007F, #D0006F);
+  background: linear-gradient(135deg, #d84e55, #e53935);
   color: #FFFFFF;
   border: none;
   padding: 10px 20px;
@@ -576,7 +581,9 @@ body {
   font-weight: 800;
   font-size: 0.88rem;
   cursor: pointer;
+  box-shadow: 0 4px 10px rgba(216, 78, 85, 0.25);
 }
+
 /* ==========================================
    Seat Selection Interactive Grid Styles
    ========================================== */
@@ -591,20 +598,21 @@ body {
 }
 
 .bus-layout-card, .booking-summary-card {
-  background: #1C2541;
+  background: #FFFFFF;
   border-radius: 14px;
   padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
 .bus-header h2 {
   font-size: 1.3rem;
-  color: #FFFFFF;
+  color: #1c2430;
   margin-bottom: 4px;
 }
 
 .bus-route-text {
-  color: #38BDF8;
+  color: var(--accent-blue);
   font-size: 0.9rem;
   font-weight: 600;
   margin-bottom: 20px;
@@ -613,9 +621,9 @@ body {
 .driver-section {
   text-align: right;
   padding-bottom: 12px;
-  border-bottom: 2px dashed rgba(255, 255, 255, 0.15);
+  border-bottom: 2px dashed var(--border-color);
   margin-bottom: 20px;
-  color: #94A3B8;
+  color: var(--text-sub);
   font-weight: 700;
 }
 
@@ -629,10 +637,10 @@ body {
 
 .seat {
   height: 48px;
-  background: #0B132B;
-  border: 2px solid #38BDF8;
+  background: #F8FAFC;
+  border: 2px solid var(--accent-blue);
   border-radius: 8px;
-  color: #FFFFFF;
+  color: #1c2430;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -643,21 +651,21 @@ body {
 }
 
 .seat:hover:not(.booked) {
-  background: rgba(56, 189, 248, 0.2);
+  background: rgba(0, 140, 255, 0.15);
   transform: scale(1.05);
 }
 
 .seat.selected {
-  background: #38BDF8;
-  color: #0B132B;
-  border-color: #38BDF8;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+  background: var(--accent-blue);
+  color: #FFFFFF;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 10px rgba(0, 140, 255, 0.4);
 }
 
 .seat.booked {
-  background: #334155;
-  border-color: #475569;
-  color: #64748B;
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+  color: #94A3B8;
   cursor: not-allowed;
   text-decoration: line-through;
 }
@@ -666,7 +674,7 @@ body {
   display: flex;
   justify-content: center;
   gap: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border-color);
   padding-top: 16px;
 }
 
@@ -675,7 +683,7 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 0.85rem;
-  color: #E2E8F0;
+  color: #1c2430;
 }
 
 .seat-demo {
@@ -685,9 +693,9 @@ body {
   display: inline-block;
 }
 
-.seat-demo.available { border: 2px solid #38BDF8; background: #0B132B; }
-.seat-demo.selected { background: #38BDF8; }
-.seat-demo.booked { background: #334155; border: 1px solid #475569; }
+.seat-demo.available { border: 2px solid var(--accent-blue); background: #F8FAFC; }
+.seat-demo.selected { background: var(--accent-blue); }
+.seat-demo.booked { background: #E2E8F0; border: 1px solid #CBD5E1; }
 
 /* Booking Summary Card */
 .summary-details {
@@ -700,29 +708,29 @@ body {
 .summary-row {
   display: flex;
   justify-content: space-between;
-  color: #CBD5E1;
+  color: var(--text-sub);
   font-size: 0.95rem;
 }
 
 .summary-divider {
   border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid var(--border-color);
 }
 
 .total-price-row {
   font-size: 1.15rem;
-  color: #FFFFFF;
+  color: #1c2430;
 }
 
 .total-price-row strong {
-  color: #38BDF8;
+  color: var(--accent-pink);
   font-size: 1.3rem;
 }
 
 .btn-proceed-booking {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #FF007F, #D0006F);
+  background: linear-gradient(135deg, #d84e55, #e53935);
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -730,37 +738,30 @@ body {
   font-size: 0.95rem;
   cursor: pointer;
   transition: opacity 0.2s;
+  box-shadow: 0 4px 12px rgba(216, 78, 85, 0.3);
 }
 
 .btn-proceed-booking:disabled {
-  background: #334155;
-  color: #64748B;
+  background: #CBD5E1;
+  color: #94A3B8;
   cursor: not-allowed;
+  box-shadow: none;
 }
+
 /* ==========================================
-   Search Widget Floating Glassmorphism
+   Search Widget Floating Light Styling
    ========================================== */
 
-.search-widget-container {
-  max-width: 1100px;
-  margin: -50px auto 40px; /* Hero banner ke thoda upar float karne ke liye */
-  padding: 0 20px;
-  position: relative;
-  z-index: 10;
-}
-
 .search-widget-form {
-  background: rgba(28, 37, 65, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 20px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 25px rgba(0, 140, 255, 0.12);
 }
 
 .search-widget-form .form-group {
@@ -773,17 +774,17 @@ body {
 .search-widget-form label {
   font-size: 0.75rem;
   font-weight: 800;
-  color: #38BDF8;
+  color: var(--accent-blue);
   letter-spacing: 0.8px;
 }
 
 .search-widget-form input,
 .search-widget-form select {
-  background: rgba(11, 19, 43, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #F8FAFC;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px 14px;
-  color: #FFFFFF;
+  color: #1c2430;
   font-size: 0.95rem;
   font-weight: 600;
   outline: none;
@@ -792,36 +793,12 @@ body {
 
 .search-widget-form input:focus,
 .search-widget-form select:focus {
-  border-color: #38BDF8;
+  border-color: var(--accent-blue);
+  background: #FFFFFF;
 }
 
-/* Swap Button Style */
-.btn-swap {
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  color: #38BDF8;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 18px;
-  transition: all 0.2s ease;
-}
-
-.btn-swap:hover {
-  background: #38BDF8;
-  color: #0B132B;
-  transform: scale(1.1);
-}
-
-/* Search Buses CTA Button */
 .btn-search {
-  background: linear-gradient(135deg, #FF007F, #D0006F);
+  background: linear-gradient(135deg, #d84e55, #e53935);
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -831,24 +808,24 @@ body {
   cursor: pointer;
   margin-top: 18px;
   white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(255, 0, 127, 0.4);
+  box-shadow: 0 4px 12px rgba(216, 78, 85, 0.3);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-search:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 0, 127, 0.6);
+  box-shadow: 0 6px 16px rgba(216, 78, 85, 0.4);
 }
-Bh/* ==========================================
-   Dark Glassmorphic Date Picker & Native Calendar
+
+/* ==========================================
+   Date Picker & Native Calendar Styling
    ========================================== */
 
-/* Dark color scheme apply karna (Chrome/Edge calendar popup ko dark theme dene ke liye) */
 input[type="date"] {
-  color-scheme: dark; /* Pop-up container ko dark mode me convert karta hai */
-  background: rgba(11, 19, 43, 0.85) !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color-scheme: light;
+  background: #F8FAFC !important;
+  color: #1c2430 !important;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px 14px;
   font-family: inherit;
@@ -858,37 +835,20 @@ input[type="date"] {
   cursor: pointer;
 }
 
-/* Calendar Icon ko highlight / colorize karna */
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   border-radius: 4px;
   padding: 2px;
-  filter: invert(0.8) sepia(1) saturate(5) hue-rotate(175deg); /* Cyan Glow Effect */
-  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: none;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-  transform: scale(1.15);
-  filter: invert(1) sepia(0) saturate(1) hue-rotate(0deg);
-}
-
-/* Chrome/Safari me internal text focus state */
 input[type="date"]::-webkit-datetime-edit {
-  color: #FFFFFF;
+  color: #1c2430;
 }
 
-input[type="date"]::-webkit-datetime-edit-fields-wrapper {
-  background: transparent;
-}
 /* ==========================================
-   Modern Custom Glassmorphic Select Dropdown
+   Modern Custom Select Dropdown
    ========================================== */
-
-.custom-select-wrapper {
-  position: relative;
-  user-select: none;
-  width: 100%;
-}
 
 .custom-select-trigger {
   position: relative;
@@ -898,20 +858,19 @@ input[type="date"]::-webkit-datetime-edit-fields-wrapper {
   padding: 12px 16px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #FFFFFF;
-  background: rgba(11, 19, 43, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #1c2430;
+  background: #F8FAFC;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s ease;
 }
 
 .custom-select-trigger:hover,
 .custom-select-wrapper.open .custom-select-trigger {
-  border-color: #38BDF8;
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
-  background: rgba(11, 19, 43, 0.9);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 10px rgba(0, 140, 255, 0.15);
+  background: #FFFFFF;
 }
 
 .arrow-icon {
@@ -924,30 +883,26 @@ input[type="date"]::-webkit-datetime-edit-fields-wrapper {
   transform: rotate(180deg);
 }
 
-/* Custom Dropdown Popup Menu */
 .custom-options {
   position: absolute;
   display: block;
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: rgba(15, 23, 42, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
   border-radius: 14px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   z-index: 99;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transform: translateY(-10px);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s ease;
   overflow: hidden;
   padding: 6px;
 }
 
-/* Active Dropdown State */
 .custom-select-wrapper.open .custom-options {
   opacity: 1;
   visibility: visible;
@@ -955,50 +910,44 @@ input[type="date"]::-webkit-datetime-edit-fields-wrapper {
   transform: translateY(0);
 }
 
-/* Individual Dropdown Item */
 .custom-option {
   padding: 10px 14px;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #94A3B8;
+  color: var(--text-sub);
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .custom-option:hover {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38BDF8;
-  padding-left: 18px; /* Smooth slide-in effect */
+  background: rgba(0, 140, 255, 0.1);
+  color: var(--accent-blue);
+  padding-left: 18px;
 }
 
 .custom-option.selected {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(16, 185, 129, 0.25));
-  color: #FFFFFF;
+  background: rgba(0, 140, 255, 0.15);
+  color: var(--accent-blue);
   font-weight: 700;
-  border-left: 3px solid #38BDF8;
+  border-left: 3px solid var(--accent-blue);
 }
-/* Custom Glassmorphic Select Box */
+
 .glass-select {
   width: 100%;
   padding: 12px 16px;
-  background-color: rgba(11, 19, 43, 0.7) !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: #F8FAFC !important;
+  color: #1c2430 !important;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   outline: none;
-  backdrop-filter: blur(8px);
-  
-  /* Remove Browser Default Arrow */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  
-  /* Add Custom Accent Arrow */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2338BDF8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23008cff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
   background-repeat: no-repeat;
   background-position: right 14px center;
   padding-right: 40px;
@@ -1006,71 +955,64 @@ input[type="date"]::-webkit-datetime-edit-fields-wrapper {
 }
 
 .glass-select:focus {
-  border-color: #38BDF8;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 10px rgba(0, 140, 255, 0.15);
 }
 
-/* Fix White Menu Options Popup */
 .glass-select option {
-  background-color: #0B132B !important;
-  color: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  color: #1c2430 !important;
   padding: 12px;
 }
+
 /* Input focus aur typing style fix */
 .search-bar input:focus,
 .search-card input:focus,
 input[type="text"]:focus,
 input[type="date"]:focus {
-  background: rgba(15, 23, 42, 0.8) !important; /* Focus hone par dark background */
-  color: #FFFFFF !important;                     /* Text humesha readable white rahega */
-  border-color: #38BDF8 !important;              /* Neon cyan outline */
+  background: #FFFFFF !important;
+  color: #1c2430 !important;
+  border-color: var(--accent-blue) !important;
   outline: none !important;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4) !important;
+  box-shadow: 0 0 10px rgba(0, 140, 255, 0.2) !important;
 }
 
-/* Chrome/Edge Autofill (White Background Fix) */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
 input:-webkit-autofill:active {
-  -webkit-text-fill-color: #FFFFFF !important;
-  -webkit-box-shadow: 0 0 0px 1000px #0F172A inset !important;
+  -webkit-text-fill-color: #1c2430 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Datepicker calendar icon styling */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1); /* Date icon white dikhega */
-}
-/* Google Top Banner Ko Har Tarah Se Hide Karein */
+/* Google Top Banner Hide */
 iframe.goog-te-banner-frame,
 .goog-te-banner-frame,
 .goog-te-banner,
 #goog-gt-tt,
 .goog-te-balloon-frame,
 .skiptranslate {
-    display: none !important;
-    visibility: hidden !important;
+  display: none !important;
+  visibility: hidden !important;
 }
 
-/* Header Top Gap Fix */
 body {
-    top: 0px !important;
-    position: static !important;
-    min-height: 100% !important;
+  top: 0px !important;
+  position: static !important;
+  min-height: 100% !important;
 }
 
-/* Page highlight / text selection yellow box hide */
 .goog-text-highlight {
-    background-color: transparent !important;
-    box-shadow: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 /* ==========================================
    AMAZON STYLE FOOTER SECTION
 ========================================== */
 .amazon-footer {
-  background-color: #232f3e;
+  background-color: #1c2430;
   color: #ffffff;
   font-family: inherit;
   margin-top: 50px;
@@ -1088,11 +1030,10 @@ body {
   text-decoration: underline;
 }
 
-/* Back To Top Bar */
 .back-to-top {
   display: block;
   text-align: center;
-  background-color: #37475a;
+  background-color: #2c3848;
   color: #ffffff !important;
   padding: 15px 0;
   font-size: 13px;
@@ -1100,11 +1041,10 @@ body {
 }
 
 .back-to-top:hover {
-  background-color: #485769;
+  background-color: #3b4b60;
   text-decoration: none !important;
 }
 
-/* 4 Column Container */
 .footer-links-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -1137,20 +1077,18 @@ body {
   color: #cccccc;
 }
 
-/* Divider Line */
 .footer-divider {
-  border-top: 1px solid #3a4553;
+  border-top: 1px solid #2c3848;
   width: 100%;
 }
 
-/* Middle Branding Row */
 .footer-middle-branding {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 30px;
   padding: 25px 20px;
-  background-color: #232f3e;
+  background-color: #1c2430;
 }
 
 .footer-middle-branding .logo {
@@ -1168,7 +1106,6 @@ body {
   cursor: default;
 }
 
-/* Bottom Copyright Section */
 .footer-bottom {
   background-color: #131a22;
   text-align: center;
@@ -1196,7 +1133,6 @@ body {
   color: #999999;
 }
 
-/* Responsive Footer Design */
 @media (max-width: 600px) {
   .footer-links-container {
     grid-template-columns: repeat(2, 1fr);

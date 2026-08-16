@@ -1,4 +1,18 @@
-/* Dark Glassmorphic Base Theme */
+/* ==========================================
+   Passenger Details - Light Theme (RedBus + MMT Hybrid)
+   ========================================== */
+
+:root {
+  --bg-dark: #f2f5f8;
+  --card-bg: #ffffff;
+  --accent-blue: #008cff;
+  --accent-cyan: #0052cc;
+  --accent-pink: #d84e55;
+  --text-main: #1c2430;
+  --text-sub: #606f7b;
+  --border-color: #e0e6ed;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -7,11 +21,8 @@
 }
 
 body {
-  background: #050A14;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
-  color: #FFFFFF;
+  background: var(--bg-dark);
+  color: var(--text-main);
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -24,14 +35,12 @@ body {
   max-width: 700px;
 }
 
-/* Glass Card Outer Box */
+/* Light Card Outer Box */
 .glass-card {
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 140, 255, 0.08);
   padding: 30px;
 }
 
@@ -41,10 +50,10 @@ body {
 }
 
 .back-link {
-  color: #38BDF8;
+  color: var(--accent-blue);
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   display: inline-block;
   margin-bottom: 8px;
   transition: opacity 0.2s;
@@ -56,14 +65,15 @@ body {
 
 .card-header h2 {
   font-size: 1.6rem;
-  color: #FFFFFF;
+  color: var(--text-main);
+  font-weight: 800;
   letter-spacing: 0.5px;
 }
 
 /* Summary Banner */
 .summary-bar {
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px dashed rgba(56, 189, 248, 0.35);
+  background: rgba(0, 140, 255, 0.05);
+  border: 1px dashed var(--accent-blue);
   border-radius: 12px;
   padding: 14px 20px;
   display: flex;
@@ -73,25 +83,28 @@ body {
 }
 
 .summary-item span {
-  color: #94A3B8;
+  color: var(--text-sub);
   font-size: 0.9rem;
   margin-right: 6px;
+  font-weight: 600;
 }
 
 .summary-item strong {
-  color: #FFFFFF;
+  color: var(--text-main);
   font-size: 1rem;
+  font-weight: 800;
 }
 
 .summary-item .price-text {
-  color: #10B981;
-  font-size: 1.2rem;
+  color: var(--accent-pink);
+  font-size: 1.25rem;
+  font-weight: 800;
 }
 
 /* Individual Passenger Card */
 .passenger-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 20px;
   margin-bottom: 20px;
@@ -99,8 +112,8 @@ body {
 
 .passenger-title {
   font-size: 0.85rem;
-  font-weight: 700;
-  color: #38BDF8;
+  font-weight: 800;
+  color: var(--accent-blue);
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 14px;
@@ -126,26 +139,32 @@ body {
 .form-group label {
   display: block;
   font-size: 0.85rem;
-  color: #CBD5E1;
+  color: var(--text-sub);
   margin-bottom: 6px;
+  font-weight: 700;
 }
 
-/* Glass Inputs */
+/* High Contrast Inputs */
 .glass-input {
   width: 100%;
   padding: 11px 14px;
-  background: rgba(11, 19, 43, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: #FFFFFF;
+  color: var(--text-main);
   font-size: 0.95rem;
+  font-weight: 600;
   outline: none;
   transition: all 0.2s ease;
 }
 
+.glass-input::placeholder {
+  color: #a0aec0;
+}
+
 .glass-input:focus {
-  border-color: #38BDF8;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 8px rgba(0, 140, 255, 0.2);
 }
 
 /* Interactive Gender Selector Pills */
@@ -167,24 +186,25 @@ body {
   display: block;
   text-align: center;
   padding: 10px 0;
-  background: rgba(11, 19, 43, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 0.85rem;
-  color: #94A3B8;
+  color: var(--text-sub);
+  font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .gender-pill input:checked + span {
-  background: rgba(56, 189, 248, 0.2);
-  border-color: #38BDF8;
-  color: #FFFFFF;
-  font-weight: 600;
+  background: rgba(0, 140, 255, 0.1);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  font-weight: 800;
 }
 
 /* Contact Section */
 .contact-section {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border-color);
   padding-top: 20px;
   margin-top: 10px;
   margin-bottom: 25px;
@@ -192,31 +212,49 @@ body {
 
 .contact-section h3 {
   font-size: 1.1rem;
-  color: #FFFFFF;
+  color: var(--text-main);
+  font-weight: 800;
 }
 
 .section-desc {
   font-size: 0.8rem;
-  color: #94A3B8;
+  color: var(--text-sub);
   margin-bottom: 15px;
+  font-weight: 600;
 }
 
-/* Proceed Button */
+/* RedBus Red Proceed Button */
 .btn-proceed {
   width: 100%;
   padding: 15px;
-  background: linear-gradient(135deg, #0EA5E9, #0284C7);
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #d84e55, #e53935);
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+  box-shadow: 0 4px 15px rgba(216, 78, 85, 0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-proceed:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+  box-shadow: 0 6px 20px rgba(216, 78, 85, 0.5);
+}
+/* Input Text Color Fix */
+.glass-input, 
+input[type="text"], 
+input[type="number"], 
+input[type="email"], 
+select {
+  color: #1c2430 !important;
+  font-weight: 600 !important;
+}
+
+/* Placeholder Text Color Fix */
+.glass-input::placeholder,
+input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
 }

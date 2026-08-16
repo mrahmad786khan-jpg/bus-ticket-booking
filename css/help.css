@@ -1,3 +1,18 @@
+/* ==========================================
+   Help & Support - Light Theme (RedBus + MMT Hybrid)
+   ========================================== */
+
+:root {
+  --bg-dark: #f2f5f8;
+  --card-bg: #ffffff;
+  --accent-blue: #008cff;
+  --accent-cyan: #0052cc;
+  --accent-pink: #d84e55;
+  --text-main: #1c2430;
+  --text-sub: #606f7b;
+  --border-color: #e0e6ed;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,11 +21,8 @@
 }
 
 body {
-  background: #030712;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.12) 0px, transparent 50%);
-  color: #F8FAFC;
+  background: var(--bg-dark);
+  color: var(--text-main);
   min-height: 100vh;
   display: flex;
   justify-content: flex-start; /* Left aligned */
@@ -24,27 +36,26 @@ body {
   margin: 0; /* Keeps container on left */
 }
 
+/* Light Card Container */
 .glass-card {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 24px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 140, 255, 0.08);
   padding: 36px;
 }
 
 .card-header {
   margin-bottom: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 18px;
 }
 
 .back-link {
-  color: #38BDF8;
+  color: var(--accent-blue);
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   display: inline-block;
   margin-bottom: 12px;
   transition: transform 0.2s ease;
@@ -52,29 +63,31 @@ body {
 
 .back-link:hover {
   transform: translateX(-4px);
-  color: #7DD3FC;
+  color: var(--accent-cyan);
 }
 
 .card-header h2 {
   font-size: 1.8rem;
-  color: #FFFFFF;
+  color: var(--text-main);
+  font-weight: 800;
   letter-spacing: 0.5px;
   margin-bottom: 6px;
 }
 
 .subtitle {
-  color: #94A3B8;
+  color: var(--text-sub);
   font-size: 0.95rem;
+  font-weight: 600;
 }
 
 /* Contact Card Styling */
 .support-contact-card {
-  background: rgba(11, 19, 43, 0.7);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
   border-radius: 18px;
   padding: 24px;
   margin-bottom: 30px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .profile-info {
@@ -82,31 +95,33 @@ body {
   align-items: center;
   gap: 16px;
   margin-bottom: 20px;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  border-bottom: 1px dashed var(--border-color);
   padding-bottom: 16px;
 }
 
 .avatar-icon {
   width: 50px;
   height: 50px;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: rgba(0, 140, 255, 0.1);
+  border: 1px solid var(--accent-blue);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1.4rem;
-  color: #38BDF8;
+  color: var(--accent-blue);
 }
 
 .profile-info h3 {
   font-size: 1.25rem;
-  color: #F8FAFC;
+  color: var(--text-main);
+  font-weight: 800;
 }
 
 .role-text {
   font-size: 0.85rem;
-  color: #94A3B8;
+  color: var(--text-sub);
+  font-weight: 600;
 }
 
 .contact-methods {
@@ -119,8 +134,8 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
   padding: 14px 18px;
   border-radius: 12px;
   text-decoration: none;
@@ -129,37 +144,41 @@ body {
 }
 
 .contact-item:hover {
-  background: rgba(56, 189, 248, 0.1);
-  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(0, 140, 255, 0.05);
+  border-color: var(--accent-blue);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 140, 255, 0.1);
 }
 
 .contact-item i {
   font-size: 1.5rem;
-  color: #38BDF8;
+  color: var(--accent-blue);
 }
 
 .instagram-btn i {
-  color: #E1306C; /* Instagram signature color */
+  color: #e1306c; /* Instagram signature color preserved */
 }
 
 .contact-item span {
   display: block;
   font-size: 0.75rem;
-  color: #94A3B8;
+  color: var(--text-sub);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .contact-item strong {
   font-size: 0.95rem;
-  color: #F8FAFC;
+  color: var(--text-main);
+  font-weight: 700;
 }
 
 /* FAQ Section */
 .faq-section h3 {
   font-size: 1.2rem;
-  color: #F8FAFC;
+  color: var(--text-main);
+  font-weight: 800;
   margin-bottom: 16px;
 }
 
@@ -170,21 +189,22 @@ body {
 }
 
 .faq-item {
-  background: rgba(11, 19, 43, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
 }
 
 .faq-question {
-  font-weight: 600;
-  color: #38BDF8;
+  font-weight: 800;
+  color: var(--accent-blue);
   font-size: 0.95rem;
   margin-bottom: 6px;
 }
 
 .faq-answer {
   font-size: 0.88rem;
-  color: #94A3B8;
+  color: var(--text-sub);
   line-height: 1.5;
+  font-weight: 600;
 }

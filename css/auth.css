@@ -1,3 +1,18 @@
+/* ==========================================
+   Auth / Login & Sign Up - Light Theme (RedBus + MMT Hybrid)
+   ========================================== */
+
+:root {
+  --bg-dark: #f2f5f8;
+  --card-bg: #ffffff;
+  --accent-blue: #008cff;
+  --accent-cyan: #0052cc;
+  --accent-pink: #d84e55;
+  --text-main: #1c2430;
+  --text-sub: #606f7b;
+  --border-color: #e0e6ed;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,11 +21,8 @@
 }
 
 body {
-  background: #030712;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.12) 0px, transparent 50%);
-  color: #F8FAFC;
+  background: var(--bg-dark);
+  color: var(--text-main);
   min-height: 100vh;
   display: flex;
   justify-content: center; /* Horizontally center */
@@ -24,21 +36,20 @@ body {
   margin: 0 auto;          /* Centered block */
 }
 
+/* Light Card Container */
 .glass-card {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 24px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 140, 255, 0.08);
   padding: 36px;
 }
 
 .back-link {
-  color: #38BDF8;
+  color: var(--accent-blue);
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   display: inline-block;
   margin-bottom: 20px;
   transition: transform 0.2s ease;
@@ -46,7 +57,7 @@ body {
 
 .back-link:hover {
   transform: translateX(-4px);
-  color: #7DD3FC;
+  color: var(--accent-cyan);
 }
 
 .auth-header {
@@ -55,19 +66,22 @@ body {
 
 .auth-header h2 {
   font-size: 1.8rem;
-  color: #FFFFFF;
+  color: var(--text-main);
+  font-weight: 800;
   margin-bottom: 6px;
 }
 
 .subtitle {
-  color: #94A3B8;
+  color: var(--text-sub);
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
+/* Tab Switching Control */
 .tab-container {
   display: flex;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 4px;
   margin-bottom: 24px;
@@ -77,19 +91,19 @@ body {
   flex: 1;
   background: transparent;
   border: none;
-  color: #94A3B8;
+  color: var(--text-sub);
   padding: 10px;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .tab-btn.active {
-  background: #38BDF8;
-  color: #030712;
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+  background: var(--accent-blue);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 140, 255, 0.25);
 }
 
 .auth-form {
@@ -102,6 +116,7 @@ body {
   display: flex;
 }
 
+/* Form Controls */
 .input-group {
   display: flex;
   flex-direction: column;
@@ -110,63 +125,69 @@ body {
 
 .input-group label {
   font-size: 0.85rem;
-  color: #CBD5E1;
+  color: var(--text-main);
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .input-group label i {
-  color: #38BDF8;
+  color: var(--accent-blue);
 }
 
 .input-group input {
-  background: rgba(11, 19, 43, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 12px 14px;
-  color: #FFFFFF;
+  color: var(--text-main);
   font-size: 0.95rem;
+  font-weight: 600;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .input-group input:focus {
-  border-color: #38BDF8;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  background: #ffffff;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.15);
 }
 
+/* RedBus Primary Action Button */
 .submit-btn {
   margin-top: 10px;
-  background: linear-gradient(135deg, #38BDF8, #0284C7);
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #d84e55, #e53935);
+  color: #ffffff;
   border: none;
   padding: 14px;
   border-radius: 12px;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 10px 20px rgba(2, 132, 199, 0.3);
+  box-shadow: 0 8px 18px rgba(216, 78, 85, 0.3);
 }
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 25px rgba(2, 132, 199, 0.45);
+  box-shadow: 0 12px 22px rgba(216, 78, 85, 0.45);
 }
 
 .demo-notice {
   margin-top: 20px;
   padding: 12px;
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  background: rgba(0, 140, 255, 0.08);
+  border: 1px solid rgba(0, 140, 255, 0.2);
   border-radius: 10px;
   font-size: 0.8rem;
-  color: #7DD3FC;
+  font-weight: 700;
+  color: var(--accent-cyan);
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 /* Custom Toast Notification */
 .toast-container {
   position: fixed;
@@ -189,11 +210,9 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: rgba(15, 23, 42, 0.92);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
   padding: 16px 22px;
   border-radius: 16px;
   min-width: 300px;
@@ -201,20 +220,21 @@ body {
 
 .toast-icon {
   font-size: 1.6rem;
-  color: #38BDF8;
+  color: var(--accent-blue);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .toast-content h4 {
-  color: #FFFFFF;
+  color: var(--text-main);
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 2px;
 }
 
 .toast-content p {
-  color: #94A3B8;
+  color: var(--text-sub);
   font-size: 0.88rem;
+  font-weight: 600;
 }

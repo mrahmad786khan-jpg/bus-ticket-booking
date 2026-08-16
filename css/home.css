@@ -1,12 +1,28 @@
 /* ==========================================
-   TravelGo - Home Page Styles
+   TravelGo - Home Page Styles (Hybrid RedBus + MMT Theme)
    ========================================== */
+
+/* Theme Variables Definition */
+:root {
+  --primary-blue: #008cff;
+  --primary-blue-dark: #0052cc;
+  --redbus-red: #d84e55;
+  --redbus-red-hover: #c23b42;
+  --card-bg: #ffffff;
+  --body-bg: #f2f5f8;
+  --border-color: #e0e6ed;
+  --text-dark: #1c2430;
+  --text-muted: #606f7b;
+  --accent-pink: #d84e55;
+  --accent-pink-hover: #c23b42;
+  --shadow-lg: 0 8px 24px rgba(0, 140, 255, 0.12);
+}
 
 /* Hero Banner */
 .hero-section {
   position: relative;
   height: 380px;
-  background: linear-gradient(rgba(11, 25, 44, 0.75), rgba(11, 25, 44, 0.6)), 
+  background: linear-gradient(135deg, rgba(0, 82, 204, 0.85), rgba(0, 140, 255, 0.75)), 
               url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
   display: flex;
   align-items: center;
@@ -20,6 +36,7 @@
   letter-spacing: 0.5px;
   margin-bottom: 8px;
   text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .hero-text p {
@@ -59,9 +76,10 @@
 .field-group label {
   font-size: 0.7rem;
   font-weight: 800;
-  color: var(--text-muted);
+  color: var(--primary-blue);
   margin-bottom: 4px;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .input-box {
@@ -70,8 +88,15 @@
   gap: 8px;
   background: #F8FAFC;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px 12px;
+  transition: all 0.2s ease;
+}
+
+.input-box:focus-within {
+  border-color: var(--primary-blue);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.15);
 }
 
 .input-box input, .input-box select {
@@ -85,7 +110,7 @@
 }
 
 .swap-btn {
-  background: #F1F5F9;
+  background: #FFFFFF;
   border: 1px solid var(--border-color);
   border-radius: 50%;
   width: 36px;
@@ -96,15 +121,20 @@
   cursor: pointer;
   margin-top: 16px;
   font-size: 0.8rem;
-  transition: transform 0.2s;
+  color: var(--primary-blue);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
 }
 
 .swap-btn:hover {
   transform: rotate(180deg);
+  background: var(--primary-blue);
+  color: #FFFFFF;
+  border-color: var(--primary-blue);
 }
 
 .btn-search {
-  background: var(--accent-pink);
+  background: linear-gradient(135deg, #d84e55, #e53935);
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
@@ -115,11 +145,13 @@
   justify-content: center;
   cursor: pointer;
   margin-top: 16px;
-  transition: background 0.2s;
+  box-shadow: 0 4px 12px rgba(216, 78, 85, 0.3);
+  transition: all 0.2s ease;
 }
 
 .btn-search:hover {
-  background: var(--accent-pink-hover);
+  background: linear-gradient(135deg, #c23b42, #d32f2f);
+  transform: translateY(-1px);
 }
 
 /* Sections Layout */
@@ -134,9 +166,10 @@
 
 .section-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 16px;
   color: var(--text-dark);
+  letter-spacing: -0.2px;
 }
 
 /* Popular Routes Grid */
@@ -151,17 +184,25 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  transition: all 0.2s ease;
+}
+
+.route-card:hover {
+  border-color: var(--primary-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 140, 255, 0.1);
 }
 
 .route-card h4 {
   font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 4px;
+  color: var(--text-dark);
 }
 
 .route-price {
-  color: var(--accent-pink);
+  color: var(--redbus-red);
   font-weight: 800;
   font-size: 0.95rem;
   margin-bottom: 10px;
@@ -182,10 +223,16 @@
   font-weight: 700;
   font-size: 0.85rem;
   text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
-.offer-pink { background: linear-gradient(135deg, #FF385C, #E00B41); }
-.offer-blue { background: linear-gradient(135deg, #1E40AF, #3B82F6); }
+.offer-pink { 
+  background: linear-gradient(135deg, #d84e55, #e53935); 
+}
+
+.offer-blue { 
+  background: linear-gradient(135deg, #0052cc, #008cff); 
+}
 
 .trust-grid {
   display: flex;
@@ -194,6 +241,7 @@
   border: 1px solid var(--border-color);
   padding: 18px;
   border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
 .trust-item {
@@ -207,4 +255,5 @@
   display: block;
   font-size: 1.2rem;
   margin-bottom: 4px;
+  color: var(--primary-blue);
 }
