@@ -28,15 +28,41 @@ document.addEventListener('DOMContentLoaded', () => {
     ? bookingData.seats
     : (JSON.parse(localStorage.getItem('selectedSeats')) || ['S1']);
 
+  // Base Fare Calculation
   const baseFare = bookingData ? (bookingData.baseFare || (savedSeats.length * 850)) : (savedSeats.length * 850);
-  const taxFare = bookingData ? (bookingData.taxFare || Math.round(baseFare * 0.05)) : Math.round(baseFare * 0.05);
-  const totalAmount = baseFare + taxFare;
+  const taxFare = 0;
 
   const displaySeats = document.getElementById('displaySeats');
   const displayFare = document.getElementById('displayFare');
 
   if (displaySeats) displaySeats.textContent = savedSeats.join(', ');
-  if (displayFare) displayFare.textContent = `₹${totalAmount}`;
+
+  // Function to calculate Total Amount including Add-ons
+  function updateTotalPrice() {
+    let currentTotal = baseFare;
+
+    const baggageCheckbox = document.getElementById('addBaggage');
+    const insuranceCheckbox = document.getElementById('addInsurance');
+    const mealCheckbox = document.getElementById('addMeal');
+
+    if (baggageCheckbox && baggageCheckbox.checked) currentTotal += parseInt(baggageCheckbox.value);
+    if (insuranceCheckbox && insuranceCheckbox.checked) currentTotal += parseInt(insuranceCheckbox.value);
+    if (mealCheckbox && mealCheckbox.checked) currentTotal += parseInt(mealCheckbox.value);
+
+    if (displayFare) displayFare.textContent = `₹${currentTotal}`;
+    return currentTotal;
+  }
+
+  // Event Listeners for Add-ons Checkboxes to update fare dynamically
+  ['addBaggage', 'addInsurance', 'addMeal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('change', updateTotalPrice);
+    }
+  });
+
+  // Initial Fare Display
+  updateTotalPrice();
 
   // Contact Inputs Autofill
   const emailElem = document.getElementById('contactEmail');
@@ -91,6 +117,13 @@ document.addEventListener('DOMContentLoaded', () => {
         gender: form[`gender_${seat}`] ? form[`gender_${seat}`].value : 'Male'
       }));
 
+      // Gather Selected Add-ons
+      const selectedAddons = [];
+      if (document.getElementById('addBaggage')?.checked) selectedAddons.push({ name: 'Extra Baggage (+15kg)', price: 150 });
+      if (document.getElementById('addInsurance')?.checked) selectedAddons.push({ name: 'Travel Insurance', price: 49 });
+      if (document.getElementById('addMeal')?.checked) selectedAddons.push({ name: 'Snacks & Beverage Box', price: 99 });
+
+      const finalTotalAmount = updateTotalPrice();
       const contactEmail = emailElem ? emailElem.value : (loggedInUser.email || '');
       const contactPhone = phoneElem ? phoneElem.value : (loggedInUser.phone || '');
 
@@ -101,8 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
         seats: savedSeats,
         seatCount: savedSeats.length,
         baseFare: baseFare,
-        taxFare: taxFare,
-        totalAmount: totalAmount,
+        addons: selectedAddons,
+        taxFare: 0,
+        totalAmount: finalTotalAmount,
         passengers: passengerData,
         contact: {
           email: contactEmail,
@@ -114,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('travelgo_booking_data', JSON.stringify(updatedBookingData));
       localStorage.setItem('passengerDetails', JSON.stringify(passengerData));
 
-      // 2. 🔥 FIX: Database API call to save booked seats immediately in Backend
+      // 2. Database API call to save booked seats immediately in Backend
       try {
         const response = await fetch('http://localhost:5000/api/book-ticket', {
           method: 'POST',
@@ -128,7 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
             seatNumbers: savedSeats,
             passengerCount: savedSeats.length,
             travelDate: travelDate,
-            totalFare: totalAmount
+            totalFare: finalTotalAmount,
+            addons: selectedAddons
           })
         });
 
@@ -150,7 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
           seats: savedSeats,
           from: (bookingData && bookingData.from) || 'Mumbai',
           to: (bookingData && bookingData.to) || 'Goa',
-          totalAmount: totalAmount,
+          totalAmount: finalTotalAmount,
+          addons: selectedAddons,
           status: 'Confirmed'
         });
         localStorage.setItem('myBookings', JSON.stringify(existingMyBookings));

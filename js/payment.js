@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     const raw = localStorage.getItem('travelgo_booking_data');
     if (raw) bookingData = JSON.parse(raw);
-  } catch (e) {}
+  } catch (e) {
+    console.error("Error parsing booking data:", e);
+  }
 
   // Extract Travel Date from URL query params or bookingData
   const urlParams = new URLSearchParams(window.location.search);
@@ -22,24 +24,53 @@ document.addEventListener('DOMContentLoaded', () => {
   let savedSeats = (bookingData && bookingData.seats) ? bookingData.seats : ['S1'];
   let passengerDetails = (bookingData && bookingData.passengers) ? bookingData.passengers : [];
 
-  let baseFare = bookingData ? Number(bookingData.baseFare) : (savedSeats.length * 1200);
-  let taxFare = bookingData ? Number(bookingData.taxFare) : Math.round(baseFare * 0.05);
-  let totalAmount = baseFare + taxFare;
+  // Base Fare Calculation
+  let baseFare = bookingData && bookingData.baseFare ? Number(bookingData.baseFare) : (savedSeats.length * 1200);
 
+  // Add-ons Total Calculation
+  let addonsTotal = 0;
+  if (bookingData && bookingData.addons && Array.isArray(bookingData.addons)) {
+    addonsTotal = bookingData.addons.reduce((sum, item) => sum + Number(item.price || 0), 0);
+  }
+
+  // Combined Subtotal (Base Fare + Add-ons)
+  let subTotal = baseFare + addonsTotal;
+
+  // --- GST FIX: Guaranteed 5% GST & Service Charge Calculation ---
+  let taxFare = Math.round(subTotal * 0.05);
+
+  // Final Total Payable Amount
+  let totalAmount = subTotal + taxFare;
+
+  // DOM Elements Selection based on payment.html
   const summarySeatsEl = document.getElementById('summarySeats');
   const summaryPassengersEl = document.getElementById('summaryPassengers');
-  const summaryAmountEl = document.getElementById('summaryAmount');
   const baseFareEl = document.getElementById('display-base-fare');
   const taxFareEl = document.getElementById('display-tax-fare');
+  const summaryAmountEl = document.getElementById('summaryAmount');
   const btnPayText = document.getElementById('btn-pay-text');
 
-  if (summarySeatsEl) summarySeatsEl.textContent = Array.isArray(savedSeats) ? savedSeats.join(', ') : savedSeats;
-  if (summaryPassengersEl) summaryPassengersEl.textContent = passengerDetails.length || (Array.isArray(savedSeats) ? savedSeats.length : 1);
-  if (baseFareEl) baseFareEl.textContent = `₹${baseFare}`;
-  if (taxFareEl) taxFareEl.textContent = `₹${taxFare}`;
-  if (summaryAmountEl) summaryAmountEl.textContent = `₹${totalAmount}`;
-  if (btnPayText) btnPayText.textContent = `Pay ₹${totalAmount} Securely`;
+  // Injecting values into HTML elements
+  if (summarySeatsEl) {
+    summarySeatsEl.textContent = Array.isArray(savedSeats) ? savedSeats.join(', ') : savedSeats;
+  }
+  if (summaryPassengersEl) {
+    summaryPassengersEl.textContent = passengerDetails.length || (Array.isArray(savedSeats) ? savedSeats.length : 1);
+  }
+  if (baseFareEl) {
+    baseFareEl.textContent = `₹${subTotal}`;
+  }
+  if (taxFareEl) {
+    taxFareEl.textContent = `₹${taxFare}`;
+  }
+  if (summaryAmountEl) {
+    summaryAmountEl.textContent = `₹${totalAmount}`;
+  }
+  if (btnPayText) {
+    btnPayText.textContent = `Pay ₹${totalAmount} Securely`;
+  }
 
+  // Payment Method Tabs Switching Logic
   const radios = document.querySelectorAll('input[name="paymentType"]');
   radios.forEach(radio => {
     radio.addEventListener('change', (e) => {
@@ -66,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Flexible Logged In User Detection (Included 'safarsathi_user')
       let loggedInUser = null;
 
       if (typeof getLoggedInUser === 'function') {
@@ -76,15 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!loggedInUser) {
         try {
           loggedInUser = JSON.parse(localStorage.getItem('safarsathi_user')) || 
-                         JSON.parse(localStorage.getItem('travelgo_user')) || 
-                         JSON.parse(localStorage.getItem('user')) || 
-                         JSON.parse(localStorage.getItem('loggedInUser'));
+                       JSON.parse(localStorage.getItem('travelgo_user')) || 
+                       JSON.parse(localStorage.getItem('user')) || 
+                       JSON.parse(localStorage.getItem('loggedInUser'));
         } catch (err) {
           loggedInUser = null;
         }
       }
 
-      // Check if user object exists
       const isUserValid = loggedInUser && (loggedInUser.id || loggedInUser.email || loggedInUser.name);
 
       if (!isUserValid) {
@@ -100,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const randomID = generateTicketId();
 
-      // Formed Object for MySQL Database API Payload
       const dbBookingPayload = {
         pnr: randomID,
         user_id: loggedInUser.id || null,
@@ -111,11 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
         destination: (bookingData && bookingData.to) ? bookingData.to : 'Destination',
         seat_no: Array.isArray(savedSeats) ? savedSeats.join(',') : String(savedSeats),
         travel_date: travelDate,
-        total_fare: totalAmount
+        total_fare: totalAmount,
+        addons: bookingData?.addons || [],
+        tax_fare: taxFare
       };
 
       try {
-        // Save to Database via API First
         const response = await fetch('http://localhost:5000/api/bookings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -129,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn("Backend DB Save Error, falling back to LocalStorage:", apiError);
       }
 
-      // Save to LocalStorage Fallback
       const newBooking = {
         pnr: randomID,
         busId: busId,
@@ -147,6 +175,8 @@ document.addEventListener('DOMContentLoaded', () => {
         seats: Array.isArray(savedSeats) ? savedSeats : [savedSeats],
         passengersCount: passengerDetails.length || (Array.isArray(savedSeats) ? savedSeats.length : 1),
         passengers: passengerDetails,
+        addons: bookingData?.addons || [],
+        taxFare: taxFare,
         bookingDate: new Date().toLocaleDateString('en-IN', {
           day: 'numeric', month: 'short', year: 'numeric'
         }),

@@ -5,22 +5,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   const busGrid = document.getElementById('busGrid');
   const selectedSeatsText = document.getElementById('selectedSeatsText');
   const seatCountText = document.getElementById('seatCountText');
+  const basePriceText = document.getElementById('basePriceText');
   const totalPriceText = document.getElementById('totalPriceText');
   const checkoutBtn = document.getElementById('checkoutBtn');
   const routeText = document.getElementById('routeText');
   const busNameText = document.getElementById('busNameText');
+
+  // Promo Code Elements
+  const promoCodeInput = document.getElementById('promoCodeInput');
+  const applyPromoBtn = document.getElementById('applyPromoBtn');
+  const promoMessage = document.getElementById('promoMessage');
+  const discountRow = document.getElementById('discountRow');
+  const discountText = document.getElementById('discountText');
+
+  // State Variables
+  let SEAT_PRICE = 850;
+  let currentBusName = 'Express Bus';
+  let selectedSeats = [];
+  let appliedDiscount = 0;
+  let activePromoCode = '';
 
   // URL Query Params Read
   const urlParams = new URLSearchParams(window.location.search);
   const busId = urlParams.get('busId');
   const fromLoc = urlParams.get('from') || 'Mumbai';
   const toLoc = urlParams.get('to') || 'Goa';
-  
-  // Safe & Strict Date Normalizer (Extracts YYYY-MM-DD cleanly)
+
   function parseStandardDate(dateStr) {
     if (!dateStr) return '';
     const str = String(dateStr).trim();
-    
     const ymdMatch = str.match(/^(\d{4}-\d{2}-\d{2})/);
     if (ymdMatch) return ymdMatch[1];
 
@@ -33,7 +46,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     return `${year}-${month}-${day}`;
   }
 
-  // Extract travel date from URL
   let rawDate = urlParams.get('date') || urlParams.get('travelDate');
   let travelDate = parseStandardDate(rawDate);
 
@@ -45,7 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     travelDate = `${year}-${month}-${day}`;
   }
 
-  // Clear stale selection if user opened a different date/bus
   try {
     const prevData = JSON.parse(localStorage.getItem('travelgo_booking_data') || '{}');
     if (prevData.travelDate && (prevData.travelDate !== travelDate || String(prevData.busId) !== String(busId))) {
@@ -56,22 +67,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (routeText) routeText.textContent = `${fromLoc} ➔ ${toLoc} (${travelDate})`;
 
-  let SEAT_PRICE = 850;
-  let currentBusName = 'Express Bus';
-  let selectedSeats = [];
-
-  // Helper function to extract integer seat numbers (e.g., "S1" -> 1)
   function extractSeatNumber(seatStr) {
     if (seatStr === null || seatStr === undefined) return null;
     const num = parseInt(String(seatStr).replace(/\D/g, ''), 10);
     return isNaN(num) ? null : num;
   }
 
-  // Fetch Occupied Seats Function
+  // Fetch Occupied Seats
   async function fetchOccupiedSeats() {
     const occupiedSeatNumbers = new Set();
-
-    // 1. Try dedicated API endpoint first
     if (busId && travelDate) {
       try {
         const res = await fetch(`http://localhost:5000/api/booked-seats?busId=${busId}&date=${travelDate}`);
@@ -82,16 +86,14 @@ document.addEventListener('DOMContentLoaded', async () => {
               const seatNum = extractSeatNumber(s);
               if (seatNum !== null) occupiedSeatNumbers.add(seatNum);
             });
-            // Primary API success - return strictly fetched seats
             return Array.from(occupiedSeatNumbers);
           }
         }
       } catch (apiErr) {
-        console.warn("API /api/booked-seats check failed, trying fallback checks...");
+        console.warn("API /api/booked-seats check failed, falling back...");
       }
     }
 
-    // 2. Fetch all bookings from Backend Database API
     try {
       const res = await fetch(`http://localhost:5000/api/my-bookings`);
       if (res.ok) {
@@ -99,23 +101,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (Array.isArray(allDbBookings)) {
           allDbBookings.forEach(item => {
             const itemBusId = item.bus_id || item.busId || item.bus;
-            // Strict match for Bus ID and Travel Date
             const matchBus = busId ? String(itemBusId) === String(busId) : true;
-
             const rawItemDate = item.travel_date || item.travelDate || item.date || item.journey_date;
             const itemDate = parseStandardDate(rawItemDate);
             const matchDate = (itemDate === travelDate);
 
             if (matchBus && matchDate && item.status !== 'Cancelled') {
-              let rawSeats = [];
-              if (typeof item.seat_numbers === 'string') {
-                rawSeats = item.seat_numbers.split(',');
-              } else if (Array.isArray(item.seats)) {
-                rawSeats = item.seats;
-              } else if (item.seats) {
-                rawSeats = String(item.seats).split(',');
-              }
-
+              let rawSeats = Array.isArray(item.seats) ? item.seats : String(item.seats || item.seat_numbers || '').split(',');
               rawSeats.forEach(s => {
                 const seatNum = extractSeatNumber(s);
                 if (seatNum !== null) occupiedSeatNumbers.add(seatNum);
@@ -125,36 +117,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
     } catch (e) {
-      console.warn("My-bookings API check failed, falling back to LocalStorage:", e);
-    }
-
-    // 3. Fallback: LocalStorage Check (Strictly filter by travelDate & busId)
-    try {
-      const allBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
-      allBookings.forEach(booking => {
-        const itemBusId = booking.busId || booking.bus_id;
-        const matchBus = busId ? String(itemBusId) === String(busId) : true;
-
-        const rawBookingDate = booking.travelDate || booking.date;
-        const bookingDate = parseStandardDate(rawBookingDate);
-        const matchDate = (bookingDate === travelDate);
-
-        if (matchBus && matchDate && booking.status !== 'Cancelled') {
-          let seatsArr = Array.isArray(booking.seats) ? booking.seats : String(booking.seats || '').split(',');
-          seatsArr.forEach(s => {
-            const seatNum = extractSeatNumber(s);
-            if (seatNum !== null) occupiedSeatNumbers.add(seatNum);
-          });
-        }
-      });
-    } catch (e) {
-      console.error("LocalStorage read error:", e);
+      console.warn("My-bookings API check failed:", e);
     }
 
     return Array.from(occupiedSeatNumbers);
   }
 
-  // Fetch Selected Bus Details from Database
+  // Fetch Selected Bus Details
   try {
     const response = await fetch('http://localhost:5000/api/buses');
     if (response.ok) {
@@ -169,16 +138,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
     }
-
-    if (busNameText) {
-      busNameText.textContent = `${currentBusName} (₹${SEAT_PRICE}/seat)`;
-    }
+    if (busNameText) busNameText.textContent = `${currentBusName} (₹${SEAT_PRICE}/seat)`;
   } catch (error) {
-    console.error("Backend bus details fetch error:", error);
     if (busNameText) busNameText.textContent = `Express Bus (₹${SEAT_PRICE}/seat)`;
   }
 
-  // Render Bus Grid Layout
+  // Render Bus Grid (Full Left Column Reserved for Women)
   function renderSeats(bookedSeats) {
     if (!busGrid) return;
     busGrid.innerHTML = '';
@@ -189,17 +154,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       seat.textContent = `S${i}`;
       seat.dataset.seatNumber = `S${i}`;
 
+      // Left Column Seats: S1, S5, S9, S13, S17, S21
+      const isLeftColumnFemale = (i % 4 === 1);
+
       if (bookedSeats.includes(i)) {
         seat.classList.add('booked');
-        seat.style.pointerEvents = 'none'; // Prevent selection on booked seats
+        seat.style.pointerEvents = 'none';
       } else {
         seat.classList.add('available');
+        
+        if (isLeftColumnFemale) {
+          seat.classList.add('female-seat');
+          seat.style.backgroundColor = '#fce7f3';
+          seat.style.borderColor = '#ec4899';
+          seat.style.color = '#be185d';
+          seat.style.fontWeight = 'bold';
+          seat.title = "Reserved for Female Passenger";
+        }
+
         seat.addEventListener('click', () => toggleSeatSelection(seat, `S${i}`));
       }
 
       busGrid.appendChild(seat);
 
-      // Aisle space for 2+2 layout
       if (i % 2 === 0 && i % 4 !== 0) {
         const aisle = document.createElement('div');
         aisle.classList.add('aisle-space');
@@ -222,13 +199,73 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateSummary();
   }
 
-  // Update Price Summary
+  // Promo Code Handler
+  if (applyPromoBtn) {
+    applyPromoBtn.addEventListener('click', () => {
+      const code = promoCodeInput.value.trim().toUpperCase();
+      const count = selectedSeats.length;
+      const baseTotal = count * SEAT_PRICE;
+
+      if (count === 0) {
+        showPromoMsg('Pehle seats select karein!', 'red');
+        return;
+      }
+
+      if (code === 'SAFAR50') {
+        appliedDiscount = Math.min(Math.round(baseTotal * 0.50), 150);
+        activePromoCode = code;
+        showPromoMsg(`Coupon 'SAFAR50' Applied! Saved ₹${appliedDiscount}`, 'green');
+      } else if (code === 'FIRST100') {
+        appliedDiscount = 100;
+        activePromoCode = code;
+        showPromoMsg(`Coupon 'FIRST100' Applied! Saved ₹100`, 'green');
+      } else {
+        appliedDiscount = 0;
+        activePromoCode = '';
+        showPromoMsg('Invalid Promo Code!', 'red');
+      }
+
+      updateSummary();
+    });
+  }
+
+  function showPromoMsg(msg, color) {
+    if (!promoMessage) return;
+    promoMessage.textContent = msg;
+    promoMessage.style.color = color === 'green' ? '#16a34a' : '#dc2626';
+    promoMessage.style.display = 'block';
+  }
+
+  // Update Summary UI (Fixed Tax Logic)
   function updateSummary() {
     const count = selectedSeats.length;
-    const baseTotal = count * SEAT_PRICE;
+    const originalBaseTotal = count * SEAT_PRICE;
 
     if (seatCountText) seatCountText.textContent = count;
-    if (totalPriceText) totalPriceText.textContent = `₹${baseTotal}`;
+    if (basePriceText) basePriceText.textContent = `₹${originalBaseTotal}`;
+
+    if (activePromoCode === 'SAFAR50') {
+      appliedDiscount = Math.min(Math.round(originalBaseTotal * 0.50), 150);
+    } else if (activePromoCode === 'FIRST100' && count > 0) {
+      appliedDiscount = 100;
+    } else if (count === 0) {
+      appliedDiscount = 0;
+      activePromoCode = '';
+      if (promoCodeInput) promoCodeInput.value = '';
+      if (promoMessage) promoMessage.style.display = 'none';
+    }
+
+    if (appliedDiscount > 0 && discountRow && discountText) {
+      discountRow.style.display = 'flex';
+      discountText.textContent = `-₹${appliedDiscount}`;
+    } else if (discountRow) {
+      discountRow.style.display = 'none';
+    }
+
+    // Displays exact base price without adding tax here
+    const finalFareDisplay = Math.max(0, originalBaseTotal - appliedDiscount);
+
+    if (totalPriceText) totalPriceText.textContent = `₹${finalFareDisplay}`;
 
     if (count > 0) {
       if (selectedSeatsText) selectedSeatsText.textContent = selectedSeats.join(', ');
@@ -239,15 +276,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Checkout Handler
+  // Checkout Handler - Matches passenger.js Exact Requirements
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
       const count = selectedSeats.length;
       if (count === 0) return;
 
-      const pureBaseFare = count * SEAT_PRICE;
-      const taxFare = Math.round(pureBaseFare * 0.05);
-      const finalTotal = pureBaseFare + taxFare;
+      const originalBase = count * SEAT_PRICE;
+      const finalBaseFare = Math.max(0, originalBase - appliedDiscount);
+      const calculatedTaxFare = Math.round(finalBaseFare * 0.05);
 
       const updatedData = {
         busId: busId,
@@ -255,9 +292,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         seats: selectedSeats,
         seatCount: count,
         baseSeatPrice: SEAT_PRICE,
-        baseFare: pureBaseFare,
-        taxFare: taxFare,
-        totalAmount: finalTotal,
+        baseFare: finalBaseFare,       // Discounted Fare sent to passenger page
+        taxFare: calculatedTaxFare,   // 5% tax calculated for passenger page
         from: fromLoc,
         to: toLoc,
         travelDate: travelDate
@@ -270,7 +306,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Load occupied seats THEN render
   const currentlyBookedSeats = await fetchOccupiedSeats();
   renderSeats(currentlyBookedSeats);
   updateSummary();
