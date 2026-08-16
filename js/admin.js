@@ -61,71 +61,132 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadDashboardData() {
   const API_URL = 'http://127.0.0.1:5000/api';
 
+  let bookingsList = [];
+  let busesList = [];
+  let totalRevenue = 0;
+  let totalBookingsCount = 0;
+
+  // 1. Fetch Stats & Bookings
   try {
-    // 1. Fetch Stats & Bookings
     const statsRes = await fetch(`${API_URL}/admin/dashboard-stats`);
-    const statsData = await statsRes.json();
-
-    if (statsData.success) {
-      document.getElementById('total-revenue').innerText = `₹${statsData.stats.totalRevenue || 0}`;
-      document.getElementById('total-bookings').innerText = statsData.stats.totalBookings || 0;
-      document.getElementById('total-buses').innerText = statsData.stats.totalBuses || 0;
-
-      // Render Recent Bookings Table
-      const bookingsTable = document.getElementById('bookings-table-body');
-      if (bookingsTable) {
-        bookingsTable.innerHTML = '';
-        if (statsData.bookings && statsData.bookings.length > 0) {
-          statsData.bookings.forEach(b => {
-            bookingsTable.innerHTML += `
-              <tr>
-                <td>#${b.id || 'PNR'}</td>
-                <td>${b.passenger_name || 'Passenger'}</td>
-                <td>${b.source || '-'} to ${b.destination || '-'}</td>
-                <td>${b.seat_number || 'A1'}</td>
-                <td>₹${b.total_fare || 0}</td>
-                <td>${b.created_at ? new Date(b.created_at).toLocaleDateString() : 'Today'}</td>
-              </tr>
-            `;
-          });
-        } else {
-          bookingsTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#a9a9b3;">No passenger bookings yet.</td></tr>`;
+    if (statsRes.ok) {
+      const statsData = await statsRes.json();
+      if (statsData.success) {
+        bookingsList = statsData.bookings || [];
+        if (statsData.stats) {
+          totalRevenue = statsData.stats.totalRevenue || 0;
+          totalBookingsCount = statsData.stats.totalBookings || 0;
         }
       }
     }
-
-    // 2. Fetch Active Buses List
-    const busesRes = await fetch(`${API_URL}/buses`);
-    const busesList = await busesRes.json();
-
-    const busesTable = document.getElementById('buses-table-body');
-    if (busesTable) {
-      busesTable.innerHTML = '';
-      if (Array.isArray(busesList) && busesList.length > 0) {
-        busesList.forEach(bus => {
-          busesTable.innerHTML += `
-            <tr>
-              <td>${bus.id}</td>
-              <td><strong>${bus.bus_name}</strong></td>
-              <td>${bus.bus_number}</td>
-              <td>${bus.source} ➔ ${bus.destination}</td>
-              <td>${bus.departure_time} - ${bus.arrival_time}</td>
-              <td>₹${bus.fare}</td>
-              <td>
-                <button class="btn-delete" onclick="deleteBus(${bus.id})">
-                  <i class="fa-solid fa-trash"></i> Delete
-                </button>
-              </td>
-            </tr>
-          `;
-        });
-      } else {
-        busesTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No active buses in database. Add one above!</td></tr>`;
-      }
-    }
-
   } catch (err) {
-    console.error('Error fetching dashboard data:', err);
+    console.warn('Backend stats API unavailable, falling back to LocalStorage...', err);
+  }
+
+  // LocalStorage Fallback for Bookings & Revenue calculation if API failed or returned 0
+  if (!bookingsList || bookingsList.length === 0) {
+    try {
+      const localBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+      bookingsList = localBookings;
+    } catch (e) {
+      bookingsList = [];
+    }
+  }
+
+  // Calculate stats manually if empty or not received from backend
+  totalBookingsCount = bookingsList.length;
+  totalRevenue = bookingsList.reduce((sum, b) => {
+    const status = (b.status || '').toUpperCase();
+    if (status === 'CANCELLED' || status === 'CANCEL') return sum;
+    const fare = Number(b.total_fare || b.totalAmount || b.fare || 0);
+    return sum + (isNaN(fare) ? 0 : fare);
+  }, 0);
+
+  // Update Stats Cards Elements
+  const revEl = document.getElementById('total-revenue');
+  const bookEl = document.getElementById('total-bookings');
+  const busEl = document.getElementById('total-buses');
+
+  if (revEl) revEl.innerText = `₹${totalRevenue}`;
+  if (bookEl) bookEl.innerText = totalBookingsCount;
+
+  // Render Recent Bookings Table
+  const bookingsTable = document.getElementById('bookings-table-body');
+  if (bookingsTable) {
+    bookingsTable.innerHTML = '';
+    if (bookingsList && bookingsList.length > 0) {
+      bookingsList.forEach(b => {
+        const pnr = b.pnr || b.id || 'PNR';
+        const passenger = b.passenger_name || b.passengerName || 'Passenger';
+        const src = b.source || b.from || '-';
+        const dest = b.destination || b.to || '-';
+        let seat = b.seat_number || b.seat_no || b.seats || 'A1';
+        if (Array.isArray(seat)) seat = seat.join(', ');
+        const fare = b.total_fare || b.totalAmount || b.fare || 0;
+        const date = b.created_at || b.travel_date || b.travelDate || b.date;
+
+        bookingsTable.innerHTML += `
+          <tr>
+            <td>#${pnr}</td>
+            <td>${passenger}</td>
+            <td>${src} to ${dest}</td>
+            <td>${seat}</td>
+            <td>₹${fare}</td>
+            <td>${date ? new Date(date).toLocaleDateString() : 'Today'}</td>
+          </tr>
+        `;
+      });
+    } else {
+      bookingsTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#a9a9b3;">No passenger bookings yet.</td></tr>`;
+    }
+  }
+
+  // 2. Fetch Active Buses List
+  try {
+    const busesRes = await fetch(`${API_URL}/buses`);
+    if (busesRes.ok) {
+      busesList = await busesRes.json();
+    }
+  } catch (err) {
+    console.warn('Backend buses API unavailable, falling back to LocalStorage...', err);
+  }
+
+  // Fallback LocalStorage for Buses
+  if (!Array.isArray(busesList) || busesList.length === 0) {
+    try {
+      busesList = JSON.parse(localStorage.getItem('availableBuses')) || [];
+    } catch (e) {
+      busesList = [];
+    }
+  }
+
+  // Update Total Buses Count Card
+  if (busEl) busEl.innerText = busesList.length;
+
+  const busesTable = document.getElementById('buses-table-body');
+  if (busesTable) {
+    busesTable.innerHTML = '';
+    if (Array.isArray(busesList) && busesList.length > 0) {
+      busesList.forEach(bus => {
+        busesTable.innerHTML += `
+          <tr>
+            <td>${bus.id || '-'}</td>
+            <td><strong>${bus.bus_name || bus.name || 'Express Bus'}</strong></td>
+            <td>${bus.bus_number || bus.number || 'N/A'}</td>
+            <td>${bus.source || bus.from} ➔ ${bus.destination || bus.to}</td>
+            <td>${bus.departure_time || 'N/A'} - ${bus.arrival_time || 'N/A'}</td>
+            <td>₹${bus.fare || bus.price || 0}</td>
+            <td>
+              <button class="btn-delete" onclick="deleteBus(${bus.id})">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    } else {
+      busesTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No active buses in database. Add one above!</td></tr>`;
+    }
   }
 }
 
