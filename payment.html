@@ -2,8 +2,6 @@
 <html lang="en">
 <head>
   <head>
-  <!-- Baaki ke head elements (title, meta, etc.) -->
-
   <!-- Google Translate Top Banner Force Hide -->
   <style type="text/css">
     iframe.goog-te-banner-frame,
@@ -212,6 +210,11 @@
         <h2>Complete Payment</h2>
       </div>
 
+      <!-- Seat Selection Timer Box Added Here -->
+      <div class="timer-box" style="background: rgba(216, 78, 85, 0.1); padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; color: #d84e55; font-weight: 700;">
+        ⏱️ Time remaining to complete payment: <span id="paymentTimer">10:00</span>
+      </div>
+
       <!-- Booking Fare Summary -->
       <div class="summary-bar" style="flex-direction: column; gap: 8px; align-items: stretch;">
         <div style="display: flex; justify-content: space-between;">
@@ -286,6 +289,20 @@
             </div>
           </div>
 
+          <!-- Wallet Option (Added) -->
+          <div class="payment-method">
+            <label class="method-header">
+              <input type="radio" name="paymentType" value="wallet">
+              <i class="fa-solid fa-wallet" style="color: #008cff;"></i> SafarSathi Wallet
+            </label>
+            <div class="form-panel" id="walletForm">
+              <p style="font-size: 0.88rem; color: var(--text-sub); margin-bottom: 8px;">
+                Available Balance: <strong id="checkoutWalletBalance" style="color: var(--accent-blue);">₹0</strong>
+              </p>
+              <p style="font-size: 0.8rem; color: #10b981;">Instant payment using your wallet balance.</p>
+            </div>
+          </div>
+
         </div>
 
         <!-- Submit Button -->
@@ -314,7 +331,7 @@
 
   <script src="js/auth-check.js"></script>
   <script src="js/payment.js"></script>
- <!-- Google Translate Fast Background Engine -->
+<!-- Google Translate Fast Background Engine -->
 <div id="google_translate_element" style="display:none;"></div>
 
 <script type="text/javascript">

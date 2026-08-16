@@ -1,3 +1,8 @@
+// --- GLOBAL OVERRIDE: Block any default browser alerts ---
+window.alert = function(msg) {
+  console.log("Blocked default alert:", msg);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   let bookingData = null;
   try {
@@ -6,6 +11,103 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {
     console.error("Error parsing booking data:", e);
   }
+
+  // --- Fetch Logged-in User Wallet Info ---
+  let loggedInUser = null;
+  try {
+    loggedInUser = JSON.parse(localStorage.getItem('safarsathi_user')) || 
+                   JSON.parse(localStorage.getItem('travelgo_user')) || 
+                   JSON.parse(localStorage.getItem('user')) || 
+                   JSON.parse(localStorage.getItem('loggedInUser'));
+  } catch (err) {
+    loggedInUser = null;
+  }
+
+  // Display Wallet Balance in Payment Form if element exists
+  const checkoutWalletBalance = document.getElementById('checkoutWalletBalance');
+  if (checkoutWalletBalance && loggedInUser) {
+    checkoutWalletBalance.textContent = `₹${loggedInUser.wallet_balance || 150}`;
+  }
+
+  // --- MODERN CUSTOM NOTIFICATION FUNCTION ---
+  function showCustomAlert(message, type = 'info') {
+    let existingAlert = document.getElementById('customPaymentAlert');
+    if (existingAlert) existingAlert.remove();
+
+    const alertBox = document.createElement('div');
+    alertBox.id = 'customPaymentAlert';
+    alertBox.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 99999;
+      background: ${type === 'error' ? '#fee2e2' : '#ecfdf5'};
+      color: ${type === 'error' ? '#991b1b' : '#065f46'};
+      border: 1px solid ${type === 'error' ? '#f87171' : '#34d399'};
+      padding: 16px 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 380px;
+    `;
+
+    alertBox.innerHTML = `
+      <span style="font-size: 18px;">${type === 'error' ? '⚠️' : '✨'}</span>
+      <div style="flex: 1; line-height: 1.4;">${message}</div>
+      <button onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer; font-size:16px; color:inherit; font-weight:bold;">&times;</button>
+    `;
+
+    document.body.appendChild(alertBox);
+
+    setTimeout(() => {
+      if (alertBox) alertBox.remove();
+    }, 5000);
+  }
+
+  // --- FEATURE 1: Seat Selection / Payment Timer Logic ---
+  const timerDisplay = document.getElementById('paymentTimer');
+  let TIMER_DURATION = 10 * 60; // 10 minutes in seconds
+
+  const savedExpiryTime = localStorage.getItem('travelgo_timer_expiry');
+  const currentTime = Date.now();
+
+  if (savedExpiryTime) {
+    let timeLeft = Math.floor((parseInt(savedExpiryTime) - currentTime) / 1000);
+    if (timeLeft > 0) {
+      TIMER_DURATION = timeLeft;
+    } else {
+      localStorage.removeItem('travelgo_timer_expiry');
+    }
+  } else {
+    let expiryTime = currentTime + (TIMER_DURATION * 1000);
+    localStorage.setItem('travelgo_timer_expiry', expiryTime);
+  }
+
+  const countdownInterval = setInterval(() => {
+    let minutes = Math.floor(TIMER_DURATION / 60);
+    let seconds = TIMER_DURATION % 60;
+
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    if (timerDisplay) {
+      timerDisplay.textContent = `${minutes}:${seconds}`;
+    }
+
+    if (--TIMER_DURATION < 0) {
+      clearInterval(countdownInterval);
+      localStorage.removeItem('travelgo_timer_expiry');
+      localStorage.removeItem('travelgo_booking_data');
+      
+      showCustomAlert("Session expired! Your held seats have been released.", "error");
+      setTimeout(() => { window.location.href = "index.html"; }, 2000);
+    }
+  }, 1000);
 
   // Extract Travel Date from URL query params or bookingData
   const urlParams = new URLSearchParams(window.location.search);
@@ -97,18 +199,59 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      let loggedInUser = null;
+      // Check selected payment method
+      const selectedMethodRadio = document.querySelector('input[name="paymentType"]:checked');
+      const selectedMethod = selectedMethodRadio ? selectedMethodRadio.value : 'upi';
 
-      if (typeof getLoggedInUser === 'function') {
-        loggedInUser = getLoggedInUser();
+      // If user selected Wallet, handle partial or full deduction seamlessly
+      if (selectedMethod === 'wallet') {
+        let currentBalance = loggedInUser ? Number(loggedInUser.wallet_balance || 150) : 0;
+        
+        if (currentBalance <= 0) {
+          showCustomAlert(`Your wallet balance is ₹0. Please choose another payment method or add money.`, "error");
+          return;
+        }
+
+        let amountPaidFromWallet = 0;
+        let remainingAmountToPay = 0;
+
+        if (currentBalance >= totalAmount) {
+          // Full payment from wallet
+          amountPaidFromWallet = totalAmount;
+          loggedInUser.wallet_balance = currentBalance - totalAmount;
+        } else {
+          // Partial payment: Jitna wallet mein hai wo minus ho jayega
+          amountPaidFromWallet = currentBalance;
+          remainingAmountToPay = totalAmount - currentBalance;
+          loggedInUser.wallet_balance = 0; 
+          totalAmount = remainingAmountToPay; // Update final total to remaining amount
+          
+          showCustomAlert(`Wallet balance of ₹${amountPaidFromWallet} applied successfully! Remaining balance of ₹${remainingAmountToPay} will be adjusted.`);
+        }
+
+        // Record transaction
+        if (!loggedInUser.transactions) loggedInUser.transactions = [];
+        loggedInUser.transactions.push({
+          title: `Bus Booking (Wallet Payment)`,
+          amount: -amountPaidFromWallet,
+          date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
+        });
+
+        // Save back to localStorage immediately
+        localStorage.setItem('safarsathi_user', JSON.stringify(loggedInUser));
+        localStorage.setItem('travelgo_user', JSON.stringify(loggedInUser));
       }
+
+      // Clear timer on successful payment submission
+      localStorage.removeItem('travelgo_timer_expiry');
+      clearInterval(countdownInterval);
 
       if (!loggedInUser) {
         try {
           loggedInUser = JSON.parse(localStorage.getItem('safarsathi_user')) || 
-                       JSON.parse(localStorage.getItem('travelgo_user')) || 
-                       JSON.parse(localStorage.getItem('user')) || 
-                       JSON.parse(localStorage.getItem('loggedInUser'));
+                         JSON.parse(localStorage.getItem('travelgo_user')) || 
+                         JSON.parse(localStorage.getItem('user')) || 
+                         JSON.parse(localStorage.getItem('loggedInUser'));
         } catch (err) {
           loggedInUser = null;
         }
@@ -117,8 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const isUserValid = loggedInUser && (loggedInUser.id || loggedInUser.email || loggedInUser.name);
 
       if (!isUserValid) {
-        alert("Please log in or sign up to complete your ticket booking.");
-        window.location.href = `auth.html?redirect=payment.html`;
+        showCustomAlert("Please log in or sign up to complete your ticket booking.", "error");
+        setTimeout(() => { window.location.href = `auth.html?redirect=payment.html`; }, 1500);
         return;
       }
 
@@ -202,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('travelgo_booking_data');
       localStorage.removeItem('selectedSeats');
       localStorage.removeItem('passengerDetails');
+      localStorage.removeItem('travelgo_timer_expiry');
 
       window.location.href = "my-bookings.html";
     });
