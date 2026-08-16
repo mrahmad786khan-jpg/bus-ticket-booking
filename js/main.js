@@ -89,3 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+function changeLanguage(langCode) {
+  // Google Translate ke native iframe select element ko access karke instantly value change karta hai
+  const googleCombo = document.querySelector('.goog-te-combo');
+  
+  if (googleCombo) {
+    googleCombo.value = langCode;
+    // Trigger change event directly without reloading the page
+    googleCombo.dispatchEvent(new Event('change'));
+  } else {
+    // Agar Google engine slow load hua ho toh cookie fallback
+    document.cookie = "googtrans=/auto/" + langCode + "; path=/;";
+    window.location.reload();
+  }
+}

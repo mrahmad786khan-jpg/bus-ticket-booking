@@ -1042,3 +1042,26 @@ input:-webkit-autofill:active {
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1); /* Date icon white dikhega */
 }
+/* Google Top Banner Ko Har Tarah Se Hide Karein */
+iframe.goog-te-banner-frame,
+.goog-te-banner-frame,
+.goog-te-banner,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.skiptranslate {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Header Top Gap Fix */
+body {
+    top: 0px !important;
+    position: static !important;
+    min-height: 100% !important;
+}
+
+/* Page highlight / text selection yellow box hide */
+.goog-text-highlight {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}

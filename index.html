@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Translate ki speed badhane ke liye preconnect -->
+  <link rel="preconnect" href="https://translate.googleapis.com" />
+  <link rel="preconnect" href="https://translate.google.com" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TravelGo - Bus Ticket Booking</title>
@@ -11,20 +14,45 @@
   <!-- Top Navigation Bar -->
   <nav class="navbar">
     <div class="nav-left">
-      <a href="index.html" class="logo">
-        <span class="logo-icon">🚌</span> Safar<span class="logo-accent">Sathi</span>
+      <a href="index.html" class="logo notranslate">
+        <span class="logo-icon" >🚌</span> Safar<span class="logo-accent">Sathi</span>
       </a>
-
+      
       
     </div>
     
     <div class="nav-right">
       <ul class="nav-links">
+        <!-- Language Selector Dropdown for Navbar -->
+<div class="lang-selector-wrapper notranslate" style="display: inline-block; margin: 0 10px;">
+  <select onchange="changeLanguage(this.value)" id="languageDropdown" style="
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #dcdfe6;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+  ">
+    <option value="en">🌐 English</option>
+    <option value="hi">🌐 हिंदी (Hindi)</option>
+    <option value="bn">🌐 বাংলা (Bengali)</option>
+    <option value="mr">🌐 मराठी (Marathi)</option>
+    <option value="te">🌐 తెలుగు (Telugu)</option>
+    <option value="ta">🌐 தமிழ் (Tamil)</option>
+    <option value="gu">🌐 ગુજરાતી (Gujarati)</option>
+    <option value="ur">🌐 اردو (Urdu)</option>
+  </select>
+</div>
         <li><a href="my-bookings.html">My Bookings</a></li>
         <li><a href="offers.html">Offers</a></li>
         <li><a href="support.html">Help</a></li>
       </ul>
-      <a href="auth.html" class="btn-login nav-login-btn" id="nav-login-btn">Login / Sign Up</a>
+      <a href="auth.html" class="btn-login nav-login-btn notranslate" id="nav-login-btn">Login / Sign Up</a>
     </div>
    
   </nav>
@@ -127,5 +155,19 @@
   
   <script src="js/main.js"></script>
   <script src="js/auth-check.js"></script>
+  <!-- Google Translate Fast Background Engine -->
+<div id="google_translate_element" style="display:none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi,bn,mr,te,ta,gu,ur',
+      autoDisplay: false,
+      multilanguagePage: true
+    }, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
