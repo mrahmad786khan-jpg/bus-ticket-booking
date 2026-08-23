@@ -121,8 +121,15 @@ db.connect((err) => {
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `, (err) => {
-      if (err) console.error("Error creating operators table:", err.message);
-      else console.log("✅ Operators table ready!");
+      if (err) {
+        console.error("Error creating operators table:", err.message);
+      } else {
+        console.log("✅ Operators table ready!");
+        // Fix for existing tables where fleet_size might be INT
+        db.query(`ALTER TABLE operators MODIFY COLUMN fleet_size VARCHAR(50)`, (alterErr) => {
+          // Silent catch or log if needed
+        });
+      }
     });
   }
 });
