@@ -6,181 +6,43 @@
   <title>Partner as Bus Operator - SafarSathi</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    body {
-      background-color: #f8f9fa !important;
-      color: #333333 !important;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .partner-hero {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      color: #ffffff;
-      text-align: center;
-      padding: 60px 20px;
-    }
-    .partner-hero h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      color: #ffffff !important;
-    }
-    .partner-hero p {
-      font-size: 1.2rem;
-      color: #f0fff4 !important;
-    }
-    .partner-container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    .partner-card {
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 30px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .partner-card h2 {
-      color: #11998e !important;
-      margin-top: 0;
-    }
-    .partner-card p {
-      color: #555555 !important;
-      line-height: 1.6;
-      font-size: 1rem;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #333;
-    }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    .btn-submit {
-      background: #11998e;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 5px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-    }
-    .btn-submit:hover {
-      background: #0e8076;
-    }
-
-    /* --- Custom Modal (Alert Popup) Styling --- */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-card {
-      background: #ffffff;
-      padding: 30px 25px;
-      border-radius: 15px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      transform: translateY(-20px);
-      transition: transform 0.3s ease;
-    }
-
-    .modal-overlay.active .modal-card {
-      transform: translateY(0);
-    }
-
-    .modal-icon {
-      font-size: 50px;
-      margin-bottom: 10px;
-    }
-
-    .modal-card h3 {
-      margin: 10px 0 5px;
-      color: #11998e;
-      font-size: 1.5rem;
-    }
-
-    .modal-card p {
-      color: #666;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      margin-bottom: 20px;
-    }
-
-    .btn-modal {
-      background: #11998e;
-      color: #ffffff;
-      border: none;
-      padding: 10px 30px;
-      border-radius: 25px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(17, 153, 142, 0.3);
-      transition: background 0.2s ease, transform 0.1s ease;
-    }
-
-    .btn-modal:hover {
-      background: #0e8076;
-      transform: scale(1.03);
-    }
+    body { background-color: #f8f9fa !important; color: #333333 !important; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    .partner-hero { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #ffffff; text-align: center; padding: 60px 20px; }
+    .partner-hero h1 { font-size: 2.5rem; margin-bottom: 10px; color: #ffffff !important; }
+    .partner-hero p { font-size: 1.2rem; color: #f0fff4 !important; }
+    .partner-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .partner-card { background: #ffffff; border-radius: 10px; padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .partner-card h2 { color: #11998e !important; margin-top: 0; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    .btn-submit { background: #11998e; color: white; border: none; padding: 12px 25px; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; width: 100%; }
+    .btn-submit:hover { background: #0e8076; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-card { background: #ffffff; padding: 30px 25px; border-radius: 15px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .btn-modal { background: #11998e; color: #ffffff; border: none; padding: 10px 30px; border-radius: 25px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
   </style>
 </head>
 <body>
 
-  <!-- Top Navbar -->
   <nav class="navbar">
     <div class="nav-left">
-      <a href="index.html" class="logo notranslate">
-        <span class="logo-icon">🚌</span> Safar<span class="logo-accent">Sathi</span>
-      </a>
+      <a href="index.html" class="logo notranslate"><span class="logo-icon">🚌</span> Safar<span class="logo-accent">Sathi</span></a>
     </div>
     <div class="nav-right">
       <a href="index.html" style="color: #007bff; font-weight: bold; text-decoration: none;">← Back to Home</a>
     </div>
   </nav>
 
-  <!-- Hero Section -->
   <header class="partner-hero">
     <h1>Register Your Bus Fleet</h1>
     <p>Grow your bus business by attaching your fleet with SafarSathi</p>
   </header>
 
-  <!-- Content Section -->
   <main class="partner-container">
     <div class="partner-card">
       <h2>Bus Operator Registration</h2>
-      <p>Fill out the details below and our partnership team will get in touch with you within 24 hours.</p>
-      
       <form id="operatorForm">
         <div class="form-group">
           <label>Operator / Agency Name</label>
@@ -208,24 +70,21 @@
     </div>
   </main>
 
-  <!-- Custom Success Modal -->
   <div class="modal-overlay" id="successModal">
     <div class="modal-card">
-      <div class="modal-icon">🎉</div>
-      <h3>Registration Successful!</h3>
-      <p>Thank you! Your registration request has been submitted. Our team will contact you shortly.</p>
+      <div style="font-size: 50px;">🎉</div>
+      <h3 style="color: #11998e; margin: 10px 0;">Registration Successful!</h3>
+      <p style="color: #666;">Thank you! Your registration request has been submitted. Our team will contact you shortly.</p>
       <button class="btn-modal" onclick="redirectToHome()">OK</button>
     </div>
   </div>
 
   <script>
-    const form = document.getElementById('operatorForm');
+    const operatorForm = document.getElementById('operatorForm');
     const modal = document.getElementById('successModal');
-
-    // Absolute Backend API URL
     const API_BASE_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
 
-    form.addEventListener('submit', async function(e) {
+    operatorForm.addEventListener('submit', async function(e) {
       e.preventDefault();
 
       const operatorData = {
@@ -236,11 +95,9 @@
       };
 
       try {
-        const response = acid = await fetch(`${API_BASE_URL}/operators`, {
+        const response = await fetch(`${API_BASE_URL}/operators`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(operatorData)
         });
 
@@ -249,11 +106,11 @@
         if (result.success) {
           modal.classList.add('active');
         } else {
-          alert('Error: ' + (result.message || result.error || 'Registration fail ho gaya!'));
+          alert('Error: ' + (result.message || 'Registration fail ho gaya!'));
         }
       } catch (err) {
-        console.error('Registration Error:', err);
-        alert('Server se connect nahi ho paya! Make sure Node server chal raha ho.');
+        console.error('Submission Error:', err);
+        alert('Server se connect nahi ho paya!');
       }
     });
 
@@ -261,6 +118,5 @@
       window.location.href = 'index.html';
     }
   </script>
-
 </body>
 </html>
