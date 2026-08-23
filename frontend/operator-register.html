@@ -103,8 +103,7 @@
 
         const result = await response.json();
 
-        // Updated check: response.ok ensure karega ki HTTP status 200-299 ke beech ho
-        if (response.ok && result.success) {
+        if (result.success) {
           modal.classList.add('active');
         } else {
           alert('Error: ' + (result.message || 'Registration fail ho gaya!'));
