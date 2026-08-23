@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     adminNameElement.innerText = `Welcome, ${savedUser.name}`;
   }
 
-  // Fetch Dashboard Analytics, Fleet, Operators & Agents Data
+  // Fetch Dashboard Analytics, Fleet, Operators & Agents Data Separately
   loadDashboardData();
   loadOperatorsData();
   loadAgentsData();
@@ -47,13 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (result.success) {
           alert('✅ Bus successfully added to the system!');
           addBusForm.reset();
-          loadDashboardData(); // Refresh Tables and Counters
+          loadDashboardData();
         } else {
           alert('❌ Bus add karne me issue aaya: ' + (result.error || result.message));
         }
       } catch (err) {
         console.error('Add Bus Error:', err);
-        alert('Server connection error! Node.js backend check karein.');
+        alert('Server connection error!');
       }
     });
   }
@@ -68,7 +68,7 @@ async function loadDashboardData() {
   let totalRevenue = 0;
   let totalBookingsCount = 0;
 
-  // 1. Fetch Stats & Bookings
+  // 1. Fetch Stats & Bookings (Only Bookings & Stats here)
   try {
     const statsRes = await fetch(`${API_URL}/admin/dashboard-stats`);
     if (statsRes.ok) {
@@ -79,31 +79,21 @@ async function loadDashboardData() {
           totalRevenue = statsData.stats.totalRevenue || 0;
           totalBookingsCount = statsData.stats.totalBookings || 0;
         }
-
-        // Direct Render Operators & Agents from Dashboard Stats to prevent merging/empty issues
-        if (statsData.operators) {
-          renderOperators(statsData.operators);
-        }
-        if (statsData.agents) {
-          renderAgents(statsData.agents);
-        }
       }
     }
   } catch (err) {
     console.warn('Backend stats API unavailable, falling back to LocalStorage...', err);
   }
 
-  // LocalStorage Fallback for Bookings & Revenue calculation if API failed or returned 0
+  // LocalStorage Fallback for Bookings
   if (!bookingsList || bookingsList.length === 0) {
     try {
-      const localBookings = JSON.parse(localStorage.getItem('myBookings')) || [];
-      bookingsList = localBookings;
+      bookingsList = JSON.parse(localStorage.getItem('myBookings')) || [];
     } catch (e) {
       bookingsList = [];
     }
   }
 
-  // Calculate stats manually if empty or not received from backend
   totalBookingsCount = bookingsList.length;
   totalRevenue = bookingsList.reduce((sum, b) => {
     const status = (b.status || '').toUpperCase();
@@ -112,7 +102,7 @@ async function loadDashboardData() {
     return sum + (isNaN(fare) ? 0 : fare);
   }, 0);
 
-  // Update Stats Cards Elements
+  // Update Stats Cards
   const revEl = document.getElementById('total-revenue');
   const bookEl = document.getElementById('total-bookings');
   const busEl = document.getElementById('total-buses');
@@ -158,10 +148,9 @@ async function loadDashboardData() {
       busesList = await busesRes.json();
     }
   } catch (err) {
-    console.warn('Backend buses API unavailable, falling back to LocalStorage...', err);
+    console.warn('Backend buses API unavailable...', err);
   }
 
-  // Fallback LocalStorage for Buses
   if (!Array.isArray(busesList) || busesList.length === 0) {
     try {
       busesList = JSON.parse(localStorage.getItem('availableBuses')) || [];
@@ -170,7 +159,6 @@ async function loadDashboardData() {
     }
   }
 
-  // Update Total Buses Count Card
   if (busEl) busEl.innerText = busesList.length;
 
   const busesTable = document.getElementById('buses-table-body');
@@ -195,16 +183,14 @@ async function loadDashboardData() {
         `;
       });
     } else {
-      busesTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No active buses in database. Add one above!</td></tr>`;
+      busesTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No active buses found.</td></tr>`;
     }
   }
 }
 
 // -----------------------------------------------------------
-// OPERATORS & AGENTS DATA LOADERS & RENDERERS
+// OPERATORS DATA LOADER
 // -----------------------------------------------------------
-
-// 3. Load Operators Data (Independent Fetch)
 async function loadOperatorsData() {
   const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
   try {
@@ -246,7 +232,9 @@ function renderOperators(operators) {
   }
 }
 
-// 4. Load Agents Data (Independent Fetch)
+// -----------------------------------------------------------
+// AGENTS DATA LOADER
+// -----------------------------------------------------------
 async function loadAgentsData() {
   const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
   try {
