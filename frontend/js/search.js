@@ -1,13 +1,16 @@
 /* ==========================================
-   TravelGo - Search & Filter Logic
+   TravelGo - Search & Filter Logic (Railway Live API)
    ========================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // 1. Get query params from URL (from, to, date)
   const urlParams = new URLSearchParams(window.location.search);
   const from = urlParams.get("from") || "Mumbai";
   const to = urlParams.get("to") || "Goa";
   const date = urlParams.get("date") || "2026-08-15";
+
+  // Railway Live API Base URL
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
 
   // Update Header text
   const routeTitle = document.getElementById("routeTitle");
@@ -15,9 +18,36 @@ document.addEventListener("DOMContentLoaded", () => {
   if (routeTitle) routeTitle.textContent = `${from} ➔ ${to}`;
   if (travelDate) travelDate.textContent = date;
 
-  // 2. Fetch Buses from Mock Database
-  const allBuses = typeof getStoredBuses === 'function' ? getStoredBuses() : [];
   const container = document.getElementById("busResultsList");
+  let allBuses = [];
+
+  // 2. Fetch Buses from Railway Backend API
+  try {
+    const response = await fetch(`${API_URL}/buses?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+    const dbBuses = await response.json();
+
+    // Map database columns to frontend structure
+    allBuses = (Array.isArray(dbBuses) ? dbBuses : []).map(bus => ({
+      id: bus.id,
+      name: bus.bus_name || 'Express Bus',
+      number: bus.bus_number || '',
+      type: bus.bus_type || 'AC Sleeper / Seater',
+      from: bus.source || '',
+      to: bus.destination || '',
+      departureTime: bus.departure_time || '10:00 AM',
+      arrivalTime: bus.arrival_time || '06:00 PM',
+      duration: bus.duration || '',
+      price: Number(bus.fare) || 1200,
+      rating: bus.rating || '4.5',
+      availableSeats: bus.available_seats || 20
+    }));
+  } catch (error) {
+    console.error("Error fetching buses from Railway API:", error);
+    if (container) {
+      container.innerHTML = `<div style="text-align:center; padding:40px; color:#ef4444;"><h3>Server Connection Error!</h3><p>Could not load live buses.</p></div>`;
+    }
+    return;
+  }
 
   function renderBuses(busList) {
     if (!container) return;
@@ -32,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "bus-card";
 
-      // FIXED HERE: Bus ID ke sath-sath date, from, aur to parameters URL me attach kiye gaye hain
       const seatSelectionUrl = `seat-selection.html?busId=${encodeURIComponent(bus.id)}&date=${encodeURIComponent(date)}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
 
       card.innerHTML = `
@@ -54,21 +83,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Filter matching route buses
+  // Filter matching route buses (Case-insensitive check)
   const filtered = allBuses.filter(
-    b => b.from && b.to && b.from.toLowerCase() === from.toLowerCase() && b.to.toLowerCase() === to.toLowerCase()
+    b => b.from && b.to && b.from.toLowerCase().includes(from.toLowerCase()) && b.to.toLowerCase().includes(to.toLowerCase())
   );
 
-  // Initial Render (Fallback to all buses if route exact match not found)
+  // Initial Render (Fallback to all fetched buses if exact route match filter is empty)
   renderBuses(filtered.length > 0 ? filtered : allBuses);
 
   // Price Slider Event
   const priceRange = document.getElementById("priceRange");
   const priceValue = document.getElementById("priceValue");
   if (priceRange) {
+    // Set max range dynamically based on buses
+    if (allBuses.length > 0) {
+      const maxFare = Math.max(...allBuses.map(b => b.price), 2000);
+      priceRange.max = maxFare;
+      priceRange.value = maxFare;
+      if (priceValue) priceValue.textContent = maxFare;
+    }
+
     priceRange.addEventListener("input", (e) => {
       if (priceValue) priceValue.textContent = e.target.value;
-      const filteredByPrice = allBuses.filter(b => b.price <= e.target.value);
+      const filteredByPrice = (filtered.length > 0 ? filtered : allBuses).filter(b => b.price <= e.target.value);
       renderBuses(filteredByPrice);
     });
   }

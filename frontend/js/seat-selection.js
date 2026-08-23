@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const TOTAL_SEATS = 24;
 
+  // Railway Live API Base URL
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
+
   // DOM Elements
   const busGrid = document.getElementById('busGrid');
   const selectedSeatsText = document.getElementById('selectedSeatsText');
@@ -73,12 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     return isNaN(num) ? null : num;
   }
 
-  // Fetch Occupied Seats (Updated to relative paths)
+  // Fetch Occupied Seats from Railway Live API
   async function fetchOccupiedSeats() {
     const occupiedSeatNumbers = new Set();
     if (busId && travelDate) {
       try {
-        const res = await fetch(`/api/booked-seats?busId=${busId}&date=${travelDate}`);
+        const res = await fetch(`${API_URL}/booked-seats?busId=${busId}&date=${travelDate}`);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data)) {
@@ -90,12 +93,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         }
       } catch (apiErr) {
-        console.warn("API /api/booked-seats check failed, falling back...");
+        console.warn("API /booked-seats check failed, falling back...");
       }
     }
 
     try {
-      const res = await fetch(`/api/my-bookings`);
+      const res = await fetch(`${API_URL}/my-bookings`);
       if (res.ok) {
         const allDbBookings = await res.json();
         if (Array.isArray(allDbBookings)) {
@@ -123,9 +126,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return Array.from(occupiedSeatNumbers);
   }
 
-  // Fetch Selected Bus Details (Updated to relative path)
+  // Fetch Selected Bus Details from Railway Live API
   try {
-    const response = await fetch('/api/buses');
+    const response = await fetch(`${API_URL}/buses`);
     if (response.ok) {
       const buses = await response.json();
       const selectedBusObj = buses.find(b => String(b.id) === String(busId));
@@ -236,7 +239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     promoMessage.style.display = 'block';
   }
 
-  // Update Summary UI (Fixed Tax Logic)
+  // Update Summary UI
   function updateSummary() {
     const count = selectedSeats.length;
     const originalBaseTotal = count * SEAT_PRICE;
@@ -275,7 +278,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Checkout Handler - Matches passenger.js Exact Requirements
+  // Checkout Handler
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
       const count = selectedSeats.length;

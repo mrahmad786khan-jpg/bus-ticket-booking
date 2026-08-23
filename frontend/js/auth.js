@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const title = document.getElementById('auth-title');
   const subtitle = document.getElementById('auth-subtitle');
 
-  // Unified API URL using localhost
-  const API_URL = '/api';
+  // Updated to Railway Live API URL
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
 
   function showToast(message, heading = "Notification", callback = null) {
     const toast = document.getElementById('custom-toast');

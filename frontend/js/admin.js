@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const API_URL = '/api';
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
 
   // Check Admin Security
   const savedUser = JSON.parse(localStorage.getItem('safarsathi_user') || '{}');
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Load Dashboard Analytics & Dynamic Tables
 async function loadDashboardData() {
-  const API_URL = '/api';
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
 
   let bookingsList = [];
   let busesList = [];
@@ -198,7 +198,7 @@ async function loadDashboardData() {
 
 // 3. Load Operators Data
 async function loadOperatorsData() {
-  const API_URL = '/api';
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
   const operatorsTable = document.getElementById('operators-table-body');
   
   if (!operatorsTable) return;
@@ -236,7 +236,7 @@ async function loadOperatorsData() {
 
 // 4. Load Agents Data
 async function loadAgentsData() {
-  const API_URL = '/api';
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
   const agentsTable = document.getElementById('agents-table-body');
 
   if (!agentsTable) return;
@@ -276,7 +276,7 @@ async function loadAgentsData() {
 async function deleteOperator(id) {
   if (!confirm('Kya aap is Bus Operator ko remove karna chahte hain?')) return;
 
-  const API_URL = '/api';
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
   try {
     const res = await fetch(`${API_URL}/operators/${id}`, { method: 'DELETE' });
     const data = await res.json();
@@ -293,7 +293,7 @@ async function deleteOperator(id) {
 async function deleteAgent(id) {
   if (!confirm('Kya aap is Agent Application ko remove karna chahte hain?')) return;
 
-  const API_URL = '/api';
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
   try {
     const res = await fetch(`${API_URL}/agents/${id}`, { method: 'DELETE' });
     const data = await res.json();
@@ -310,7 +310,7 @@ async function deleteAgent(id) {
 async function deleteBus(busId) {
   if (!confirm('Kya aap sachme is bus ko delete karna chahte hain?')) return;
 
-  const API_URL = 'http://127.0.0.1:5000/api';
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
   try {
     const res = await fetch(`${API_URL}/admin/delete-bus/${busId}`, { method: 'DELETE' });
     const data = await res.json();

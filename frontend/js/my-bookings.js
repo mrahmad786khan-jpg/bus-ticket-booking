@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const bookingsContainer = document.getElementById('bookingsContainer') || document.getElementById('bookingsList');
 
+  // Updated to Railway Live API URL
+  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
+
   // Multi-key User Check
   const currentUser = JSON.parse(
     localStorage.getItem('safarsathi_user') || 
@@ -473,7 +476,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Permanently Update Cancellation in Memory & Storage
   async function executeCancellation(pnr) {
     try {
-      await fetch(`/api/cancel-booking`, {
+      await fetch(`${API_URL}/cancel-booking`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pnr: pnr, email: currentUser ? currentUser.email : '' })
@@ -522,7 +525,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       const userEmail = currentUser.email;
-      const res = await fetch(`/api/my-bookings?email=${encodeURIComponent(userEmail)}`);
+      const res = await fetch(`${API_URL}/my-bookings?email=${encodeURIComponent(userEmail)}`);
       if (res.ok) {
         allBookings = await res.json();
       }
