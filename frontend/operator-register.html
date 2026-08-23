@@ -222,7 +222,7 @@
     const form = document.getElementById('operatorForm');
     const modal = document.getElementById('successModal');
 
-    // Backend API par data bhejna (Keys match kar di gayi hain)
+    // Backend API par data bhejna (Fixed connection using relative path)
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -234,7 +234,7 @@
       };
 
       try {
-        const response = await fetch('http://localhost:5000/api/operators', {
+        const response = await fetch('/api/operators', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
