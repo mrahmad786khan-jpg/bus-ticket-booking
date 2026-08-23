@@ -7,18 +7,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Frontend folder ko static serve karne ke liye (Agar frontend sath me hai)
+// Frontend folder ko static serve karne ke liye
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// MySQL Cloud Database Connection
-// Render par environment variables (process.env) ke zariye details di jayengi
-const db = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '10760618608ffmax1',
-  database: process.env.DB_NAME || 'safarsathi_db',
-  port: process.env.DB_PORT || 3306
-});
+// MySQL Cloud Database Connection (Updated for Railway/Render support via URL or individual variables)
+const dbConfig = process.env.MYSQL_URL || process.env.DATABASE_URL ? {
+  uri: process.env.MYSQL_URL || process.env.DATABASE_URL
+} : {
+  host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
+  user: process.env.DB_USER || process.env.MYSQLUSER || 'root',
+  password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || process.env.MYSQL_ROOT_PASSWORD || '',
+  database: process.env.DB_NAME || process.env.MYSQL_DATABASE || 'safarsathi_db',
+  port: process.env.DB_PORT || process.env.MYSQLPORT || 3306
+};
+
+const db = mysql.createConnection(dbConfig);
 
 db.connect((err) => {
   if (err) {
@@ -292,7 +295,7 @@ app.get('/api/admin/dashboard-stats', (req, res) => {
   });
 });
 
-// Start Server (Dynamic Port for Render)
+// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server listening on port ${PORT}`);
