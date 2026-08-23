@@ -219,7 +219,9 @@
     const form = document.getElementById('operatorForm');
     const modal = document.getElementById('successModal');
 
-    // Backend API par operator data bhejna (Fixed connection using relative path)
+    // Absolute Backend API URL
+    const API_BASE_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
+
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -231,7 +233,7 @@
       };
 
       try {
-        const response = await fetch('/api/operators', {
+        const response = await fetch(`${API_BASE_URL}/operators`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -252,7 +254,6 @@
       }
     });
 
-    // OK button dabane par index.html par redirect karein
     function redirectToHome() {
       window.location.href = 'index.html';
     }

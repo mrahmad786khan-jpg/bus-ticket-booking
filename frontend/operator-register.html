@@ -222,7 +222,9 @@
     const form = document.getElementById('operatorForm');
     const modal = document.getElementById('successModal');
 
-    // Backend API par data bhejna (Fixed connection using relative path)
+    // Absolute Backend API URL
+    const API_BASE_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
+
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -234,7 +236,7 @@
       };
 
       try {
-        const response = await fetch('/api/operators', {
+        const response = acid = await fetch(`${API_BASE_URL}/operators`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
