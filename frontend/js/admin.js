@@ -68,25 +68,18 @@ async function loadDashboardData() {
   let totalRevenue = 0;
   let totalBookingsCount = 0;
 
-  // 1. Fetch Stats & Bookings (Only Bookings & Stats here)
+  // 1. Fetch All Bookings from Backend
   try {
-    const statsRes = await fetch(`${API_URL}/admin/dashboard-stats`);
-    if (statsRes.ok) {
-      const statsData = await statsRes.json();
-      if (statsData.success) {
-        bookingsList = statsData.bookings || [];
-        if (statsData.stats) {
-          totalRevenue = statsData.stats.totalRevenue || 0;
-          totalBookingsCount = statsData.stats.totalBookings || 0;
-        }
-      }
+    const res = await fetch(`${API_URL}/bookings`);
+    if (res.ok) {
+      bookingsList = await res.json();
     }
   } catch (err) {
-    console.warn('Backend stats API unavailable, falling back to LocalStorage...', err);
+    console.warn('Backend bookings API unavailable, falling back to LocalStorage...', err);
   }
 
-  // LocalStorage Fallback for Bookings
-  if (!bookingsList || bookingsList.length === 0) {
+  // Fallback to LocalStorage if backend data is empty
+  if (!Array.isArray(bookingsList) || bookingsList.length === 0) {
     try {
       bookingsList = JSON.parse(localStorage.getItem('myBookings')) || [];
     } catch (e) {
@@ -95,6 +88,8 @@ async function loadDashboardData() {
   }
 
   totalBookingsCount = bookingsList.length;
+
+  // Total Revenue Calculation (excluding cancelled tickets)
   totalRevenue = bookingsList.reduce((sum, b) => {
     const status = (b.status || '').toUpperCase();
     if (status === 'CANCELLED' || status === 'CANCEL') return sum;
@@ -102,7 +97,7 @@ async function loadDashboardData() {
     return sum + (isNaN(fare) ? 0 : fare);
   }, 0);
 
-  // Update Stats Cards
+  // Update Stats Cards on Admin Panel
   const revEl = document.getElementById('total-revenue');
   const bookEl = document.getElementById('total-bookings');
   const busEl = document.getElementById('total-buses');
@@ -114,13 +109,13 @@ async function loadDashboardData() {
   const bookingsTable = document.getElementById('bookings-table-body');
   if (bookingsTable) {
     bookingsTable.innerHTML = '';
-    if (bookingsList && bookingsList.length > 0) {
+    if (Array.isArray(bookingsList) && bookingsList.length > 0) {
       bookingsList.forEach(b => {
         const pnr = b.pnr || b.id || 'PNR';
         const passenger = b.passenger_name || b.passengerName || 'Passenger';
         const src = b.source || b.from || '-';
         const dest = b.destination || b.to || '-';
-        let seat = b.seat_number || b.seat_no || b.seats || 'A1';
+        let seat = b.seat_no || b.seat_number || b.seats || 'A1';
         if (Array.isArray(seat)) seat = seat.join(', ');
         const fare = b.total_fare || b.totalAmount || b.fare || 0;
         const date = b.created_at || b.travel_date || b.travelDate || b.date;
