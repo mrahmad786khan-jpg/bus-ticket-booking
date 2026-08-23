@@ -79,6 +79,14 @@ async function loadDashboardData() {
           totalRevenue = statsData.stats.totalRevenue || 0;
           totalBookingsCount = statsData.stats.totalBookings || 0;
         }
+
+        // Direct Render Operators & Agents from Dashboard Stats to prevent merging/empty issues
+        if (statsData.operators) {
+          renderOperators(statsData.operators);
+        }
+        if (statsData.agents) {
+          renderAgents(statsData.agents);
+        }
       }
     }
   } catch (err) {
@@ -193,82 +201,90 @@ async function loadDashboardData() {
 }
 
 // -----------------------------------------------------------
-// OPERATORS & AGENTS DATA LOADERS (NEW)
+// OPERATORS & AGENTS DATA LOADERS & RENDERERS
 // -----------------------------------------------------------
 
-// 3. Load Operators Data
+// 3. Load Operators Data (Independent Fetch)
 async function loadOperatorsData() {
   const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
-  const operatorsTable = document.getElementById('operators-table-body');
-  
-  if (!operatorsTable) return;
-
   try {
     const res = await fetch(`${API_URL}/operators`);
-    const operators = await res.json();
-
-    operatorsTable.innerHTML = '';
-    if (Array.isArray(operators) && operators.length > 0) {
-      operators.forEach((op, index) => {
-        operatorsTable.innerHTML += `
-          <tr>
-            <td>${index + 1}</td>
-            <td><strong>${op.agency_name}</strong></td>
-            <td>${op.owner_name}</td>
-            <td><a href="tel:${op.phone}">${op.phone}</a></td>
-            <td>${op.fleet_size}</td>
-            <td>${new Date(op.created_at).toLocaleDateString()}</td>
-            <td>
-              <button class="btn-delete" onclick="deleteOperator(${op.id})">
-                <i class="fa-solid fa-trash"></i> Delete
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-    } else {
-      operatorsTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No registered operators found.</td></tr>`;
+    if (res.ok) {
+      const operators = await res.json();
+      renderOperators(operators);
     }
   } catch (err) {
     console.error('Failed to load operators:', err);
   }
 }
 
-// 4. Load Agents Data
+function renderOperators(operators) {
+  const operatorsTable = document.getElementById('operators-table-body');
+  if (!operatorsTable) return;
+
+  operatorsTable.innerHTML = '';
+  if (Array.isArray(operators) && operators.length > 0) {
+    operators.forEach((op, index) => {
+      operatorsTable.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td><strong>${op.agency_name || 'N/A'}</strong></td>
+          <td>${op.owner_name || 'N/A'}</td>
+          <td><a href="tel:${op.phone}">${op.phone || 'N/A'}</a></td>
+          <td>${op.fleet_size || '1'}</td>
+          <td>${op.created_at ? new Date(op.created_at).toLocaleDateString() : 'Today'}</td>
+          <td>
+            <button class="btn-delete" onclick="deleteOperator(${op.id})">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+  } else {
+    operatorsTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No registered operators found.</td></tr>`;
+  }
+}
+
+// 4. Load Agents Data (Independent Fetch)
 async function loadAgentsData() {
   const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
-  const agentsTable = document.getElementById('agents-table-body');
-
-  if (!agentsTable) return;
-
   try {
     const res = await fetch(`${API_URL}/agents`);
-    const agents = await res.json();
-
-    agentsTable.innerHTML = '';
-    if (Array.isArray(agents) && agents.length > 0) {
-      agents.forEach((ag, index) => {
-        agentsTable.innerHTML += `
-          <tr>
-            <td>${index + 1}</td>
-            <td><strong>${ag.full_name}</strong></td>
-            <td>${ag.agency_shop}</td>
-            <td><a href="tel:${ag.phone}">${ag.phone}</a></td>
-            <td>${ag.city}</td>
-            <td>${new Date(ag.created_at).toLocaleDateString()}</td>
-            <td>
-              <button class="btn-delete" onclick="deleteAgent(${ag.id})">
-                <i class="fa-solid fa-trash"></i> Delete
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-    } else {
-      agentsTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No agent applications found.</td></tr>`;
+    if (res.ok) {
+      const agents = await res.json();
+      renderAgents(agents);
     }
   } catch (err) {
     console.error('Failed to load agents:', err);
+  }
+}
+
+function renderAgents(agents) {
+  const agentsTable = document.getElementById('agents-table-body');
+  if (!agentsTable) return;
+
+  agentsTable.innerHTML = '';
+  if (Array.isArray(agents) && agents.length > 0) {
+    agents.forEach((ag, index) => {
+      agentsTable.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td><strong>${ag.full_name || 'N/A'}</strong></td>
+          <td>${ag.agency_shop || 'N/A'}</td>
+          <td><a href="tel:${ag.phone}">${ag.phone || 'N/A'}</a></td>
+          <td>${ag.city || 'N/A'}</td>
+          <td>${ag.created_at ? new Date(ag.created_at).toLocaleDateString() : 'Today'}</td>
+          <td>
+            <button class="btn-delete" onclick="deleteAgent(${ag.id})">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+  } else {
+    agentsTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No agent applications found.</td></tr>`;
   }
 }
 
