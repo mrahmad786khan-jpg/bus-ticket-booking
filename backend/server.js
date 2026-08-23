@@ -30,7 +30,7 @@ db.connect((err) => {
     console.log('✅ Connected to MySQL Database');
     
     // ==========================================
-    // AUTO CREATE TABLES ON CONNECTION
+    // AUTO CREATE TABLES & DEFAULT ADMIN
     // ==========================================
     db.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -43,7 +43,21 @@ db.connect((err) => {
       )
     `, (err) => {
       if (err) console.error("Error creating users table:", err.message);
-      else console.log("✅ Users table ready!");
+      else {
+        console.log("✅ Users table ready!");
+        // Auto Insert Default Admin if not exists
+        const adminEmail = 'admin@safarsathi.com';
+        const adminPassword = 'amir2010khan';
+        const checkAdminSql = 'SELECT * FROM users WHERE email = ?';
+        db.query(checkAdminSql, [adminEmail], (err, results) => {
+          if (!err && results.length === 0) {
+            const insertAdminSql = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)';
+            db.query(insertAdminSql, ['Admin', adminEmail, adminPassword, 'admin'], (err) => {
+              if (!err) console.log("✅ Default Admin account created successfully!");
+            });
+          }
+        });
+      }
     });
 
     db.query(`
@@ -133,14 +147,17 @@ app.post('/api/register', (req, res) => {
       return res.status(400).json({ success: false, message: 'Yeh email pehle se registered hai!' });
     }
 
-    const insertSql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    db.query(insertSql, [name, email, password], (err, result) => {
+    // Agar email admin wali hai toh role 'admin' set hoga, warna 'user'
+    const role = (email === 'admin@safarsathi.com') ? 'admin' : 'user';
+
+    const insertSql = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)';
+    db.query(insertSql, [name, email, password, role], (err, result) => {
       if (err) return res.status(500).json({ success: false, message: err.message });
 
       res.json({
         success: true,
         message: 'Registration successful!',
-        user: { id: result.insertId, name, email, role: 'user' }
+        user: { id: result.insertId, name, email, role }
       });
     });
   });
