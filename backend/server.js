@@ -28,6 +28,88 @@ db.connect((err) => {
     console.error('❌ Database Connection Failed:', err.message);
   } else {
     console.log('✅ Connected to MySQL Database');
+    
+    // ==========================================
+    // AUTO CREATE TABLES ON CONNECTION
+    // ==========================================
+    db.query(`
+      CREATE TABLE IF NOT EXISTS users (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          email VARCHAR(255) UNIQUE NOT NULL,
+          password VARCHAR(255) NOT NULL,
+          role VARCHAR(50) DEFAULT 'user',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `, (err) => {
+      if (err) console.error("Error creating users table:", err.message);
+      else console.log("✅ Users table ready!");
+    });
+
+    db.query(`
+      CREATE TABLE IF NOT EXISTS buses (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          bus_name VARCHAR(255) NOT NULL,
+          bus_number VARCHAR(100),
+          source VARCHAR(100) NOT NULL,
+          destination VARCHAR(100) NOT NULL,
+          departure_time VARCHAR(50),
+          arrival_time VARCHAR(50),
+          fare DECIMAL(10, 2) NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `, (err) => {
+      if (err) console.error("Error creating buses table:", err.message);
+      else console.log("✅ Buses table ready!");
+    });
+
+    db.query(`
+      CREATE TABLE IF NOT EXISTS bookings (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          pnr VARCHAR(100),
+          user_id VARCHAR(50),
+          bus_id VARCHAR(50),
+          passenger_name VARCHAR(255),
+          passenger_email VARCHAR(255),
+          source VARCHAR(100),
+          destination VARCHAR(100),
+          seat_no VARCHAR(255),
+          travel_date DATE,
+          total_fare DECIMAL(10, 2),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `, (err) => {
+      if (err) console.error("Error creating bookings table:", err.message);
+      else console.log("✅ Bookings table ready!");
+    });
+
+    db.query(`
+      CREATE TABLE IF NOT EXISTS agents (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          full_name VARCHAR(255) NOT NULL,
+          agency_shop VARCHAR(255) NOT NULL,
+          phone VARCHAR(50) NOT NULL,
+          city VARCHAR(100) NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `, (err) => {
+      if (err) console.error("Error creating agents table:", err.message);
+      else console.log("✅ Agents table ready!");
+    });
+
+    db.query(`
+      CREATE TABLE IF NOT EXISTS operators (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          agency_name VARCHAR(255) NOT NULL,
+          owner_name VARCHAR(255) NOT NULL,
+          phone VARCHAR(50) NOT NULL,
+          fleet_size INT DEFAULT 1,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `, (err) => {
+      if (err) console.error("Error creating operators table:", err.message);
+      else console.log("✅ Operators table ready!");
+    });
   }
 });
 
