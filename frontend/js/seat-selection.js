@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const TOTAL_SEATS = 24;
 
-  // Railway Live API Base URL
-  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
+  // Updated to Render Live API Base URL
+  const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
 
   // DOM Elements
   const busGrid = document.getElementById('busGrid');
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return isNaN(num) ? null : num;
   }
 
-  // Fetch Occupied Seats from Railway Live API
+  // Fetch Occupied Seats from Render Live API
   async function fetchOccupiedSeats() {
     const occupiedSeatNumbers = new Set();
     if (busId && travelDate) {
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return Array.from(occupiedSeatNumbers);
   }
 
-  // Fetch Selected Bus Details from Railway Live API
+  // Fetch Selected Bus Details from Render Live API
   try {
     const response = await fetch(`${API_URL}/buses`);
     if (response.ok) {

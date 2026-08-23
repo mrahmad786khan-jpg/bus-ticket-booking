@@ -1,5 +1,5 @@
 /* ==========================================
-   TravelGo - Search & Filter Logic (Railway Live API)
+   TravelGo - Search & Filter Logic (Render Live API)
    ========================================== */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const to = urlParams.get("to") || "Goa";
   const date = urlParams.get("date") || "2026-08-15";
 
-  // Railway Live API Base URL
-  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
+  // Updated to Render Live API Base URL
+  const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
 
   // Update Header text
   const routeTitle = document.getElementById("routeTitle");
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("busResultsList");
   let allBuses = [];
 
-  // 2. Fetch Buses from Railway Backend API
+  // 2. Fetch Buses from Render Backend API
   try {
     const response = await fetch(`${API_URL}/buses?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
     const dbBuses = await response.json();
@@ -42,9 +42,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       availableSeats: bus.available_seats || 20
     }));
   } catch (error) {
-    console.error("Error fetching buses from Railway API:", error);
+    console.error("Error fetching buses from Render API:", error);
     if (container) {
-      container.innerHTML = `<div style="text-align:center; padding:40px; color:#ef4444;"><h3>Server Connection Error!</h3><p>Could not load live buses.</p></div>`;
+      container.innerHTML = `<div style="text-align:center; padding:40px; color:#ef4444;"><h3>Server Connection Error!</h3><p>Could not load live buses from Render server.</p></div>`;
     }
     return;
   }

@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error("Error parsing booking data:", e);
   }
 
-  // Railway Live API Base URL
-  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
+  // Updated to Render Live API Base URL
+  const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
 
   // --- Fetch Logged-in User Wallet Info ---
   let loggedInUser = null;
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       try {
-        // Updated to Railway Live API URL
+        // Updated to Render Live API URL
         const response = await fetch(`${API_URL}/bookings`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

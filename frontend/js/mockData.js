@@ -1,5 +1,5 @@
 /* ==========================================
-   SafarSathi (TravelGo) - Central Mock Database
+   SafarSathi (TravelGo) - Central Mock Database & Config
    ========================================== */
 
 const TRAVELGO_DB = {
@@ -120,6 +120,9 @@ const TRAVELGO_DB = {
   ]
 };
 
+// Render Live API Base URL Configuration
+const RENDER_API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
+
 // LocalStorage Initialization System (Fixed Non-Overwriting)
 function initMockData() {
   localStorage.setItem("travelgo_buses", JSON.stringify(TRAVELGO_DB.buses));
@@ -138,7 +141,7 @@ function getStoredBuses() {
 // Get Bus By ID with correct Base Price Sync
 function getBusById(busId) {
   const buses = getStoredBuses();
-  return buses.find(b => b.id === busId) || buses[0];
+  return buses.find(b => String(b.id) === String(busId)) || buses[0];
 }
 
 // Global Price Synchronization Getter & Setter

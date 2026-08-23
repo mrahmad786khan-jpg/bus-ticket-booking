@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const rawBookingData = localStorage.getItem('travelgo_booking_data');
   const bookingData = rawBookingData ? JSON.parse(rawBookingData) : null;
 
-  // Railway Live API Base URL
-  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
+  // Updated to Render Live API Base URL
+  const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
 
   // URL Query Params Read
   const urlParams = new URLSearchParams(window.location.search);
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('travelgo_booking_data', JSON.stringify(updatedBookingData));
       localStorage.setItem('passengerDetails', JSON.stringify(passengerData));
 
-      // 2. Database API call to save booked seats immediately in Backend using Railway URL
+      // 2. Database API call to save booked seats immediately in Backend using Render URL
       try {
         const response = await fetch(`${API_URL}/book-ticket`, {
           method: 'POST',

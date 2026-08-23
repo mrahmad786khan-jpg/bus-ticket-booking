@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const toLocation = urlParams.get('to') ? urlParams.get('to').trim() : '';
   const travelDate = urlParams.get('date') || 'Today';
 
-  // Railway Live API Base URL
-  const API_URL = 'https://bus-ticket-booking-production-2368.up.railway.app/api';
+  // Updated to Render Live API Base URL
+  const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
 
   // Input Fields Sync
   const fromInput = document.querySelector('input[name="from"]') || document.getElementById('fromInput');
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let routeMatchedBuses = [];
 
-  // 2. Fetch Data Directly From Railway Live Backend API with Route Parameters
+  // 2. Fetch Data Directly From Render Live Backend API with Route Parameters
   try {
     const apiUrl = `${API_URL}/buses?from=${encodeURIComponent(fromLocation)}&to=${encodeURIComponent(toLocation)}`;
     const response = await fetch(apiUrl);
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       busListContainer.innerHTML = `
         <div style="color: #ef4444; text-align: center; padding: 25px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; margin-top: 20px;">
           <h3>Server Connection Error!</h3>
-          <p style="margin-top: 5px; color: #f87171;">Railway live server se connect karne me fail ho gaya hai.</p>
+          <p style="margin-top: 5px; color: #f87171;">Render live server se connect karne me fail ho gaya hai.</p>
         </div>
       `;
     }

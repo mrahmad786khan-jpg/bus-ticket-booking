@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
 function changeLanguage(langCode) {
   // Google Translate ke native iframe select element ko access karke instantly value change karta hai
   const googleCombo = document.querySelector('.goog-te-combo');
