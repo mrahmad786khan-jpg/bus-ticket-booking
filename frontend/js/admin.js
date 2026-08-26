@@ -14,10 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     adminNameElement.innerText = `Welcome, ${savedUser.name}`;
   }
 
-  // Fetch Dashboard Analytics, Fleet, Operators & Agents Data Separately
+  // Fetch Dashboard Analytics, Fleet, Operators, Agents & Users Data
   loadDashboardData();
   loadOperatorsData();
   loadAgentsData();
+  loadUsersData(); // ✅ Added here
 
   // Add New Bus Form Handler
   const addBusForm = document.getElementById('add-bus-form');
@@ -268,6 +269,78 @@ function renderAgents(agents) {
     });
   } else {
     agentsTable.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#a9a9b3;">No agent applications found.</td></tr>`;
+  }
+}
+
+// -----------------------------------------------------------
+// ✅ ADDED: REGISTERED USERS DATA LOADER
+// -----------------------------------------------------------
+async function loadUsersData() {
+  const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
+  const usersTable = document.getElementById('users-table-body');
+  if (!usersTable) return;
+
+  try {
+    const res = await fetch(`${API_URL}/admin/users`);
+    if (res.ok) {
+      const usersList = await res.json();
+      renderUsers(usersList);
+    }
+  } catch (err) {
+    console.error('Failed to load users:', err);
+    usersTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Failed to load users from server.</td></tr>`;
+  }
+}
+
+function renderUsers(users) {
+  const usersTable = document.getElementById('users-table-body');
+  if (!usersTable) return;
+
+  usersTable.innerHTML = '';
+  if (Array.isArray(users) && users.length > 0) {
+    users.forEach((user, index) => {
+      const joinedDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Today';
+      const roleBadge = user.role === 'admin' 
+        ? '<span style="background: #ffebee; color: #c62828; padding: 3px 8px; border-radius: 4px; font-size: 0.85em;">Admin</span>' 
+        : '<span style="background: #e3f2fd; color: #0d47a1; padding: 3px 8px; border-radius: 4px; font-size: 0.85em;">User</span>';
+
+      usersTable.innerHTML += `
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #eee;">${user.id || index + 1}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>${user.name || 'N/A'}</strong></td>
+          <td style="padding: 10px; border-bottom: 1px solid #eee;">${user.email || 'N/A'}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eee;">${roleBadge}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eee;">${joinedDate}</td>
+          <td style="padding: 10px; border-bottom: 1px solid #eee;">
+            ${user.role !== 'admin' ? `
+              <button class="btn-delete" onclick="deleteUser(${user.id})" style="padding: 5px 10px; background: #ff4d4d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>` : 'N/A'}
+          </td>
+        </tr>
+      `;
+    });
+  } else {
+    usersTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#a9a9b3; padding: 15px;">No registered users found.</td></tr>`;
+  }
+}
+
+// Delete User Function
+async function deleteUser(userId) {
+  if (!confirm('Kya aap is user ko delete karna chahte hain?')) return;
+
+  const API_URL = 'https://bus-ticket-booking-5k6m.onrender.com/api';
+  try {
+    const res = await fetch(`${API_URL}/admin/delete-user/${userId}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      alert('🗑️ User deleted successfully!');
+      loadUsersData();
+    } else {
+      alert('Delete error: ' + data.message);
+    }
+  } catch (err) {
+    console.error('Delete user error:', err);
   }
 }
 

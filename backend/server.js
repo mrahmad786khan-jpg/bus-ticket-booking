@@ -191,7 +191,7 @@ app.post('/api/bookings', (req, res) => {
   });
 });
 
-// AGENTS & OPERATORS APIS (Fixed field mapping to accept both standard & alt keys)
+// AGENTS & OPERATORS APIS
 app.post('/api/agents', (req, res) => {
   const fullName = req.body.full_name || req.body.name;
   const agencyShop = req.body.agency_shop || req.body.shop;
@@ -266,6 +266,22 @@ app.delete('/api/admin/delete-bus/:id', (req, res) => {
   db.query('DELETE FROM buses WHERE id = ?', [req.params.id], (err) => {
     if (err) return res.status(500).json({ success: false, message: err.message });
     res.json({ success: true, message: 'Bus deleted successfully' });
+  });
+});
+
+// ✅ ADDED: Get all registered users for Admin Panel
+app.get('/api/admin/users', (req, res) => {
+  db.query('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC', (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json(results);
+  });
+});
+
+// ✅ ADDED: Delete user by admin
+app.delete('/api/admin/delete-user/:id', (req, res) => {
+  db.query('DELETE FROM users WHERE id = ?', [req.params.id], (err) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'User deleted successfully' });
   });
 });
 
