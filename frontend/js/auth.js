@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = passwordInput.value.trim();
 
       if (!identifier || !password) {
-        showToast("Email/Mobile aur Password dono bharein!", "Warning");
+        showToast("Please enter both Email/Mobile and Password!", "Warning"); // Converted to English
         return;
       }
 
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch (err) {
         console.error("Login Error:", err);
-        showToast("Server se connect nahi ho paya. Node.js backend check karein!", "Connection Error");
+        showToast("Unable to connect to the server. Please check your backend connection!", "Connection Error"); // Converted to English
       }
     });
   }
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (response.ok && data.success) {
-          showToast(`Account created successfully! Ab login karein.`, "Account Created", () => {
+          showToast(`Account created successfully! Please log in now.`, "Account Created", () => { // Converted to English
             if (tabLogin) tabLogin.click();
           });
         } else {
@@ -134,7 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch (err) {
         console.error("Signup Error:", err);
-        showToast("Server se connect nahi ho paya. Node.js backend check karein!", "Connection Error");
+        showToast("Unable to connect to the server. Please check your backend connection!", "Connection Error"); // Converted to English
+        showToast("Unable to connect to the server. Please check your backend connection!", "Connection Error"); // Converted to English
       }
     });
   }

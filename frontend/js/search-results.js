@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1. URL Query Parameters Read Karein
+  // 1. Read URL Query Parameters
   const urlParams = new URLSearchParams(window.location.search);
   const fromLocation = urlParams.get('from') ? urlParams.get('from').trim() : '';
   const toLocation = urlParams.get('to') ? urlParams.get('to').trim() : '';
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const response = await fetch(apiUrl);
     const dbBuses = await response.json();
 
-    // Database columns ko frontend structure me map karna
+    // Map database columns to frontend structure
     const allBuses = (Array.isArray(dbBuses) ? dbBuses : []).map(bus => ({
       id: bus.id,
       name: bus.bus_name || 'Express Bus',
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       availableSeats: bus.available_seats || 20
     }));
 
-    // Client-side Space & Case Insensitive Match (Saare spaces aur capital letters hata kar compare karega)
+    // Client-side Space & Case Insensitive Match
     const cleanFrom = fromLocation.toLowerCase().replace(/\s+/g, '');
     const cleanTo = toLocation.toLowerCase().replace(/\s+/g, '');
 
@@ -83,16 +83,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (priceVal) priceVal.textContent = `₹${highestPrice}`;
     }
 
-    // Load hone par filters run karein
+    // Run filters on load
     applyFilters();
 
   } catch (error) {
-    console.error("Backend Database se buses fetch karne me error aayi:", error);
+    console.error("Error fetching buses from backend database:", error);
     if (busListContainer) {
       busListContainer.innerHTML = `
         <div style="color: #ef4444; text-align: center; padding: 25px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; margin-top: 20px;">
           <h3>Server Connection Error!</h3>
-          <p style="margin-top: 5px; color: #f87171;">Render live server se connect karne me fail ho gaya hai.</p>
+          <p style="margin-top: 5px; color: #f87171;">Failed to connect to the Render live server.</p>
         </div>
       `;
     }
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="no-buses" style="color: #94a3b8; text-align: center; padding: 40px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin-top: 20px;">
           <h3 style="color: #1c2430; margin-bottom: 8px;">No Buses Available</h3>
           <p style="margin: 0;">No buses found matching ${fromLocation ? `"${fromLocation} ➔ ${toLocation}"` : 'your search criteria'}.</p>
-          <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Admin Panel se new bus add karein ya route change karke try karein.</p>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Please add a new bus from the Admin Panel or try changing the route.</p>
         </div>
       `;
       return;

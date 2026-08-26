@@ -50,11 +50,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div style="width: 60px; height: 60px; background: #ffebee; color: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 28px; font-weight: bold;">✕</div>
           <h3 style="margin: 0 0 10px; color: #333;">Cancel Ticket?</h3>
           <p style="color: #666; font-size: 0.95rem; margin-bottom: 25px;">
-            Kya aap sach me PNR: <strong id="cancelModalPNR" style="color: #007bff;"></strong> wali ticket cancel karna chahte hain?
+            Are you sure you want to cancel the ticket for PNR: <strong id="cancelModalPNR" style="color: #007bff;"></strong>?
           </p>
           <div style="display: flex; gap: 12px; justify-content: center;">
-            <button id="cancelModalCloseBtn" style="flex: 1; padding: 10px; background: #f1f3f5; color: #495057; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Nahi, Rakho</button>
-            <button id="cancelModalConfirmBtn" style="flex: 1; padding: 10px; background: #dc3545; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Haan, Cancel Karo</button>
+            <button id="cancelModalCloseBtn" style="flex: 1; padding: 10px; background: #f1f3f5; color: #495057; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">No, Keep It</button>
+            <button id="cancelModalConfirmBtn" style="flex: 1; padding: 10px; background: #dc3545; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Yes, Cancel</button>
           </div>
         </div>
       </div>
@@ -203,14 +203,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     return 'UPCOMING';
   }
 
-  function renderEmptyState(message = 'Koi Booked Tickets Nahi Mili!') {
+  function renderEmptyState(message = 'No Booked Tickets Found!') {
     if (!bookingsContainer) return;
     bookingsContainer.innerHTML = `
       <div style="text-align: center; padding: 40px; color: #666;">
         <h3>${message}</h3>
         ${!currentUser ? 
-          '<p>Apni booked tickets dekhne ke liye login karein.</p><a href="auth.html" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border-radius: 5px; text-decoration: none;">Login Now</a>' : 
-          '<p>Aapne abhi tak koi ticket book nahi ki hai.</p><a href="index.html" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border-radius: 5px; text-decoration: none;">Book Ticket Now</a>'
+          '<p>Please login to view your booked tickets.</p><a href="auth.html" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border-radius: 5px; text-decoration: none;">Login Now</a>' : 
+          '<p>You have not booked any tickets yet.</p><a href="index.html" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border-radius: 5px; text-decoration: none;">Book Ticket Now</a>'
         }
       </div>
     `;
@@ -509,7 +509,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (!currentUser) {
-    renderEmptyState('Aap Logged Out Hain!');
+    renderEmptyState('You are logged out!');
     return;
   }
 
@@ -581,7 +581,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     if (filteredBookings.length === 0) {
-      renderEmptyState(`Koi ${currentFilter.toLowerCase()} booking nahi mili!`);
+      renderEmptyState(`No ${currentFilter.toLowerCase()} bookings found!`);
       return;
     }
 

@@ -110,12 +110,12 @@ db.connect((err) => {
 app.post('/api/register', (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
-    return res.status(400).json({ success: false, message: 'Sabhi fields bharna zaroori hai!' });
+    return res.status(400).json({ success: false, message: 'All fields are required!' });
   }
 
   db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
     if (err) return res.status(500).json({ success: false, message: err.message });
-    if (results.length > 0) return res.status(400).json({ success: false, message: 'Yeh email pehle se registered hai!' });
+    if (results.length > 0) return res.status(400).json({ success: false, message: 'This email is already registered!' });
 
     const role = (email === 'admin@safarsathi.com') ? 'admin' : 'user';
     db.query('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', [name, email, password, role], (err, result) => {
@@ -133,7 +133,7 @@ app.post('/api/login', (req, res) => {
       const user = results[0];
       res.json({ success: true, message: 'Login successful!', user: { id: user.id, name: user.name, email: user.email, role: user.role } });
     } else {
-      res.status(401).json({ success: false, message: 'Galat Email ya Password!' });
+      res.status(401).json({ success: false, message: 'Invalid email or password!' });
     }
   });
 });
@@ -199,7 +199,7 @@ app.post('/api/agents', (req, res) => {
   const city = req.body.city;
 
   if (!fullName || !agencyShop || !phone || !city) {
-    return res.status(400).json({ success: false, message: 'Kripya sabhi fields bharein!' });
+    return res.status(400).json({ success: false, message: 'Please fill all required fields!' });
   }
 
   db.query('INSERT INTO agents (full_name, agency_shop, phone, city) VALUES (?, ?, ?, ?)', [fullName, agencyShop, phone, city], (err) => {
@@ -229,10 +229,10 @@ app.post('/api/operators', (req, res) => {
   const fleetSize = req.body.fleet_size || '1';
 
   if (!agencyName || !ownerName || !phone) {
-    return res.status(400).json({ success: false, message: 'Kripya zaroori details bharein!' });
+    return res.status(400).json({ success: false, message: 'Please fill all required details!' });
   }
 
-  db.query('INSERT INTO operators (agency_name, owner_name, phone, fleet_size) VALUES (?, ?, ?, ?)', [agencyName, ownerName, phone, fleet_size], (err) => {
+  db.query('INSERT INTO operators (agency_name, owner_name, phone, fleet_size) VALUES (?, ?, ?, ?)', [agencyName, ownerName, phone, fleetSize], (err) => {
     if (err) return res.status(500).json({ success: false, message: err.message });
     res.json({ success: true, message: 'Operator Registered Successfully!' });
   });
@@ -269,7 +269,6 @@ app.delete('/api/admin/delete-bus/:id', (req, res) => {
   });
 });
 
-// ✅ ADDED: Get all registered users for Admin Panel
 app.get('/api/admin/users', (req, res) => {
   db.query('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC', (err, results) => {
     if (err) return res.status(500).json({ success: false, message: err.message });
@@ -277,7 +276,6 @@ app.get('/api/admin/users', (req, res) => {
   });
 });
 
-// ✅ ADDED: Delete user by admin
 app.delete('/api/admin/delete-user/:id', (req, res) => {
   db.query('DELETE FROM users WHERE id = ?', [req.params.id], (err) => {
     if (err) return res.status(500).json({ success: false, message: err.message });
